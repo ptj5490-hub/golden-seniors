@@ -179,57 +179,165 @@
     .trust-card h3 { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 12px; }
     .trust-card p { font-size: 15px; color: var(--gray-600); line-height: 1.7; }
 
-    /* ======= CALCULATOR ======= */
-    .calc { background: var(--white); }
-    .calc-box {
-      background: linear-gradient(135deg, var(--gold-light) 0%, #FFFBF0 100%);
-      border: 2px solid var(--gold);
-      border-radius: 24px; padding: 60px;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
-      align-items: center; margin-top: 56px;
+    /* ======= 역경매 견적 ======= */
+    .auction { background: var(--white); }
+    .auction-wrap {
+      margin-top: 56px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start;
     }
-    .calc-form { display: flex; flex-direction: column; gap: 20px; }
-    .calc-field label {
-      font-size: 14px; font-weight: 700; color: var(--navy);
+
+    /* 스텝 인디케이터 */
+    .auction-steps {
+      display: flex; align-items: center; gap: 0; margin-bottom: 36px;
+    }
+    .auction-step {
+      display: flex; align-items: center; gap: 10px; flex: 1;
+    }
+    .auction-step-num {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800;
+      background: var(--gray-200); color: var(--gray-400);
+      transition: all 0.3s;
+    }
+    .auction-step.active .auction-step-num,
+    .auction-step.done .auction-step-num {
+      background: var(--gold); color: var(--white);
+    }
+    .auction-step-label {
+      font-size: 13px; font-weight: 600; color: var(--gray-400); white-space: nowrap;
+      transition: color 0.3s;
+    }
+    .auction-step.active .auction-step-label { color: var(--navy); }
+    .auction-step.done .auction-step-label { color: var(--gold-dark); }
+    .auction-step-line {
+      flex: 1; height: 2px; background: var(--gray-200); margin: 0 8px; transition: background 0.3s;
+    }
+    .auction-step-line.done { background: var(--gold); }
+
+    /* 폼 카드 */
+    .auction-form-card {
+      background: linear-gradient(135deg, var(--gold-light) 0%, #FFFCF4 100%);
+      border: 2px solid var(--gold); border-radius: 24px; padding: 40px;
+    }
+    .auction-panel { display: none; flex-direction: column; gap: 20px; }
+    .auction-panel.active { display: flex; }
+    .auction-panel-title {
+      font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 4px;
+    }
+    .auction-panel-sub { font-size: 14px; color: var(--gray-600); margin-bottom: 8px; }
+
+    /* 필드 공통 */
+    .a-field label {
+      font-size: 13px; font-weight: 700; color: var(--navy);
       display: block; margin-bottom: 8px;
     }
-    .calc-field select, .calc-field input {
-      width: 100%; padding: 14px 18px;
+    .a-field select, .a-field input, .a-field textarea {
+      width: 100%; padding: 13px 16px;
       border: 2px solid var(--gray-200); border-radius: 12px;
-      font-size: 15px; color: var(--gray-900);
-      background: var(--white); appearance: none;
-      transition: border-color 0.2s;
+      font-size: 15px; color: var(--gray-900); background: var(--white);
+      transition: border-color 0.2s; font-family: inherit;
     }
-    .calc-field select:focus, .calc-field input:focus {
+    .a-field select:focus, .a-field input:focus, .a-field textarea:focus {
       outline: none; border-color: var(--gold);
     }
-    .calc-btn {
-      background: var(--navy); color: var(--white);
+    .a-field textarea { resize: none; height: 90px; }
+    .a-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* 예산 칩 선택 */
+    .budget-chips { display: flex; gap: 10px; flex-wrap: wrap; }
+    .budget-chip {
+      padding: 10px 18px; border: 2px solid var(--gray-200); border-radius: 100px;
+      font-size: 14px; font-weight: 600; color: var(--gray-600);
+      cursor: pointer; transition: all 0.2s; background: var(--white);
+    }
+    .budget-chip:hover { border-color: var(--gold); color: var(--gold-dark); }
+    .budget-chip.selected {
+      border-color: var(--gold); background: var(--gold); color: var(--white);
+    }
+
+    /* 버튼 행 */
+    .a-btn-row { display: flex; gap: 12px; margin-top: 8px; }
+    .a-btn-next {
+      flex: 1; background: var(--navy); color: var(--white);
       border: none; border-radius: 12px;
       padding: 16px; font-size: 16px; font-weight: 800;
-      cursor: pointer; transition: all 0.2s; margin-top: 4px;
+      cursor: pointer; transition: all 0.2s;
     }
-    .calc-btn:hover { background: var(--navy-light); transform: translateY(-1px); }
-    .calc-result { text-align: center; }
-    .calc-result-box {
-      background: var(--white); border-radius: 20px;
-      padding: 40px 30px; box-shadow: var(--shadow-lg);
-    }
-    .calc-result-label { font-size: 14px; color: var(--gray-400); margin-bottom: 12px; }
-    .calc-result-price {
-      font-size: 48px; font-weight: 900; color: var(--navy);
-      line-height: 1; margin-bottom: 6px;
-    }
-    .calc-result-price span { font-size: 22px; font-weight: 600; }
-    .calc-result-note { font-size: 13px; color: var(--gray-400); margin-top: 10px; line-height: 1.6; }
-    .calc-result-cta {
-      display: block; margin-top: 24px;
-      background: var(--gold); color: var(--white);
+    .a-btn-next:hover { background: var(--navy-light); transform: translateY(-1px); }
+    .a-btn-prev {
+      background: var(--gray-100); color: var(--gray-600);
       border: none; border-radius: 12px;
-      padding: 14px; font-size: 15px; font-weight: 700;
-      cursor: pointer; width: 100%; transition: background 0.2s;
+      padding: 16px 22px; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: background 0.2s;
     }
-    .calc-result-cta:hover { background: var(--gold-dark); }
+    .a-btn-prev:hover { background: var(--gray-200); }
+    .a-submit {
+      flex: 1; background: var(--gold); color: var(--white);
+      border: none; border-radius: 12px;
+      padding: 16px; font-size: 16px; font-weight: 800;
+      cursor: pointer; transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(245,166,35,0.4);
+    }
+    .a-submit:hover { background: var(--gold-dark); transform: translateY(-1px); }
+
+    /* 완료 패널 */
+    .auction-done {
+      display: none; flex-direction: column; align-items: center; text-align: center; gap: 16px;
+    }
+    .auction-done.active { display: flex; }
+    .done-badge {
+      width: 72px; height: 72px; border-radius: 50%; background: var(--gold);
+      display: flex; align-items: center; justify-content: center; font-size: 32px;
+      box-shadow: 0 8px 24px rgba(245,166,35,0.4); animation: popIn 0.4s ease;
+    }
+    @keyframes popIn { 0%{transform:scale(0)} 70%{transform:scale(1.15)} 100%{transform:scale(1)} }
+    .done-title { font-size: 22px; font-weight: 900; color: var(--navy); }
+    .done-sub { font-size: 15px; color: var(--gray-600); line-height: 1.7; }
+    .done-timer {
+      background: var(--navy); color: var(--white); border-radius: 14px;
+      padding: 16px 28px; font-size: 15px; font-weight: 700; width: 100%;
+    }
+    .done-timer span { color: var(--gold); font-size: 22px; font-weight: 900; }
+
+    /* 우측 — 어떻게 진행되나요 */
+    .auction-how { display: flex; flex-direction: column; gap: 24px; }
+    .auction-how-title {
+      font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 4px;
+    }
+    .auction-how-sub { font-size: 14px; color: var(--gray-600); margin-bottom: 16px; line-height: 1.6; }
+    .auction-how-step {
+      display: flex; gap: 18px; align-items: flex-start;
+    }
+    .auction-how-icon {
+      width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 22px;
+    }
+    .auction-how-step:nth-child(1) .auction-how-icon { background: #FFF3DC; }
+    .auction-how-step:nth-child(2) .auction-how-icon { background: #E8F8F0; }
+    .auction-how-step:nth-child(3) .auction-how-icon { background: #EEF2FF; }
+    .auction-how-step:nth-child(4) .auction-how-icon { background: #FEF2F2; }
+    .auction-how-body h4 { font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+    .auction-how-body p { font-size: 13px; color: var(--gray-600); line-height: 1.6; }
+
+    /* 견적 미리보기 카드 */
+    .auction-bids {
+      margin-top: 24px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .bid-card {
+      background: var(--white); border-radius: 14px; padding: 16px 18px;
+      box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 14px;
+      border-left: 4px solid var(--gold);
+    }
+    .bid-avatar {
+      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 22px;
+    }
+    .bid-info { flex: 1; }
+    .bid-name { font-size: 15px; font-weight: 700; color: var(--navy); }
+    .bid-spec { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+    .bid-price { font-size: 17px; font-weight: 900; color: var(--gold-dark); }
+    .bid-blur { filter: blur(5px); user-select: none; }
 
     /* ======= SERVICES ======= */
     .services { background: var(--gray-100); }
@@ -723,55 +831,241 @@
   </div>
 </section>
 
-<!-- ======= CALCULATOR ======= -->
-<section class="calc" id="calc">
+<!-- ======= 역경매 견적 ======= -->
+<section class="auction" id="calc">
   <div class="container">
-    <div class="section-label">비용 계산기</div>
-    <h2 class="section-title">예상 방문 재활비용을<br>지금 바로 확인하세요</h2>
-    <p class="section-sub">서비스 유형과 주 횟수를 선택하면 월 예상 비용을 바로 알 수 있어요.</p>
-    <div class="calc-box">
-      <div class="calc-form">
-        <div class="calc-field">
-          <label>서비스 유형</label>
-          <select id="serviceType">
-            <option value="basic">기본 재활운동 (60분)</option>
-            <option value="premium">프리미엄 재활운동 (90분)</option>
-            <option value="intensive">집중 재활관리 (120분)</option>
-          </select>
-        </div>
-        <div class="calc-field">
-          <label>주 방문 횟수</label>
-          <select id="visitCount">
-            <option value="1">주 1회</option>
-            <option value="2">주 2회</option>
-            <option value="3">주 3회</option>
-            <option value="5">주 5회 (매일)</option>
-          </select>
-        </div>
-        <div class="calc-field">
-          <label>거주 지역</label>
-          <select id="region">
-            <option value="seoul">서울</option>
-            <option value="gyeonggi">경기/인천</option>
-            <option value="other">기타 지역</option>
-          </select>
-        </div>
-        <button class="calc-btn" onclick="calcPrice()">💰 월 예상 비용 계산하기</button>
-      </div>
-      <div class="calc-result">
-        <div class="calc-result-box">
-          <div class="calc-result-label">월 예상 비용</div>
-          <div class="calc-result-price" id="resultPrice">
-            <span>₩</span>0
+    <div class="section-label">역경매 견적</div>
+    <h2 class="section-title">조건을 등록하면<br>전문가들이 직접 견적을 보냅니다</h2>
+    <p class="section-sub">고정 가격 없이 여러 재활운동사의 견적을 비교하고 가장 맞는 분을 선택하세요.</p>
+
+    <div class="auction-wrap">
+
+      <!-- 좌측: 3단계 폼 -->
+      <div>
+        <!-- 스텝 인디케이터 -->
+        <div class="auction-steps" id="aSteps">
+          <div class="auction-step active" id="stepTab1">
+            <div class="auction-step-num">1</div>
+            <div class="auction-step-label">케어 조건</div>
           </div>
-          <div class="calc-result-note" id="resultNote">
-            서비스 유형과 방문 횟수를 선택하면<br>예상 비용이 표시됩니다.
+          <div class="auction-step-line" id="stepLine1"></div>
+          <div class="auction-step" id="stepTab2">
+            <div class="auction-step-num">2</div>
+            <div class="auction-step-label">예산 설정</div>
           </div>
-          <button class="calc-result-cta" onclick="alert('상담 신청이 접수되었습니다!\n담당자가 24시간 내 연락드립니다.')">
-            📞 이 금액으로 상담 신청하기
-          </button>
+          <div class="auction-step-line" id="stepLine2"></div>
+          <div class="auction-step" id="stepTab3">
+            <div class="auction-step-num">3</div>
+            <div class="auction-step-label">연락처</div>
+          </div>
+        </div>
+
+        <div class="auction-form-card">
+
+          <!-- STEP 1: 케어 조건 -->
+          <div class="auction-panel active" id="aPanel1">
+            <div class="auction-panel-title">어르신 케어 조건을 알려주세요</div>
+            <div class="auction-panel-sub">입력하신 조건을 바탕으로 맞는 전문가를 매칭합니다.</div>
+            <div class="a-field">
+              <label>질환 / 재활 목적</label>
+              <select id="a-condition">
+                <option value="">선택해주세요</option>
+                <option>뇌졸중·중풍 재활</option>
+                <option>관절·수술 후 재활</option>
+                <option>낙상 예방 운동</option>
+                <option>근감소증·체력 강화</option>
+                <option>치매 예방 운동</option>
+                <option>파킨슨 재활</option>
+                <option>호흡·심폐 재활</option>
+                <option>기타 (직접 입력)</option>
+              </select>
+            </div>
+            <div class="a-row">
+              <div class="a-field">
+                <label>거주 지역</label>
+                <select id="a-region">
+                  <option value="">시/도 선택</option>
+                  <option>서울</option><option>경기</option><option>인천</option>
+                  <option>부산</option><option>대구</option><option>대전</option>
+                  <option>광주</option><option>울산</option><option>세종</option>
+                  <option>강원</option><option>충북</option><option>충남</option>
+                  <option>전북</option><option>전남</option><option>경북</option>
+                  <option>경남</option><option>제주</option>
+                </select>
+              </div>
+              <div class="a-field">
+                <label>주 방문 횟수</label>
+                <select id="a-freq">
+                  <option value="">선택</option>
+                  <option>주 1회</option><option>주 2회</option>
+                  <option>주 3회</option><option>주 5회 (매일)</option>
+                </select>
+              </div>
+            </div>
+            <div class="a-field">
+              <label>희망 방문 시간대 (복수 선택 가능)</label>
+              <div class="budget-chips" id="timeChips">
+                <span class="budget-chip" onclick="toggleChip(this)">오전 (9~12시)</span>
+                <span class="budget-chip" onclick="toggleChip(this)">오후 (12~17시)</span>
+                <span class="budget-chip" onclick="toggleChip(this)">저녁 (17~20시)</span>
+                <span class="budget-chip" onclick="toggleChip(this)">협의 가능</span>
+              </div>
+            </div>
+            <div class="a-btn-row">
+              <button class="a-btn-next" onclick="aNext(2)">다음 단계 →</button>
+            </div>
+          </div>
+
+          <!-- STEP 2: 예산 설정 -->
+          <div class="auction-panel" id="aPanel2">
+            <div class="auction-panel-title">희망 예산 범위를 알려주세요</div>
+            <div class="auction-panel-sub">전문가들이 이 예산 범위 안에서 견적을 제안합니다.</div>
+            <div class="a-field">
+              <label>1회 방문 희망 예산</label>
+              <div class="budget-chips" id="budgetChips">
+                <span class="budget-chip" onclick="selectBudget(this)">3만원 이하</span>
+                <span class="budget-chip" onclick="selectBudget(this)">3~5만원</span>
+                <span class="budget-chip" onclick="selectBudget(this)">5~7만원</span>
+                <span class="budget-chip" onclick="selectBudget(this)">7~10만원</span>
+                <span class="budget-chip" onclick="selectBudget(this)">10만원 이상</span>
+                <span class="budget-chip" onclick="selectBudget(this)">예산 협의</span>
+              </div>
+            </div>
+            <div class="a-field">
+              <label>서비스 시작 희망일</label>
+              <input type="date" id="a-startdate">
+            </div>
+            <div class="a-field">
+              <label>특이 사항 / 요청 사항 (선택)</label>
+              <textarea id="a-note" placeholder="예: 거동이 불편하여 1층 방문 필요, 여성 선생님 선호 등"></textarea>
+            </div>
+            <div class="a-btn-row">
+              <button class="a-btn-prev" onclick="aNext(1)">← 이전</button>
+              <button class="a-btn-next" onclick="aNext(3)">다음 단계 →</button>
+            </div>
+          </div>
+
+          <!-- STEP 3: 연락처 -->
+          <div class="auction-panel" id="aPanel3">
+            <div class="auction-panel-title">견적을 받을 연락처를 입력해주세요</div>
+            <div class="auction-panel-sub">입력하신 번호로 전문가들의 견적이 전달됩니다.</div>
+            <div class="a-row">
+              <div class="a-field">
+                <label>보호자 / 신청자 이름</label>
+                <input type="text" id="a-name" placeholder="홍길동">
+              </div>
+              <div class="a-field">
+                <label>연락처</label>
+                <input type="tel" id="a-phone" placeholder="010-0000-0000">
+              </div>
+            </div>
+            <div class="a-field">
+              <label>신청자 구분</label>
+              <select id="a-role">
+                <option>자녀 (보호자)</option>
+                <option>배우자</option>
+                <option>본인 (어르신 직접)</option>
+                <option>기타</option>
+              </select>
+            </div>
+            <div style="background:var(--gold-light); border-radius:12px; padding:14px 16px; font-size:13px; color:var(--gray-600); line-height:1.7;">
+              🔒 입력하신 정보는 전문가 매칭 목적으로만 사용되며 제3자에게 제공되지 않습니다.
+            </div>
+            <div class="a-btn-row">
+              <button class="a-btn-prev" onclick="aNext(2)">← 이전</button>
+              <button class="a-submit" onclick="aSubmit()">🔍 견적 요청 등록하기</button>
+            </div>
+          </div>
+
+          <!-- 완료 화면 -->
+          <div class="auction-done" id="aDone">
+            <div class="done-badge">✓</div>
+            <div class="done-title">견적 요청이 등록됐습니다!</div>
+            <div class="done-sub">
+              내 주변 재활운동사들에게 알림이 발송됐습니다.<br>
+              빠르면 <strong>30분 이내</strong>에 견적이 도착합니다.
+            </div>
+            <div class="done-timer">
+              현재 <span id="bidCount">0</span>명이 견적을 검토 중입니다
+            </div>
+            <button class="a-submit" style="width:100%; margin-top:4px;" onclick="aReset()">
+              다른 조건으로 다시 요청하기
+            </button>
+          </div>
+
         </div>
       </div>
+
+      <!-- 우측: 역경매 안내 + 견적 미리보기 -->
+      <div class="auction-how">
+        <div>
+          <div class="auction-how-title">역경매 방식이란?</div>
+          <div class="auction-how-sub">고정 가격이 없습니다. 여러 전문가가 직접 견적을 제안하고, 고객이 비교해서 선택합니다.</div>
+        </div>
+        <div class="auction-how-step">
+          <div class="auction-how-icon">📋</div>
+          <div class="auction-how-body">
+            <h4>① 케어 조건 등록</h4>
+            <p>질환, 지역, 방문 횟수, 예산 범위를 입력하면 요청이 등록됩니다.</p>
+          </div>
+        </div>
+        <div class="auction-how-step">
+          <div class="auction-how-icon">🔔</div>
+          <div class="auction-how-body">
+            <h4>② 전문가에게 알림 발송</h4>
+            <p>조건에 맞는 주변 재활운동사들에게 실시간으로 알림이 전송됩니다.</p>
+          </div>
+        </div>
+        <div class="auction-how-step">
+          <div class="auction-how-icon">💰</div>
+          <div class="auction-how-body">
+            <h4>③ 견적 도착 & 비교</h4>
+            <p>전문가들이 프로필과 견적가를 제안합니다. 평균 3~5개 견적이 도착합니다.</p>
+          </div>
+        </div>
+        <div class="auction-how-step">
+          <div class="auction-how-icon">🤝</div>
+          <div class="auction-how-body">
+            <h4>④ 원하는 전문가 선택</h4>
+            <p>경력, 후기, 가격을 비교한 후 마음에 드는 전문가를 선택해 바로 시작하세요.</p>
+          </div>
+        </div>
+
+        <!-- 견적 예시 카드 (블러 처리) -->
+        <div>
+          <div style="font-size:13px; font-weight:700; color:var(--gray-400); margin-bottom:12px;">견적 도착 예시</div>
+          <div class="auction-bids">
+            <div class="bid-card">
+              <div class="bid-avatar" style="background:#FFF3DC;">👨‍⚕️</div>
+              <div class="bid-info">
+                <div class="bid-name">김재훈 · 물리치료사 · 경력 8년</div>
+                <div class="bid-spec">★ 4.98 · 방문 127회</div>
+              </div>
+              <div class="bid-price bid-blur">55,000원</div>
+            </div>
+            <div class="bid-card">
+              <div class="bid-avatar" style="background:#E8F8F0;">👩‍⚕️</div>
+              <div class="bid-info">
+                <div class="bid-name">이수진 · 운동처방사 · 경력 5년</div>
+                <div class="bid-spec">★ 4.97 · 방문 98회</div>
+              </div>
+              <div class="bid-price bid-blur">48,000원</div>
+            </div>
+            <div class="bid-card">
+              <div class="bid-avatar" style="background:#EEF2FF;">👨‍⚕️</div>
+              <div class="bid-info">
+                <div class="bid-name">박성민 · 물리치료사 · 경력 11년</div>
+                <div class="bid-spec">★ 4.99 · 방문 214회</div>
+              </div>
+              <div class="bid-price bid-blur">62,000원</div>
+            </div>
+          </div>
+          <div style="font-size:12px; color:var(--gray-400); margin-top:10px; text-align:center;">
+            🔒 견적 금액은 요청 등록 후 확인할 수 있습니다
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -1093,34 +1387,87 @@
 
 <!-- ======= CALCULATOR JS ======= -->
 <script>
-  // 요금표 (단위: 원)
-  const prices = {
-    basic:     { seoul: 60000, gyeonggi: 55000, other: 50000 },
-    premium:   { seoul: 85000, gyeonggi: 80000, other: 75000 },
-    intensive: { seoul: 110000, gyeonggi: 105000, other: 100000 }
-  };
 
-  // 어떤 도움이 필요하세요 — 카드 선택
+  // ── 어떤 도움이 필요하세요 카드 선택 ──
   function setNeed(el, name) {
     document.querySelectorAll('.need-card').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
   }
 
-  function calcPrice() {
-    const type   = document.getElementById('serviceType').value;
-    const visits = parseInt(document.getElementById('visitCount').value);
-    const region = document.getElementById('region').value;
+  // ── 역경매 위저드 ──
+  let currentStep = 1;
 
-    const perSession = prices[type][region];
-    const monthly    = perSession * visits * 4; // 월 4주 기준
+  function aNext(step) {
+    // 유효성 검사 (다음으로 갈 때만)
+    if (step > currentStep) {
+      if (currentStep === 1) {
+        if (!document.getElementById('a-condition').value) { alert('질환/재활 목적을 선택해주세요.'); return; }
+        if (!document.getElementById('a-region').value)    { alert('거주 지역을 선택해주세요.'); return; }
+        if (!document.getElementById('a-freq').value)      { alert('주 방문 횟수를 선택해주세요.'); return; }
+      }
+      if (currentStep === 2) {
+        if (!document.querySelector('#budgetChips .selected')) { alert('희망 예산을 선택해주세요.'); return; }
+      }
+    }
 
-    document.getElementById('resultPrice').innerHTML =
-      '<span>₩</span>' + monthly.toLocaleString();
+    // 패널 전환
+    document.getElementById('aPanel' + currentStep).classList.remove('active');
+    document.getElementById('aPanel' + step).classList.add('active');
 
-    const typeNames = { basic: '기본(60분)', premium: '프리미엄(90분)', intensive: '집중(120분)' };
-    document.getElementById('resultNote').innerHTML =
-      `${typeNames[type]} × 주 ${visits}회 × 4주 기준<br>
-       회당 ${perSession.toLocaleString()}원 / 실제 금액은 상담 후 확정됩니다.`;
+    // 스텝 탭 상태 업데이트
+    for (let i = 1; i <= 3; i++) {
+      const tab = document.getElementById('stepTab' + i);
+      tab.classList.remove('active', 'done');
+      if (i < step)      tab.classList.add('done');
+      else if (i === step) tab.classList.add('active');
+    }
+    if (document.getElementById('stepLine1'))
+      document.getElementById('stepLine1').classList.toggle('done', step > 1);
+    if (document.getElementById('stepLine2'))
+      document.getElementById('stepLine2').classList.toggle('done', step > 2);
+
+    currentStep = step;
+  }
+
+  function toggleChip(el) {
+    el.classList.toggle('selected');
+  }
+
+  function selectBudget(el) {
+    document.querySelectorAll('#budgetChips .budget-chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function aSubmit() {
+    if (!document.getElementById('a-name').value.trim())  { alert('이름을 입력해주세요.'); return; }
+    if (!document.getElementById('a-phone').value.trim()) { alert('연락처를 입력해주세요.'); return; }
+
+    // 폼 숨기고 완료 화면 표시
+    document.getElementById('aSteps').style.display = 'none';
+    for (let i = 1; i <= 3; i++) document.getElementById('aPanel' + i).classList.remove('active');
+    document.getElementById('aDone').classList.add('active');
+
+    // 입찰자 수 카운트업 애니메이션
+    let count = 0;
+    const target = Math.floor(Math.random() * 4) + 3; // 3~6명
+    const timer = setInterval(() => {
+      count++;
+      document.getElementById('bidCount').textContent = count;
+      if (count >= target) clearInterval(timer);
+    }, 400);
+  }
+
+  function aReset() {
+    document.getElementById('aDone').classList.remove('active');
+    document.getElementById('aSteps').style.display = 'flex';
+    // 폼 초기화
+    ['a-condition','a-region','a-freq','a-startdate','a-note','a-name','a-phone'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.querySelectorAll('.budget-chip').forEach(c => c.classList.remove('selected'));
+    currentStep = 1;
+    aNext(1);
   }
 </script>
 

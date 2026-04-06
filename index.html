@@ -493,49 +493,133 @@
     .step h3 { font-size: 18px; font-weight: 800; color: var(--white); margin-bottom: 10px; }
     .step p { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.7; }
 
-    /* ======= 전문가 프로필 ======= */
+    /* ======= 이 달의 베스트 선생님 ======= */
     .experts { background: var(--gray-100); }
-    .experts-grid {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
-      margin-top: 56px;
+
+    /* 월 배너 */
+    .best-month-banner {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(90deg, var(--navy) 0%, var(--navy-light) 100%);
+      color: var(--white); border-radius: 100px;
+      padding: 10px 24px; font-size: 14px; font-weight: 700;
+      margin-bottom: 40px;
     }
-    .expert-card {
-      background: var(--white); border-radius: var(--radius);
+    .best-month-banner span { font-size: 18px; }
+
+    /* 선발 기준 안내 */
+    .best-criteria {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      margin-bottom: 48px; margin-top: -16px;
+    }
+    .best-criteria-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--gray-600);
+    }
+    .best-criteria-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+
+    /* 레이아웃: 1등 왼쪽 크게 + 2·3등 오른쪽 */
+    .best-layout {
+      display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px;
+      align-items: start;
+    }
+    .best-right { display: flex; flex-direction: column; gap: 20px; }
+
+    /* 공통 카드 */
+    .best-card {
+      background: var(--white); border-radius: 20px;
       overflow: hidden; box-shadow: var(--shadow-md);
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s; position: relative;
     }
-    .expert-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
-    .expert-photo {
-      height: 180px; display: flex; align-items: center; justify-content: center;
-      font-size: 72px; position: relative;
+    .best-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+    /* 1등 카드 */
+    .best-card-1st {
+      border: 3px solid var(--gold);
     }
-    .expert-photo-1 { background: linear-gradient(135deg, #FFF3DC, #FFE4A0); }
-    .expert-photo-2 { background: linear-gradient(135deg, #E8F8F0, #B8EDD4); }
-    .expert-photo-3 { background: linear-gradient(135deg, #EEF2FF, #C7D2FE); }
-    .expert-photo-4 { background: linear-gradient(135deg, #FDF2F8, #F5C6EA); }
-    .expert-badge {
+    .best-card-1st .best-photo {
+      height: 220px; font-size: 90px;
+      background: linear-gradient(135deg, #FFF3DC, #FFE09A);
+    }
+
+    /* 2·3등 카드 */
+    .best-card-2nd { border: 2px solid #C0C0C0; }
+    .best-card-3rd { border: 2px solid #CD7F32; }
+    .best-card-2nd .best-photo,
+    .best-card-3rd .best-photo {
+      height: 130px; font-size: 56px;
+    }
+    .best-card-2nd .best-photo { background: linear-gradient(135deg, #F5F5F5, #E0E0E0); }
+    .best-card-3rd .best-photo { background: linear-gradient(135deg, #FFF1E6, #FFDCB0); }
+
+    /* 공통 사진 영역 */
+    .best-photo {
+      display: flex; align-items: center; justify-content: center; position: relative;
+    }
+
+    /* 순위 뱃지 */
+    .best-rank {
+      position: absolute; top: 12px; left: 14px;
+      font-size: 28px; line-height: 1;
+    }
+    .best-card-2nd .best-rank,
+    .best-card-3rd .best-rank { font-size: 22px; }
+
+    /* 자격증 뱃지 */
+    .best-license {
       position: absolute; top: 12px; right: 12px;
       background: var(--navy); color: var(--white);
       font-size: 11px; font-weight: 700; border-radius: 100px;
       padding: 4px 10px;
     }
-    .expert-info { padding: 20px; }
-    .expert-name { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
-    .expert-spec { font-size: 13px; color: var(--gray-600); margin-bottom: 12px; }
-    .expert-stats { display: flex; gap: 12px; }
-    .expert-stat { font-size: 13px; color: var(--gray-600); }
-    .expert-stat strong { color: var(--navy); font-weight: 700; }
-    .expert-star { color: var(--gold); font-weight: 700; font-size: 14px; }
-    .experts-more {
-      display: block; margin: 36px auto 0;
-      background: var(--navy); color: var(--white);
-      border: none; border-radius: 14px;
-      padding: 16px 44px; font-size: 16px; font-weight: 700;
-      cursor: pointer; text-decoration: none; text-align: center;
-      width: fit-content; transition: background 0.2s;
+
+    /* 카드 본문 */
+    .best-body { padding: 22px 22px 20px; }
+    .best-card-1st .best-body { padding: 26px 26px 22px; }
+    .best-name {
+      font-size: 20px; font-weight: 900; color: var(--navy); margin-bottom: 4px;
     }
-    .experts-more:hover { background: var(--navy-light); }
+    .best-card-2nd .best-name,
+    .best-card-3rd .best-name { font-size: 16px; }
+    .best-spec { font-size: 13px; color: var(--gray-600); margin-bottom: 14px; }
+    .best-card-2nd .best-spec,
+    .best-card-3rd .best-spec { margin-bottom: 10px; }
+
+    /* 통계 행 */
+    .best-stats { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+    .best-stat { font-size: 13px; color: var(--gray-600); }
+    .best-stat strong { color: var(--navy); font-weight: 800; }
+    .best-star { color: var(--gold); font-weight: 800; font-size: 15px; }
+    .best-card-2nd .best-stats,
+    .best-card-3rd .best-stats { margin-bottom: 0; }
+
+    /* 1등 후기 인용 */
+    .best-review {
+      background: var(--gold-light); border-left: 3px solid var(--gold);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 14px; font-size: 13px; color: var(--gray-600);
+      line-height: 1.7; font-style: italic;
+    }
+    .best-review-author {
+      font-size: 12px; color: var(--gray-400); margin-top: 6px;
+      font-style: normal; font-weight: 600;
+    }
+
+    /* 하단 CTA 행 */
+    .best-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 40px; flex-wrap: wrap; gap: 16px;
+    }
+    .best-footer-note { font-size: 13px; color: var(--gray-400); }
+    .best-footer-note strong { color: var(--navy); }
+    .best-join {
+      background: var(--navy); color: var(--white);
+      border: none; border-radius: 12px;
+      padding: 14px 28px; font-size: 14px; font-weight: 700;
+      cursor: pointer; text-decoration: none; transition: background 0.2s;
+    }
+    .best-join:hover { background: var(--navy-light); }
 
     /* ======= 앱 다운로드 ======= */
     .app-download {
@@ -928,8 +1012,7 @@
             <div class="a-field">
               <label>1회 방문 희망 예산</label>
               <div class="budget-chips" id="budgetChips">
-                <span class="budget-chip" onclick="selectBudget(this)">3만원 이하</span>
-                <span class="budget-chip" onclick="selectBudget(this)">3~5만원</span>
+                <span class="budget-chip" onclick="selectBudget(this)">4~5만원</span>
                 <span class="budget-chip" onclick="selectBudget(this)">5~7만원</span>
                 <span class="budget-chip" onclick="selectBudget(this)">7~10만원</span>
                 <span class="budget-chip" onclick="selectBudget(this)">10만원 이상</span>
@@ -1138,75 +1221,109 @@
   </div>
 </section>
 
-<!-- ======= 전문가 프로필 ======= -->
+<!-- ======= 이 달의 베스트 선생님 ======= -->
 <section class="experts" id="experts">
   <div class="container">
     <div class="section-label">전문가 소개</div>
-    <h2 class="section-title">검증된 재활운동사를<br>직접 만나보세요</h2>
-    <p class="section-sub">모든 전문가는 자격증 검증 · 면접 · 실기 테스트를 통과한 분들입니다.</p>
-    <div class="experts-grid">
-      <div class="expert-card">
-        <div class="expert-photo expert-photo-1">
-          👨‍⚕️
-          <span class="expert-badge">물리치료사</span>
-        </div>
-        <div class="expert-info">
-          <div class="expert-name">김재훈 선생님</div>
-          <div class="expert-spec">뇌졸중 재활 · 보행 훈련 전문</div>
-          <div class="expert-stats">
-            <div class="expert-stat"><strong>127</strong>회 방문</div>
-            <div class="expert-stat"><strong>경력 8년</strong></div>
-            <div class="expert-star">★ 4.98</div>
-          </div>
-        </div>
+    <h2 class="section-title">이 달의 베스트 선생님! 🏆</h2>
+
+    <!-- 월 배너 -->
+    <div class="best-month-banner">
+      <span>📅</span> 2025년 4월 베스트 선생님
+    </div>
+
+    <!-- 선발 기준 -->
+    <div class="best-criteria">
+      <div class="best-criteria-item">
+        <div class="best-criteria-dot" style="background:#F5A623;"></div>
+        이번 달 후기 평점 기준
       </div>
-      <div class="expert-card">
-        <div class="expert-photo expert-photo-2">
-          👩‍⚕️
-          <span class="expert-badge">운동처방사</span>
-        </div>
-        <div class="expert-info">
-          <div class="expert-name">이수진 선생님</div>
-          <div class="expert-spec">낙상 예방 · 근력 강화 전문</div>
-          <div class="expert-stats">
-            <div class="expert-stat"><strong>98</strong>회 방문</div>
-            <div class="expert-stat"><strong>경력 5년</strong></div>
-            <div class="expert-star">★ 4.97</div>
-          </div>
-        </div>
+      <div class="best-criteria-item">
+        <div class="best-criteria-dot" style="background:#1A3B6E;"></div>
+        보호자 재예약률 반영
       </div>
-      <div class="expert-card">
-        <div class="expert-photo expert-photo-3">
-          👨‍⚕️
-          <span class="expert-badge">물리치료사</span>
-        </div>
-        <div class="expert-info">
-          <div class="expert-name">박성민 선생님</div>
-          <div class="expert-spec">관절·수술 후 재활 전문</div>
-          <div class="expert-stats">
-            <div class="expert-stat"><strong>214</strong>회 방문</div>
-            <div class="expert-stat"><strong>경력 11년</strong></div>
-            <div class="expert-star">★ 4.99</div>
-          </div>
-        </div>
-      </div>
-      <div class="expert-card">
-        <div class="expert-photo expert-photo-4">
-          👩‍⚕️
-          <span class="expert-badge">스포츠재활사</span>
-        </div>
-        <div class="expert-info">
-          <div class="expert-name">최지은 선생님</div>
-          <div class="expert-spec">치매 예방 · 인지 운동 전문</div>
-          <div class="expert-stats">
-            <div class="expert-stat"><strong>76</strong>회 방문</div>
-            <div class="expert-stat"><strong>경력 4년</strong></div>
-            <div class="expert-star">★ 4.96</div>
-          </div>
-        </div>
+      <div class="best-criteria-item">
+        <div class="best-criteria-dot" style="background:#27AE60;"></div>
+        방문 성실도 검증 완료
       </div>
     </div>
-    <a href="#calc" class="experts-more">전문가 전체 보기 →</a>
+
+    <!-- 1등 (왼쪽) + 2·3등 (오른쪽) -->
+    <div class="best-layout">
+
+      <!-- 🥇 1등 카드 -->
+      <div class="best-card best-card-1st">
+        <div class="best-photo">
+          👨‍⚕️
+          <div class="best-rank">🥇</div>
+          <div class="best-license">물리치료사</div>
+        </div>
+        <div class="best-body">
+          <div class="best-name">박성민 선생님</div>
+          <div class="best-spec">관절·수술 후 재활 · 보행 훈련 전문 · 경력 11년</div>
+          <div class="best-stats">
+            <div class="best-stat"><span class="best-star">★</span> <strong>4.99</strong></div>
+            <div class="best-stat">이번 달 방문 <strong>38회</strong></div>
+            <div class="best-stat">재예약률 <strong>97%</strong></div>
+          </div>
+          <div class="best-review">
+            "수업 후 매번 사진과 함께 어머니 상태를 카톡으로 보내주셔서 정말 안심이 됐어요. 무릎이 많이 좋아지셨습니다."
+            <div class="best-review-author">— 보호자 김○○님 후기</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2·3등 오른쪽 컬럼 -->
+      <div class="best-right">
+
+        <!-- 🥈 2등 카드 -->
+        <div class="best-card best-card-2nd">
+          <div class="best-photo">
+            👨‍⚕️
+            <div class="best-rank">🥈</div>
+            <div class="best-license">물리치료사</div>
+          </div>
+          <div class="best-body">
+            <div class="best-name">김재훈 선생님</div>
+            <div class="best-spec">뇌졸중 재활 · 경력 8년</div>
+            <div class="best-stats">
+              <div class="best-stat"><span class="best-star">★</span> <strong>4.98</strong></div>
+              <div class="best-stat">방문 <strong>29회</strong></div>
+              <div class="best-stat">재예약 <strong>94%</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🥉 3등 카드 -->
+        <div class="best-card best-card-3rd">
+          <div class="best-photo">
+            👩‍⚕️
+            <div class="best-rank">🥉</div>
+            <div class="best-license">운동처방사</div>
+          </div>
+          <div class="best-body">
+            <div class="best-name">이수진 선생님</div>
+            <div class="best-spec">낙상 예방 · 근력 강화 · 경력 5년</div>
+            <div class="best-stats">
+              <div class="best-stat"><span class="best-star">★</span> <strong>4.97</strong></div>
+              <div class="best-stat">방문 <strong>24회</strong></div>
+              <div class="best-stat">재예약 <strong>91%</strong></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /best-right -->
+    </div><!-- /best-layout -->
+
+    <!-- 하단 CTA -->
+    <div class="best-footer">
+      <div class="best-footer-note">
+        매달 1일 새로운 베스트 선생님이 선정됩니다.<br>
+        <strong>골든 시니어스</strong>의 모든 선생님은 자격증·면접·실기 테스트를 통과했습니다.
+      </div>
+      <a href="#calc" class="best-join">재활운동사로 등록하기 →</a>
+    </div>
+
   </div>
 </section>
 

@@ -30,6 +30,7 @@
       color: var(--gray-900);
       background: var(--white);
     }
+    html, body { overflow-x: hidden; max-width: 100%; }
 
     /* ======= HEADER ======= */
     header {
@@ -869,27 +870,137 @@
       padding: 0 10px; font-size: 11px; color: var(--gray-600); gap: 8px;
     }
 
-    /* ======= RESPONSIVE ======= */
-    @media (max-width: 900px) {
-      header { padding: 0 24px; }
-      nav { display: none; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .needs-grid { grid-template-columns: repeat(2, 1fr); }
-      .howto-steps { grid-template-columns: repeat(2, 1fr); gap: 40px; }
-      .howto-steps::before { display: none; }
-      .experts-grid { grid-template-columns: repeat(2, 1fr); }
-      .trust-grid, .services-grid, .reviews-grid { grid-template-columns: 1fr; }
-      .calc-box { grid-template-columns: 1fr; padding: 36px 24px; gap: 36px; }
-      .app-inner { grid-template-columns: 1fr; }
-      .app-mockup { display: none; }
-      .footer-inner { grid-template-columns: 1fr 1fr; }
-      section { padding: 60px 20px; }
+    /* ======= 햄버거 메뉴 ======= */
+    .hamburger {
+      display: none; flex-direction: column; justify-content: center;
+      gap: 5px; background: none; border: none; cursor: pointer;
+      padding: 8px; z-index: 1001;
     }
+    .hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--navy); border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-nav-cta { display: none; }
+
+    /* ======= RESPONSIVE — 태블릿 (900px) ======= */
+    @media (max-width: 900px) {
+      section { padding: 64px 20px; }
+
+      /* 헤더 */
+      header { padding: 0 20px; }
+      .desktop-cta { display: none; }
+      .hamburger { display: flex; }
+      nav {
+        display: none; position: fixed; top: 70px; left: 0; right: 0;
+        background: var(--white); flex-direction: column;
+        padding: 20px 24px 28px; gap: 0;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        z-index: 1000; border-top: 1px solid var(--gray-200);
+      }
+      nav.open { display: flex; }
+      nav a { padding: 14px 0; font-size: 16px; border-bottom: 1px solid var(--gray-100); }
+      nav a:last-child { border-bottom: none; }
+      .mobile-nav-cta {
+        display: block; margin-top: 12px; text-align: center;
+        background: var(--gold); color: var(--white);
+        border-radius: 12px; padding: 14px !important;
+        font-weight: 800; border: none;
+      }
+
+      /* 통계 */
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+
+      /* 도움 그리드 */
+      .needs-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+
+      /* 트러스트 */
+      .trust-grid { grid-template-columns: 1fr; }
+
+      /* 비교표 */
+      .compare-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .compare-table { min-width: 520px; font-size: 13px; }
+      .compare-table th, .compare-table td { padding: 14px 12px; }
+
+      /* 카카오 보고 미리보기 */
+      .report-inner { grid-template-columns: 1fr; gap: 40px; }
+      .report-phone-wrap { order: -1; }
+
+      /* 이용방법 */
+      .howto-steps { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+      .howto-steps::before { display: none; }
+
+      /* 역경매 */
+      .calc-box { grid-template-columns: 1fr; padding: 36px 24px; gap: 36px; }
+
+      /* 서비스 */
+      .services-grid { grid-template-columns: 1fr; }
+
+      /* 베스트 선생님 */
+      .best-layout { grid-template-columns: 1fr; }
+      .best-card-1st .best-photo { height: 180px; }
+
+      /* 후기 */
+      .reviews-grid { grid-template-columns: 1fr; }
+
+      /* 앱 다운로드 */
+      .app-inner { grid-template-columns: 1fr; gap: 40px; }
+      .app-mockup { display: none; }
+
+      /* 푸터 */
+      .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+    }
+
+    /* ======= RESPONSIVE — 모바일 (500px) ======= */
     @media (max-width: 500px) {
-      .needs-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-      .experts-grid { grid-template-columns: 1fr; }
+      section { padding: 52px 16px; }
+      .container { padding: 0; }
+
+      /* 통계 — 2x2 유지하되 글자 줄임 */
+      .stat-num { font-size: 36px !important; }
+
+      /* 도움 그리드 */
+      .needs-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .need-card { padding: 20px 12px; }
+      .need-icon { font-size: 36px; margin-bottom: 10px; }
+      .need-title { font-size: 14px; }
+      .need-desc { display: none; }
+
+      /* 비교표 — 500px에서는 더 좁게 */
+      .compare-table { min-width: 420px; font-size: 12px; }
+
+      /* 이용방법 */
       .howto-steps { grid-template-columns: 1fr; }
+
+      /* 역경매 */
+      .auction-steps { gap: 0; }
+      .a-step-label { font-size: 11px; }
+      .budget-chips { gap: 8px; }
+      .budget-chip { padding: 8px 14px; font-size: 13px; }
+      .bid-cards { grid-template-columns: 1fr; }
+
+      /* 베스트 선생님 */
+      .best-criteria { gap: 12px; }
+      .best-name { font-size: 18px; }
+
+      /* 앱 버튼 */
+      .app-buttons { flex-direction: column; }
+      .app-btn { width: 100%; justify-content: center; }
+
+      /* 마무리 CTA */
+      .final-cta { padding: 72px 16px; }
+
+      /* 푸터 */
       .footer-inner { grid-template-columns: 1fr; }
+      .footer-bottom { font-size: 11px; }
+
+      /* 플로팅 버튼 */
+      .kakao-float { bottom: 18px; right: 16px; }
+      .kakao-float-btn { width: 50px; height: 50px; font-size: 24px; }
     }
   </style>
 </head>
@@ -901,12 +1012,16 @@
     <div class="logo-icon">🏃</div>
     골든 시니어스
   </a>
-  <nav>
-    <a href="#calc">재활운동사 찾기</a>
-    <a href="#services">서비스 소개</a>
-    <a href="#reviews">이용 후기</a>
+  <nav id="mainNav">
+    <a href="#calc" onclick="closeNav()">재활운동사 찾기</a>
+    <a href="#services" onclick="closeNav()">서비스 소개</a>
+    <a href="#reviews" onclick="closeNav()">이용 후기</a>
+    <a href="#calc" class="header-cta mobile-nav-cta" onclick="closeNav()">무료 상담 신청</a>
   </nav>
-  <a href="#calc" class="header-cta">무료 상담 신청</a>
+  <a href="#calc" class="header-cta desktop-cta">무료 상담 신청</a>
+  <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="메뉴">
+    <span></span><span></span><span></span>
+  </button>
 </header>
 
 <!-- ======= HERO ======= -->
@@ -1049,6 +1164,7 @@
     <div class="section-label">서비스 비교</div>
     <h2 class="section-title">병원 방문 vs 골든 시니어스</h2>
     <p class="section-sub">매번 병원에 가는 것보다, 전문가가 직접 찾아오는 게 왜 더 나은지 비교해보세요.</p>
+    <div class="compare-table-wrap">
     <table class="compare-table">
       <thead>
         <tr>
@@ -1095,6 +1211,7 @@
         </tr>
       </tbody>
     </table>
+    </div><!-- /compare-table-wrap -->
   </div>
 </section>
 
@@ -2055,6 +2172,24 @@
       if (count >= target) clearInterval(timer);
     }, 400);
   }
+
+  // 햄버거 메뉴
+  function toggleNav() {
+    const nav = document.getElementById('mainNav');
+    const btn = document.getElementById('hamburger');
+    nav.classList.toggle('open');
+    btn.classList.toggle('open');
+  }
+  function closeNav() {
+    document.getElementById('mainNav').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+  }
+  // 외부 클릭 시 닫기
+  document.addEventListener('click', function(e) {
+    const nav = document.getElementById('mainNav');
+    const btn = document.getElementById('hamburger');
+    if (!nav.contains(e.target) && !btn.contains(e.target)) closeNav();
+  });
 
   function toggleFaq(el) {
     const item = el.parentElement;

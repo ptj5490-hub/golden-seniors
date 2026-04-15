@@ -1046,6 +1046,7 @@
   <!-- 로그인 상태 -->
   <div id="headerUser" class="header-user">
     <span class="header-user-name" id="headerUserName">👋 안녕하세요</span>
+    <a href="pages/mypage.html" class="header-login" id="headerMypage" style="text-decoration:none;">마이페이지</a>
     <button class="header-logout" onclick="handleLogout()">로그아웃</button>
   </div>
   <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="메뉴">
@@ -2217,9 +2218,11 @@
     el.classList.add('selected');
   }
 
-  function aSubmit() {
-    if (!document.getElementById('a-name').value.trim())  { alert('이름을 입력해주세요.'); return; }
-    if (!document.getElementById('a-phone').value.trim()) { alert('연락처를 입력해주세요.'); return; }
+  async function aSubmit() {
+    const nameVal  = document.getElementById('a-name').value.trim();
+    const phoneVal = document.getElementById('a-phone').value.trim();
+    if (!nameVal)  { alert('이름을 입력해주세요.'); return; }
+    if (!phoneVal) { alert('연락처를 입력해주세요.'); return; }
 
     // 신청 정보 수집
     const condition  = document.getElementById('a-condition').value || '';
@@ -2230,12 +2233,46 @@
     const ageGroup   = document.querySelector('[data-group="ageGroup"]')?.textContent || '';
     const mobility   = document.querySelector('[data-group="mobilityGroup"]')?.textContent || '';
     const caregiver  = document.querySelector('[data-group="caregiverGroup"]')?.textContent || '';
-    const freq      = document.getElementById('a-freq')?.value     || '';
-    const regionStr = [region, district, dong].filter(Boolean).join(' ');
+    const freq       = document.getElementById('a-freq')?.value || '';
+    const startdate  = document.getElementById('a-startdate')?.value || '';
+    const note       = document.getElementById('a-note')?.value || '';
+    const roleVal    = document.getElementById('a-role')?.value || '';
+    const timeSlots  = [...document.querySelectorAll('#timeChips .budget-chip.selected')].map(c => c.textContent);
+    const regionStr  = [region, district, dong].filter(Boolean).join(' ');
 
-    // URL 파라미터로 complete.html 이동
-    const params = new URLSearchParams({ condition, region: regionStr, budget, freq, ageGroup, mobility, caregiver });
-    window.location.href = 'pages/complete.html?' + params.toString();
+    // 버튼 로딩
+    const submitBtn = document.querySelector('.a-submit');
+    const origText  = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = '등록 중...';
+
+    try {
+      // Firestore 저장
+      const user = _auth.currentUser;
+      const quoteData = {
+        condition, region: regionStr, budget, freq, startdate, note,
+        ageGroup, mobility, caregiver, timeSlots,
+        name: nameVal, phone: phoneVal.replace(/-/g,''), role: roleVal,
+        status:    'open',
+        userId:    user ? user.uid : null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      };
+      const docRef = await _db.collection('quotes').add(quoteData);
+
+      // complete.html 이동 (quoteId 포함)
+      const params = new URLSearchParams({ condition, region: regionStr, budget, freq, ageGroup, mobility, caregiver, quoteId: docRef.id });
+      window.location.href = 'pages/complete.html?' + params.toString();
+
+    } catch (err) {
+      console.error('견적 저장 실패:', err);
+      // Firestore 실패해도 페이지 이동 (오프라인 대비)
+      const params = new URLSearchParams({ condition, region: regionStr, budget, freq, ageGroup, mobility, caregiver });
+      window.location.href = 'pages/complete.html?' + params.toString();
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = origText;
+    }
   }
 
   // 햄버거 메뉴
@@ -2281,6 +2318,7 @@
 <!-- ======= FIREBASE 인증 상태 감지 ======= -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
   if (!firebase.apps.length) {
     firebase.initializeApp({
@@ -2293,17 +2331,40 @@
     });
   }
   const _auth = firebase.auth();
+  const _db   = firebase.firestore();
 
-  _auth.onAuthStateChanged((user) => {
+  _auth.onAuthStateChanged(async (user) => {
     const guestArea = document.getElementById('headerGuest');
     const userArea  = document.getElementById('headerUser');
     const userName  = document.getElementById('headerUserName');
+    const mypageBtn = document.getElementById('headerMypage');
 
     if (user) {
       guestArea.style.display = 'none';
       userArea.style.display  = 'flex';
       const name = user.displayName || user.email.split('@')[0];
       userName.textContent = `👋 ${name}님`;
+
+      // 역할에 따라 마이페이지 링크 변경
+      try {
+        const snap = await _db.collection('users').doc(user.uid).get();
+        if (snap.exists) {
+          const data = snap.data();
+          if (data.role === 'teacher') {
+            mypageBtn.href = 'pages/dashboard-teacher.html';
+            mypageBtn.textContent = '대시보드';
+          }
+          // 폼 자동 입력 (9번)
+          const nameEl  = document.getElementById('a-name');
+          const phoneEl = document.getElementById('a-phone');
+          if (nameEl && !nameEl.value)  nameEl.value  = data.name  || '';
+          if (phoneEl && !phoneEl.value) {
+            const p = data.phone || '';
+            phoneEl.value = p.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
+          }
+        }
+      } catch(e) {}
+
     } else {
       guestArea.style.display = 'flex';
       userArea.style.display  = 'none';

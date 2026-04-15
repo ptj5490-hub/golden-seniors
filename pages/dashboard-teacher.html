@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>선생님 대시보드 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #D4891A;
+      --navy: #1A2B4A; --navy-light: #2C3E6B;
+      --green: #2ECC71; --green-light: #EAFAF1;
+      --red: #E74C3C; --red-light: #FEF2F2;
+      --gray-100: #F7F8FA; --gray-200: #EEEFF2;
+      --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
+      --white: #FFFFFF;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.07);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.10);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { overflow-x: hidden; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900); min-height: 100vh;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--navy);
+      height: 64px; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 24px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--white); text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .teacher-name { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.8); }
+    .btn-logout {
+      padding: 7px 14px; background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+      font-size: 13px; font-weight: 600; color: var(--white);
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.2); }
+
+    /* ─── 심사 대기 배너 ─── */
+    .pending-banner {
+      display: none; background: #FEF3C7; border-bottom: 1px solid #FCD34D;
+      padding: 14px 24px; text-align: center;
+      font-size: 14px; font-weight: 600; color: #92400E;
+    }
+    .pending-banner.show { display: block; }
+
+    /* ─── LAYOUT ─── */
+    .container { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
+
+    /* ─── 통계 카드 ─── */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+    .stat-card {
+      background: var(--white); border-radius: 16px; padding: 20px;
+      box-shadow: var(--shadow-sm); text-align: center;
+    }
+    .stat-icon { font-size: 28px; margin-bottom: 8px; }
+    .stat-num  { font-size: 24px; font-weight: 900; color: var(--navy); }
+    .stat-label { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+    /* ─── 탭 ─── */
+    .tabs {
+      display: flex; gap: 4px; background: var(--gray-200);
+      border-radius: 14px; padding: 4px; margin-bottom: 20px;
+    }
+    .tab {
+      flex: 1; padding: 10px; text-align: center;
+      font-size: 14px; font-weight: 700; color: var(--gray-400);
+      border-radius: 11px; cursor: pointer; transition: all 0.2s;
+      border: none; background: transparent;
+    }
+    .tab.active { background: var(--white); color: var(--navy); box-shadow: var(--shadow-sm); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ─── 요청 카드 ─── */
+    .request-card {
+      background: var(--white); border-radius: 16px; padding: 20px;
+      margin-bottom: 12px; box-shadow: var(--shadow-sm);
+      border: 1.5px solid transparent; transition: border-color 0.2s;
+    }
+    .request-card:hover { border-color: var(--gold); }
+    .request-top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .request-title { font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
+    .request-meta  { font-size: 12px; color: var(--gray-400); }
+    .badge {
+      padding: 4px 10px; border-radius: 100px;
+      font-size: 12px; font-weight: 700; white-space: nowrap;
+    }
+    .badge-new     { background: #EFF6FF; color: #2563EB; }
+    .badge-sent    { background: var(--green-light); color: #16A34A; }
+    .badge-closed  { background: var(--gray-200); color: var(--gray-400); }
+
+    .request-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .tag {
+      padding: 4px 10px; background: var(--gray-100);
+      border-radius: 100px; font-size: 12px; font-weight: 600; color: var(--gray-600);
+    }
+    .tag-budget { background: var(--gold-light); color: var(--gold-dark); }
+
+    .request-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 12px; border-top: 1px solid var(--gray-100);
+    }
+    .timer { font-size: 12px; color: var(--red); font-weight: 700; }
+    .btn-quote {
+      padding: 10px 20px; background: var(--gold); color: var(--white);
+      border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-quote:hover { background: var(--gold-dark); }
+    .btn-quote:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-quote.sent {
+      background: var(--green-light); color: #16A34A;
+      border: 1.5px solid #BBF7D0; cursor: default;
+    }
+
+    /* ─── 견적 작성 모달 ─── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 500;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white); border-radius: 24px; padding: 36px 32px;
+      width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+    }
+    .modal-title { font-size: 20px; font-weight: 900; color: var(--navy); margin-bottom: 6px; }
+    .modal-sub   { font-size: 13px; color: var(--gray-400); margin-bottom: 24px; }
+    .modal-field { margin-bottom: 16px; }
+    .modal-field label {
+      display: block; font-size: 13px; font-weight: 700;
+      color: var(--gray-600); margin-bottom: 7px;
+    }
+    .modal-field input, .modal-field textarea, .modal-field select {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-200);
+      border-radius: 10px; font-size: 15px; background: var(--gray-100);
+      outline: none; font-family: inherit; transition: border-color 0.2s;
+    }
+    .modal-field input:focus, .modal-field textarea:focus, .modal-field select:focus {
+      border-color: var(--navy); background: var(--white);
+    }
+    .modal-field textarea { min-height: 90px; resize: vertical; line-height: 1.6; }
+    .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-cancel {
+      flex: 1; padding: 14px; background: var(--gray-100);
+      border: none; border-radius: 12px; font-size: 15px; font-weight: 700;
+      color: var(--gray-600); cursor: pointer;
+    }
+    .btn-submit-modal {
+      flex: 2; padding: 14px; background: var(--gold); color: var(--white);
+      border: none; border-radius: 12px; font-size: 15px; font-weight: 800;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-submit-modal:hover { background: var(--gold-dark); }
+
+    /* ─── 내 프로필 탭 ─── */
+    .profile-section {
+      background: var(--white); border-radius: 16px; padding: 24px;
+      box-shadow: var(--shadow-sm); margin-bottom: 12px;
+    }
+    .section-title { font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 16px; }
+    .info-row { margin-bottom: 14px; }
+    .info-label { font-size: 12px; font-weight: 700; color: var(--gray-400); margin-bottom: 5px; }
+    .info-input {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-200);
+      border-radius: 10px; font-size: 15px; outline: none; font-family: inherit;
+      background: var(--gray-100); transition: border-color 0.2s;
+    }
+    .info-input:focus { border-color: var(--navy); background: var(--white); }
+    .info-textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
+
+    /* ─── 빈 상태 / 로딩 ─── */
+    .empty-state {
+      text-align: center; padding: 60px 20px;
+      background: var(--white); border-radius: 16px; box-shadow: var(--shadow-sm);
+    }
+    .empty-icon  { font-size: 56px; margin-bottom: 16px; }
+    .empty-title { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+    .empty-sub   { font-size: 14px; color: var(--gray-400); line-height: 1.7; }
+    .loading { text-align: center; padding: 60px 20px; color: var(--gray-400); }
+    .loading-spinner {
+      width: 36px; height: 36px; margin: 0 auto 16px;
+      border: 3px solid var(--gray-200); border-top-color: var(--navy);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+  </a>
+  <div class="header-right">
+    <span class="teacher-name" id="teacherName">선생님</span>
+    <button class="btn-logout" onclick="handleLogout()">로그아웃</button>
+  </div>
+</header>
+
+<!-- 심사 대기 배너 -->
+<div class="pending-banner" id="pendingBanner">
+  ⏳ 현재 자격 심사 중이에요. 승인 완료 후 견적 제출이 가능합니다. (평균 1~2 영업일 소요)
+</div>
+
+<div class="container">
+
+  <!-- 통계 카드 -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <div class="stat-num" id="statNew">0</div>
+      <div class="stat-label">새 요청</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✉️</div>
+      <div class="stat-num" id="statSent">0</div>
+      <div class="stat-label">견적 제출</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-num" id="statWon">0</div>
+      <div class="stat-label">매칭 성공</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-num" id="statRating">-</div>
+      <div class="stat-label">평균 평점</div>
+    </div>
+  </div>
+
+  <!-- 탭 -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('requests', this)">📥 견적 요청</button>
+    <button class="tab" onclick="switchTab('sent', this)">✉️ 제출한 견적</button>
+    <button class="tab" onclick="switchTab('profile', this)">👤 내 프로필</button>
+  </div>
+
+  <!-- 견적 요청 탭 -->
+  <div class="tab-panel active" id="panelRequests">
+    <div id="requestsList">
+      <div class="loading"><div class="loading-spinner"></div>요청 목록 불러오는 중...</div>
+    </div>
+  </div>
+
+  <!-- 제출한 견적 탭 -->
+  <div class="tab-panel" id="panelSent">
+    <div id="sentList">
+      <div class="loading"><div class="loading-spinner"></div>불러오는 중...</div>
+    </div>
+  </div>
+
+  <!-- 내 프로필 탭 -->
+  <div class="tab-panel" id="panelProfile">
+    <div class="profile-section">
+      <div class="section-title">프로필 수정</div>
+      <div class="info-row">
+        <div class="info-label">이름</div>
+        <input class="info-input" id="editName" type="text">
+      </div>
+      <div class="info-row">
+        <div class="info-label">전화번호</div>
+        <input class="info-input" id="editPhone" type="tel">
+      </div>
+      <div class="info-row">
+        <div class="info-label">자기소개</div>
+        <textarea class="info-input info-textarea" id="editIntro"></textarea>
+      </div>
+      <div class="info-row">
+        <div class="info-label">활동 지역</div>
+        <input class="info-input" id="editArea" type="text">
+      </div>
+      <button class="btn-quote" style="width:100%;padding:14px;font-size:15px;" onclick="saveProfile()">
+        저장하기
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- 견적 작성 모달 -->
+<div class="modal-overlay" id="quoteModal">
+  <div class="modal">
+    <h2 class="modal-title">견적 작성하기</h2>
+    <p class="modal-sub" id="modalSubtitle">고객에게 나만의 견적을 제안해보세요</p>
+
+    <div class="modal-field">
+      <label>제안 금액 (1회 방문) *</label>
+      <input type="text" id="modalPrice" placeholder="예: 55,000원">
+    </div>
+    <div class="modal-field">
+      <label>방문 가능 일정</label>
+      <input type="text" id="modalSchedule" placeholder="예: 평일 오전 9시~12시 가능">
+    </div>
+    <div class="modal-field">
+      <label>첫 인사 메시지 *</label>
+      <textarea id="modalMessage" placeholder="안녕하세요! 저는 OOO 선생님입니다. 어르신의 재활을 도와드리겠습니다..."></textarea>
+    </div>
+    <div class="modal-field">
+      <label>예상 효과 / 프로그램 소개</label>
+      <textarea id="modalPlan" placeholder="관절 가동범위 개선, 낙상 예방 운동 위주로..."></textarea>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-submit-modal" onclick="submitQuote()">💌 견적 제출</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
+    authDomain:        "golden-seniors.firebaseapp.com",
+    projectId:         "golden-seniors",
+    storageBucket:     "golden-seniors.firebasestorage.app",
+    messagingSenderId: "244026917780",
+    appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
+  });
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
+
+  let currentUser = null;
+  let teacherData = null;
+  let selectedQuoteId = null;
+  let sentQuoteIds = new Set();
+
+  // ── 인증 확인 ──
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+    await loadTeacherData(user);
+    await loadRequests();
+    await loadSentQuotes();
+  });
+
+  async function loadTeacherData(user) {
+    const snap = await db.collection('users').doc(user.uid).get();
+    if (!snap.exists) return;
+    teacherData = snap.data();
+
+    if (teacherData.role !== 'teacher') {
+      window.location.href = 'mypage.html'; return;
+    }
+
+    const name = teacherData.name || user.displayName || '선생님';
+    document.getElementById('teacherName').textContent = `👋 ${name} 선생님`;
+    document.getElementById('statRating').textContent  = teacherData.rating > 0 ? teacherData.rating.toFixed(1) : '-';
+
+    // 심사 대기 배너
+    if (teacherData.status === 'pending') {
+      document.getElementById('pendingBanner').classList.add('show');
+    }
+
+    // 프로필 탭 입력
+    document.getElementById('editName').value  = teacherData.name || '';
+    document.getElementById('editPhone').value = (teacherData.phone || '').replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
+    document.getElementById('editIntro').value = teacherData.intro || '';
+    document.getElementById('editArea').value  = teacherData.area  || '';
+  }
+
+  // ── 견적 요청 목록 (open 상태 전체) ──
+  async function loadRequests() {
+    const list = document.getElementById('requestsList');
+    try {
+      const snap = await db.collection('quotes')
+        .where('status', '==', 'open')
+        .orderBy('createdAt', 'desc')
+        .limit(30)
+        .get();
+
+      if (snap.empty) {
+        list.innerHTML = emptyHTML('📭', '현재 새 요청이 없어요', '새 요청이 들어오면 여기에 표시돼요.');
+        document.getElementById('statNew').textContent = 0;
+        return;
+      }
+
+      const requests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById('statNew').textContent = requests.length;
+      list.innerHTML = requests.map(r => renderRequestCard(r)).join('');
+
+    } catch(err) {
+      // 인덱스 없으면 단순 조회
+      try {
+        const snap2 = await db.collection('quotes').where('status', '==', 'open').limit(30).get();
+        const requests = snap2.docs.map(d => ({ id: d.id, ...d.data() }));
+        document.getElementById('statNew').textContent = requests.length;
+        list.innerHTML = requests.length ? requests.map(r => renderRequestCard(r)).join('') :
+          emptyHTML('📭', '현재 새 요청이 없어요', '');
+      } catch(e2) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-title">불러오기 실패</div><div class="empty-sub">${e2.message}</div></div>`;
+      }
+    }
+  }
+
+  // ── 내가 제출한 견적 ──
+  async function loadSentQuotes() {
+    if (!currentUser) return;
+    const list = document.getElementById('sentList');
+    try {
+      const snap = await db.collection('teacher_quotes')
+        .where('teacherId', '==', currentUser.uid)
+        .orderBy('createdAt', 'desc')
+        .get();
+
+      snap.docs.forEach(d => sentQuoteIds.add(d.data().quoteId));
+      document.getElementById('statSent').textContent = snap.size;
+      document.getElementById('statWon').textContent  = snap.docs.filter(d => d.data().status === 'won').length;
+
+      if (snap.empty) {
+        list.innerHTML = emptyHTML('✉️', '아직 제출한 견적이 없어요', '왼쪽 탭에서 고객 요청에 견적을 제출해보세요!');
+        return;
+      }
+
+      list.innerHTML = snap.docs.map(d => {
+        const q = d.data();
+        const date = q.createdAt ? new Date(q.createdAt.seconds * 1000).toLocaleDateString('ko-KR') : '';
+        const won = q.status === 'won';
+        return `
+        <div class="request-card">
+          <div class="request-top">
+            <div>
+              <div class="request-title">${q.condition || '재활운동'} · ${q.region || ''}</div>
+              <div class="request-meta">${date} 제출 · 제안금액: ${q.price || '-'}</div>
+            </div>
+            <span class="badge ${won ? 'badge-sent' : 'badge-new'}">${won ? '✅ 매칭 성공' : '⏳ 검토 중'}</span>
+          </div>
+          <div style="font-size:13px;color:var(--gray-600);line-height:1.6;">${q.message || ''}</div>
+        </div>`;
+      }).join('');
+
+    } catch(err) {
+      list.innerHTML = emptyHTML('✉️', '아직 제출한 견적이 없어요', '');
+    }
+  }
+
+  function renderRequestCard(r) {
+    const isSent = sentQuoteIds.has(r.id);
+    const date   = r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleDateString('ko-KR') : '';
+    const tags   = [r.condition, r.region, r.ageGroup, r.mobility].filter(Boolean);
+    const isPending = teacherData?.status === 'pending';
+
+    return `
+    <div class="request-card">
+      <div class="request-top">
+        <div>
+          <div class="request-title">${r.condition || '재활운동 신청'} · ${r.region || '지역 미입력'}</div>
+          <div class="request-meta">${date} · 예산: ${r.budget || '협의'}</div>
+        </div>
+        <span class="badge ${isSent ? 'badge-sent' : 'badge-new'}">${isSent ? '✅ 제출 완료' : '🔵 새 요청'}</span>
+      </div>
+      <div class="request-tags">
+        ${tags.map(t => `<span class="tag">${t}</span>`).join('')}
+        ${r.budget ? `<span class="tag tag-budget">💰 ${r.budget}</span>` : ''}
+        ${r.freq   ? `<span class="tag">${r.freq}</span>` : ''}
+      </div>
+      <div class="request-footer">
+        <span class="timer">⏰ 24시간 내 견적 마감</span>
+        <button class="btn-quote ${isSent ? 'sent' : ''}"
+          ${isSent || isPending ? 'disabled' : ''}
+          onclick="openModal('${r.id}', '${(r.condition || '').replace(/'/g,'')}', '${(r.region || '').replace(/'/g,'')}')">
+          ${isSent ? '✅ 제출 완료' : isPending ? '심사 후 제출 가능' : '💌 견적 작성'}
+        </button>
+      </div>
+    </div>`;
+  }
+
+  // ── 모달 ──
+  window.openModal = function(quoteId, condition, region) {
+    selectedQuoteId = quoteId;
+    document.getElementById('modalSubtitle').textContent = `${condition} · ${region}`;
+    document.getElementById('modalPrice').value    = '';
+    document.getElementById('modalSchedule').value = '';
+    document.getElementById('modalMessage').value  = '';
+    document.getElementById('modalPlan').value     = '';
+    document.getElementById('quoteModal').classList.add('open');
+  };
+  window.closeModal = function() {
+    document.getElementById('quoteModal').classList.remove('open');
+    selectedQuoteId = null;
+  };
+  document.getElementById('quoteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  window.submitQuote = async function() {
+    if (!selectedQuoteId || !currentUser) return;
+    const price    = document.getElementById('modalPrice').value.trim();
+    const message  = document.getElementById('modalMessage').value.trim();
+    if (!price)   { alert('제안 금액을 입력해주세요.'); return; }
+    if (!message) { alert('첫 인사 메시지를 입력해주세요.'); return; }
+
+    const btn = document.querySelector('.btn-submit-modal');
+    btn.disabled = true; btn.textContent = '제출 중...';
+
+    try {
+      // 1. teacher_quotes 컬렉션에 저장
+      const quoteSnap = await db.collection('quotes').doc(selectedQuoteId).get();
+      const quoteData = quoteSnap.exists ? quoteSnap.data() : {};
+
+      await db.collection('teacher_quotes').add({
+        quoteId:   selectedQuoteId,
+        teacherId: currentUser.uid,
+        teacherName: teacherData?.name || '',
+        price, message,
+        schedule:  document.getElementById('modalSchedule').value.trim(),
+        plan:      document.getElementById('modalPlan').value.trim(),
+        condition: quoteData.condition || '',
+        region:    quoteData.region    || '',
+        status:    'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      sentQuoteIds.add(selectedQuoteId);
+      closeModal();
+      alert('✅ 견적이 제출됐어요! 고객이 확인하면 연락이 갈 거예요.');
+      await loadRequests();
+      await loadSentQuotes();
+    } catch(err) {
+      alert('제출 중 오류가 발생했어요: ' + err.message);
+    } finally {
+      btn.disabled = false; btn.textContent = '💌 견적 제출';
+    }
+  };
+
+  // ── 프로필 저장 ──
+  window.saveProfile = async function() {
+    if (!currentUser) return;
+    const name  = document.getElementById('editName').value.trim();
+    const phone = document.getElementById('editPhone').value.trim().replace(/-/g,'');
+    const intro = document.getElementById('editIntro').value.trim();
+    const area  = document.getElementById('editArea').value.trim();
+    if (!name) { alert('이름을 입력해주세요.'); return; }
+    try {
+      await db.collection('users').doc(currentUser.uid).update({ name, phone, intro, area });
+      await currentUser.updateProfile({ displayName: name });
+      teacherData = { ...teacherData, name, phone, intro, area };
+      alert('✅ 프로필이 저장됐어요!');
+    } catch(e) { alert('저장 중 오류: ' + e.message); }
+  };
+
+  // ── 탭 전환 ──
+  window.switchTab = function(tab, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    const id = 'panel' + tab.charAt(0).toUpperCase() + tab.slice(1);
+    document.getElementById(id).classList.add('active');
+  };
+
+  // ── 로그아웃 ──
+  window.handleLogout = async function() {
+    await auth.signOut();
+    window.location.href = '../index.html';
+  };
+
+  function emptyHTML(icon, title, sub) {
+    return `<div class="empty-state">
+      <div class="empty-icon">${icon}</div>
+      <div class="empty-title">${title}</div>
+      <div class="empty-sub">${sub}</div>
+    </div>`;
+  }
+</script>
+
+</body>
+</html>

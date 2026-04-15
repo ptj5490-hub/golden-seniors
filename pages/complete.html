@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>신청 완료 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #C17D0E;
+      --navy: #1A3B6E; --navy-light: #2A5298; --white: #FFFFFF;
+      --gray-100: #F8F9FA; --gray-200: #E9ECEF; --gray-400: #9CA3AF;
+      --gray-600: #6B7280; --gray-900: #1F2937;
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { overflow-x: hidden; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900); min-height: 100vh;
+    }
+
+    /* ===== 헤더 ===== */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--white); box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+      height: 64px; display: flex; align-items: center; padding: 0 24px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--navy);
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold);
+      border-radius: 10px; display: flex; align-items: center;
+      justify-content: center; font-size: 18px;
+    }
+
+    /* ===== 메인 ===== */
+    main {
+      padding-top: 64px; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding-bottom: 40px;
+    }
+    .container { width: 100%; max-width: 560px; padding: 40px 20px; }
+
+    /* ===== 완료 카드 ===== */
+    .complete-card {
+      background: var(--white); border-radius: 24px;
+      padding: 48px 36px; text-align: center;
+      box-shadow: var(--shadow-lg); margin-bottom: 20px;
+    }
+    .check-wrap {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, #27AE60, #2ECC71);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 28px; font-size: 36px;
+      box-shadow: 0 8px 24px rgba(39,174,96,0.35);
+      animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes pop {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .complete-title {
+      font-size: 26px; font-weight: 900; color: var(--navy);
+      margin-bottom: 12px;
+    }
+    .complete-sub {
+      font-size: 15px; color: var(--gray-600); line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    /* 타임라인 */
+    .timeline {
+      display: flex; flex-direction: column; gap: 0;
+      text-align: left; margin-bottom: 36px;
+    }
+    .tl-item {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 14px 0; border-bottom: 1px solid var(--gray-200);
+    }
+    .tl-item:last-child { border-bottom: none; }
+    .tl-icon {
+      width: 38px; height: 38px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .tl-icon.done  { background: #EAF8EF; }
+    .tl-icon.going { background: #FFF3DC; }
+    .tl-icon.wait  { background: var(--gray-100); }
+    .tl-text strong {
+      display: block; font-size: 14px; font-weight: 800;
+      color: var(--navy); margin-bottom: 2px;
+    }
+    .tl-text span { font-size: 13px; color: var(--gray-600); }
+    .tl-badge {
+      margin-left: auto; font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 100px; white-space: nowrap; flex-shrink: 0;
+    }
+    .tl-badge.done  { background: #EAF8EF; color: #27AE60; }
+    .tl-badge.going { background: #FFF3DC; color: var(--gold-dark); }
+    .tl-badge.wait  { background: var(--gray-200); color: var(--gray-400); }
+
+    /* 신청 요약 박스 */
+    .summary-box {
+      background: var(--gold-light); border-radius: 16px;
+      padding: 20px; margin-bottom: 36px; text-align: left;
+    }
+    .summary-box h4 {
+      font-size: 13px; font-weight: 800; color: var(--gold-dark);
+      margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .summary-row {
+      display: flex; justify-content: space-between;
+      font-size: 14px; padding: 5px 0;
+      border-bottom: 1px solid rgba(245,166,35,0.2);
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-row span:first-child { color: var(--gray-600); }
+    .summary-row span:last-child  { font-weight: 700; color: var(--navy); }
+
+    /* 버튼 */
+    .btn-primary {
+      display: block; width: 100%; padding: 16px;
+      background: var(--navy); color: var(--white);
+      border: none; border-radius: 14px; font-size: 16px; font-weight: 800;
+      cursor: pointer; text-decoration: none; text-align: center;
+      transition: background 0.2s; margin-bottom: 12px;
+    }
+    .btn-primary:hover { background: var(--navy-light); }
+    .btn-kakao {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 16px;
+      background: #FEE500; color: #3A1D00;
+      border: none; border-radius: 14px; font-size: 16px; font-weight: 800;
+      cursor: pointer; text-decoration: none;
+      transition: opacity 0.2s; margin-bottom: 12px;
+    }
+    .btn-kakao:hover { opacity: 0.88; }
+    .btn-outline {
+      display: block; width: 100%; padding: 14px;
+      background: transparent; color: var(--gray-600);
+      border: 1px solid var(--gray-200); border-radius: 14px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      text-decoration: none; text-align: center; transition: all 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--navy); color: var(--navy); }
+
+    /* 안내 텍스트 */
+    .notice {
+      background: var(--white); border-radius: 16px;
+      padding: 20px 24px; box-shadow: var(--shadow-md);
+    }
+    .notice p {
+      font-size: 13px; color: var(--gray-600); line-height: 1.8;
+    }
+    .notice p + p { margin-top: 8px; }
+    .notice strong { color: var(--navy); }
+
+    /* 모바일 */
+    @media (max-width: 500px) {
+      .complete-card { padding: 36px 20px; }
+      .complete-title { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+  </a>
+</header>
+
+<main>
+  <div class="container">
+
+    <div class="complete-card">
+      <div class="check-wrap">✓</div>
+      <h1 class="complete-title">견적 신청이 완료됐습니다!</h1>
+      <p class="complete-sub">
+        조건에 맞는 재활운동사 선생님들이<br>
+        직접 견적을 제안해 드릴 예정입니다.<br>
+        평균 <strong style="color:var(--gold-dark)">3~5개</strong> 견적이 도착합니다.
+      </p>
+
+      <!-- 진행 타임라인 -->
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-icon done">✅</div>
+          <div class="tl-text">
+            <strong>견적 신청 완료</strong>
+            <span>방금 전</span>
+          </div>
+          <span class="tl-badge done">완료</span>
+        </div>
+        <div class="tl-item">
+          <div class="tl-icon going">⏳</div>
+          <div class="tl-text">
+            <strong>전문가 견적 검토 중</strong>
+            <span>주변 재활운동사들이 조건을 확인하고 있어요</span>
+          </div>
+          <span class="tl-badge going">진행 중</span>
+        </div>
+        <div class="tl-item">
+          <div class="tl-icon wait">💬</div>
+          <div class="tl-text">
+            <strong>견적 도착 예정</strong>
+            <span>평균 2~4시간 이내</span>
+          </div>
+          <span class="tl-badge wait">대기 중</span>
+        </div>
+        <div class="tl-item">
+          <div class="tl-icon wait">🏃</div>
+          <div class="tl-text">
+            <strong>선생님 선택 &amp; 첫 방문</strong>
+            <span>마음에 드는 분 선택 후 일정 조율</span>
+          </div>
+          <span class="tl-badge wait">대기 중</span>
+        </div>
+      </div>
+
+      <!-- 신청 요약 -->
+      <div class="summary-box">
+        <h4>📋 내 신청 조건 요약</h4>
+        <div class="summary-row">
+          <span>재활 목적</span>
+          <span id="summaryCondition">—</span>
+        </div>
+        <div class="summary-row">
+          <span>거주 지역</span>
+          <span id="summaryRegion">—</span>
+        </div>
+        <div class="summary-row">
+          <span>희망 예산</span>
+          <span id="summaryBudget">—</span>
+        </div>
+        <div class="summary-row">
+          <span>방문 횟수</span>
+          <span id="summaryFreq">—</span>
+        </div>
+      </div>
+
+      <!-- 버튼 -->
+      <a href="quotes.html" class="btn-primary">📨 받은 견적 확인하기</a>
+      <a href="http://pf.kakao.com/_Pwxoln" target="_blank" class="btn-kakao">
+        💬 카카오톡으로 알림 받기
+      </a>
+      <a href="../index.html" class="btn-outline">홈으로 돌아가기</a>
+    </div>
+
+    <!-- 하단 안내 -->
+    <div class="notice">
+      <p>📱 <strong>견적 알림</strong>은 카카오톡 채널을 통해 받을 수 있습니다. 위 버튼을 눌러 채널을 추가해 주세요.</p>
+      <p>⏰ 견적은 신청 후 <strong>24시간 이내</strong> 도착합니다. 영업일 기준이며, 주말·공휴일은 다음 평일에 처리됩니다.</p>
+      <p>❓ 문의사항은 카카오톡 채널 <strong>'골든 시니어스'</strong>로 연락해 주세요.</p>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  // URL 파라미터에서 신청 정보 읽기
+  const params = new URLSearchParams(window.location.search);
+  document.getElementById('summaryCondition').textContent = params.get('condition') || '뇌졸중 재활';
+  document.getElementById('summaryRegion').textContent    = params.get('region')    || '서울 강남구 역삼동';
+  document.getElementById('summaryBudget').textContent    = params.get('budget')    || '5~7만원';
+  document.getElementById('summaryFreq').textContent      = params.get('freq')      || '주 2회';
+</script>
+
+</body>
+</html>

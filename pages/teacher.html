@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>선생님 프로필 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #C17D0E;
+      --navy: #1A3B6E; --navy-light: #2A5298; --white: #FFFFFF;
+      --gray-100: #F8F9FA; --gray-200: #E9ECEF; --gray-400: #9CA3AF;
+      --gray-600: #6B7280; --gray-900: #1F2937;
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { overflow-x: hidden; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900);
+    }
+
+    /* ===== 헤더 ===== */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--white); box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+      height: 64px; display: flex; align-items: center; padding: 0 24px; gap: 16px;
+    }
+    .back-btn {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--gray-100); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; text-decoration: none; color: var(--navy);
+      transition: background 0.2s;
+    }
+    .back-btn:hover { background: var(--gray-200); }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--navy);
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold);
+      border-radius: 10px; display: flex; align-items: center;
+      justify-content: center; font-size: 18px;
+    }
+
+    /* ===== 레이아웃 ===== */
+    main { padding-top: 64px; }
+    .page-inner {
+      max-width: 780px; margin: 0 auto;
+      padding: 32px 20px 120px;
+      display: grid; grid-template-columns: 1fr 320px; gap: 24px;
+      align-items: start;
+    }
+
+    /* ===== 왼쪽 콘텐츠 ===== */
+    .card {
+      background: var(--white); border-radius: 20px;
+      padding: 28px; box-shadow: var(--shadow-md); margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 16px; font-weight: 800; color: var(--navy);
+      margin-bottom: 20px; padding-bottom: 14px;
+      border-bottom: 2px solid var(--gray-100);
+    }
+
+    /* 프로필 헤더 */
+    .profile-header {
+      display: flex; gap: 20px; align-items: flex-start; margin-bottom: 24px;
+    }
+    .profile-avatar {
+      width: 90px; height: 90px; border-radius: 20px; flex-shrink: 0;
+      background: linear-gradient(135deg, #FFE09A, #F5A623);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 44px; border: 3px solid var(--gold);
+    }
+    .profile-info { flex: 1; }
+    .profile-name { font-size: 24px; font-weight: 900; color: var(--navy); margin-bottom: 6px; }
+    .profile-spec { font-size: 14px; color: var(--gray-600); margin-bottom: 12px; }
+    .profile-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge {
+      font-size: 12px; font-weight: 700; padding: 4px 12px;
+      border-radius: 100px;
+    }
+    .badge-gold  { background: var(--gold-light); color: var(--gold-dark); }
+    .badge-navy  { background: #EEF2FF; color: var(--navy); }
+    .badge-green { background: #EAF8EF; color: #27AE60; }
+
+    /* 통계 4개 */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 12px; margin-bottom: 0;
+    }
+    .stat-box {
+      background: var(--gray-100); border-radius: 14px;
+      padding: 16px 12px; text-align: center;
+    }
+    .stat-box .num {
+      font-size: 22px; font-weight: 900; color: var(--navy); display: block;
+    }
+    .stat-box .lbl { font-size: 12px; color: var(--gray-600); margin-top: 2px; }
+    .star-num { color: var(--gold); }
+
+    /* 전문 분야 태그 */
+    .spec-tags { display: flex; gap: 10px; flex-wrap: wrap; }
+    .spec-tag {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--gray-100); border-radius: 12px;
+      padding: 10px 14px; font-size: 13px; color: var(--navy); font-weight: 600;
+    }
+
+    /* 경력 타임라인 */
+    .career-list { display: flex; flex-direction: column; gap: 0; }
+    .career-item {
+      display: flex; gap: 16px; padding: 16px 0;
+      border-bottom: 1px solid var(--gray-100); align-items: flex-start;
+    }
+    .career-item:last-child { border-bottom: none; }
+    .career-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--gold); margin-top: 5px; flex-shrink: 0;
+    }
+    .career-year { font-size: 13px; color: var(--gray-400); width: 80px; flex-shrink: 0; }
+    .career-text strong { display: block; font-size: 14px; font-weight: 800; color: var(--navy); margin-bottom: 2px; }
+    .career-text span { font-size: 13px; color: var(--gray-600); }
+
+    /* 자격증 */
+    .cert-list { display: flex; flex-direction: column; gap: 12px; }
+    .cert-item {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--gray-100); border-radius: 14px; padding: 14px 16px;
+    }
+    .cert-icon { font-size: 24px; flex-shrink: 0; }
+    .cert-text strong { display: block; font-size: 14px; font-weight: 800; color: var(--navy); }
+    .cert-text span { font-size: 12px; color: var(--gray-600); }
+
+    /* 후기 */
+    .review-list { display: flex; flex-direction: column; gap: 16px; }
+    .review-item {
+      padding: 18px; background: var(--gray-100); border-radius: 16px;
+    }
+    .review-top {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+    }
+    .review-stars { color: var(--gold); font-size: 14px; font-weight: 800; }
+    .review-date { font-size: 12px; color: var(--gray-400); }
+    .review-text { font-size: 14px; color: var(--gray-900); line-height: 1.7; }
+    .review-author { font-size: 12px; color: var(--gray-400); margin-top: 8px; }
+    .more-reviews {
+      text-align: center; padding: 14px; font-size: 14px;
+      color: var(--navy); font-weight: 700; cursor: pointer;
+      border: 1px solid var(--gray-200); border-radius: 12px;
+      background: var(--white); transition: background 0.2s;
+    }
+    .more-reviews:hover { background: var(--gray-100); }
+
+    /* ===== 오른쪽 사이드바 (고정) ===== */
+    .sidebar { position: sticky; top: 84px; }
+    .sidebar-card {
+      background: var(--white); border-radius: 20px;
+      padding: 24px; box-shadow: var(--shadow-md); margin-bottom: 16px;
+    }
+    .price-label { font-size: 13px; color: var(--gray-600); margin-bottom: 6px; }
+    .price-num {
+      font-size: 28px; font-weight: 900; color: var(--navy); margin-bottom: 4px;
+    }
+    .price-note { font-size: 12px; color: var(--gray-400); margin-bottom: 20px; }
+    .availability {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: #27AE60; font-weight: 700; margin-bottom: 20px;
+    }
+    .availability span { width: 8px; height: 8px; border-radius: 50%; background: #27AE60; display: block; }
+    .btn-request {
+      display: block; width: 100%; padding: 16px;
+      background: var(--gold); color: var(--white);
+      border: none; border-radius: 14px; font-size: 16px; font-weight: 800;
+      cursor: pointer; text-decoration: none; text-align: center;
+      transition: background 0.2s; margin-bottom: 10px;
+    }
+    .btn-request:hover { background: var(--gold-dark); }
+    .btn-chat {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 14px;
+      background: #FEE500; color: #3A1D00;
+      border: none; border-radius: 14px; font-size: 14px; font-weight: 800;
+      cursor: pointer; text-decoration: none; transition: opacity 0.2s;
+    }
+    .btn-chat:hover { opacity: 0.88; }
+    .sidebar-info { display: flex; flex-direction: column; gap: 10px; }
+    .info-row {
+      display: flex; justify-content: space-between;
+      font-size: 13px; padding: 8px 0; border-bottom: 1px solid var(--gray-100);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-row span:first-child { color: var(--gray-600); }
+    .info-row span:last-child  { font-weight: 700; color: var(--navy); }
+
+    /* 모바일 */
+    @media (max-width: 700px) {
+      .page-inner { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .profile-avatar { width: 72px; height: 72px; font-size: 34px; }
+      .profile-name { font-size: 20px; }
+    }
+
+    /* 모바일 하단 고정 버튼 */
+    .mobile-cta {
+      display: none; position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--white); border-top: 1px solid var(--gray-200);
+      padding: 16px 20px; gap: 10px;
+    }
+    @media (max-width: 700px) {
+      .mobile-cta { display: flex; }
+      .mobile-cta .btn-request { margin-bottom: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="javascript:history.back()" class="back-btn">←</a>
+  <a href="../index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+  </a>
+</header>
+
+<main>
+  <div class="page-inner">
+
+    <!-- ===== 왼쪽 콘텐츠 ===== -->
+    <div class="left-col">
+
+      <!-- 프로필 헤더 -->
+      <div class="card">
+        <div class="profile-header">
+          <div class="profile-avatar">👨‍⚕️</div>
+          <div class="profile-info">
+            <div class="profile-name">박성민 선생님</div>
+            <div class="profile-spec">관절·수술 후 재활 · 보행 훈련 전문</div>
+            <div class="profile-badges">
+              <span class="badge badge-gold">🥇 이달의 베스트</span>
+              <span class="badge badge-navy">물리치료사</span>
+              <span class="badge badge-green">✓ 신원 인증</span>
+            </div>
+          </div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-box">
+            <span class="num star-num">★ 4.99</span>
+            <div class="lbl">평점</div>
+          </div>
+          <div class="stat-box">
+            <span class="num">214회</span>
+            <div class="lbl">누적 방문</div>
+          </div>
+          <div class="stat-box">
+            <span class="num">97%</span>
+            <div class="lbl">재예약률</div>
+          </div>
+          <div class="stat-box">
+            <span class="num">11년</span>
+            <div class="lbl">경력</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 전문 분야 -->
+      <div class="card">
+        <div class="card-title">🎯 전문 분야</div>
+        <div class="spec-tags">
+          <div class="spec-tag">🦵 관절·수술 후 재활</div>
+          <div class="spec-tag">🚶 보행 훈련</div>
+          <div class="spec-tag">🧠 뇌졸중 재활</div>
+          <div class="spec-tag">⚖️ 균형 감각 훈련</div>
+          <div class="spec-tag">💪 근력 강화</div>
+          <div class="spec-tag">🏠 낙상 예방</div>
+        </div>
+      </div>
+
+      <!-- 경력 -->
+      <div class="card">
+        <div class="card-title">📋 경력 사항</div>
+        <div class="career-list">
+          <div class="career-item">
+            <div class="career-dot"></div>
+            <div class="career-year">2022 – 현재</div>
+            <div class="career-text">
+              <strong>골든 시니어스 소속 재활운동사</strong>
+              <span>시니어 방문 재활운동 전담 · 누적 214회 방문</span>
+            </div>
+          </div>
+          <div class="career-item">
+            <div class="career-dot"></div>
+            <div class="career-year">2018 – 2022</div>
+            <div class="career-text">
+              <strong>서울 ○○병원 물리치료사</strong>
+              <span>정형외과·신경계 재활치료 담당</span>
+            </div>
+          </div>
+          <div class="career-item">
+            <div class="career-dot"></div>
+            <div class="career-year">2015 – 2018</div>
+            <div class="career-text">
+              <strong>○○재활의학과 물리치료사</strong>
+              <span>수술 후 재활 · 노인 보행 훈련 전문</span>
+            </div>
+          </div>
+          <div class="career-item">
+            <div class="career-dot"></div>
+            <div class="career-year">2013</div>
+            <div class="career-text">
+              <strong>○○대학교 물리치료학과 졸업</strong>
+              <span>물리치료사 국가면허 취득</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 자격증 -->
+      <div class="card">
+        <div class="card-title">🎓 자격증 · 인증</div>
+        <div class="cert-list">
+          <div class="cert-item">
+            <div class="cert-icon">📜</div>
+            <div class="cert-text">
+              <strong>물리치료사 국가면허</strong>
+              <span>보건복지부 · 골든 시니어스 검증 완료</span>
+            </div>
+          </div>
+          <div class="cert-item">
+            <div class="cert-icon">🏅</div>
+            <div class="cert-text">
+              <strong>노인스포츠지도사 2급</strong>
+              <span>문화체육관광부 공인</span>
+            </div>
+          </div>
+          <div class="cert-item">
+            <div class="cert-icon">🛡️</div>
+            <div class="cert-text">
+              <strong>배상책임보험 가입 완료</strong>
+              <span>활동 중 사고 발생 시 보험 적용</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 이용 후기 -->
+      <div class="card">
+        <div class="card-title">💬 이용 후기 <span style="font-size:13px;color:var(--gray-400);font-weight:400">(127개)</span></div>
+        <div class="review-list">
+          <div class="review-item">
+            <div class="review-top">
+              <div class="review-stars">★★★★★ 5.0</div>
+              <div class="review-date">2025.03.28</div>
+            </div>
+            <div class="review-text">어머니 무릎 수술 후 재활을 도와주셨는데 정말 친절하시고 전문적이세요. 매 회차 운동 내용을 카카오톡으로 보내주셔서 멀리서도 안심이 됐어요. 덕분에 어머니 보행이 많이 좋아지셨습니다!</div>
+            <div class="review-author">보호자 김○○님 · 주 2회 · 8회 진행</div>
+          </div>
+          <div class="review-item">
+            <div class="review-top">
+              <div class="review-stars">★★★★★ 5.0</div>
+              <div class="review-date">2025.03.14</div>
+            </div>
+            <div class="review-text">아버지가 뇌졸중 후유증으로 보행이 불안정하셨는데, 3개월 꾸준히 받으시니 혼자 산책하실 정도로 회복하셨어요. 선생님이 어르신 눈높이에 맞게 운동을 조절해주셔서 좋았습니다.</div>
+            <div class="review-author">보호자 이○○님 · 주 3회 · 12회 진행</div>
+          </div>
+          <div class="review-item">
+            <div class="review-top">
+              <div class="review-stars">★★★★★ 4.9</div>
+              <div class="review-date">2025.02.22</div>
+            </div>
+            <div class="review-text">처음엔 낯설어하시던 어머니가 이제는 선생님 오시는 날을 기다리세요 😊 운동 외에도 어르신 기분 상태나 식욕도 체크해주셔서 가족 입장에서 정말 든든합니다.</div>
+            <div class="review-author">보호자 박○○님 · 주 2회 · 20회 진행</div>
+          </div>
+        </div>
+        <div class="more-reviews" onclick="alert('로그인 후 전체 후기를 확인하세요.')">
+          후기 전체 보기 (127개) →
+        </div>
+      </div>
+
+    </div><!-- /left-col -->
+
+    <!-- ===== 오른쪽 사이드바 ===== -->
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="price-label">1회 방문 기준</div>
+        <div class="price-num">6만원~</div>
+        <div class="price-note">방문 지역·시간에 따라 조정 가능</div>
+        <div class="availability">
+          <span></span> 현재 신규 고객 수락 가능
+        </div>
+        <a href="quotes.html" class="btn-request">📋 이 선생님께 견적 요청</a>
+        <a href="http://pf.kakao.com/_Pwxoln" target="_blank" class="btn-chat">
+          💬 카카오로 문의하기
+        </a>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-info">
+          <div class="info-row">
+            <span>활동 지역</span>
+            <span>서울 강남·서초·송파</span>
+          </div>
+          <div class="info-row">
+            <span>방문 가능 시간</span>
+            <span>평일 09:00~18:00</span>
+          </div>
+          <div class="info-row">
+            <span>1회 소요 시간</span>
+            <span>약 50분</span>
+          </div>
+          <div class="info-row">
+            <span>최소 방문 횟수</span>
+            <span>주 1회부터</span>
+          </div>
+          <div class="info-row">
+            <span>신원 인증</span>
+            <span>✅ 완료</span>
+          </div>
+          <div class="info-row">
+            <span>보험 가입</span>
+            <span>✅ 완료</span>
+          </div>
+        </div>
+      </div>
+    </div><!-- /sidebar -->
+
+  </div><!-- /page-inner -->
+</main>
+
+<!-- 모바일 하단 고정 버튼 -->
+<div class="mobile-cta">
+  <a href="quotes.html" class="btn-request" style="flex:1">📋 견적 요청</a>
+  <a href="http://pf.kakao.com/_Pwxoln" target="_blank" class="btn-chat" style="width:56px;border-radius:14px;">💬</a>
+</div>
+
+</body>
+</html>

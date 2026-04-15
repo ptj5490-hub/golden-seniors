@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>받은 견적 비교 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #C17D0E;
+      --navy: #1A3B6E; --navy-light: #2A5298; --white: #FFFFFF;
+      --gray-100: #F8F9FA; --gray-200: #E9ECEF; --gray-400: #9CA3AF;
+      --gray-600: #6B7280; --gray-900: #1F2937;
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { overflow-x: hidden; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900);
+    }
+
+    /* ===== 헤더 ===== */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--white); box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+      height: 64px; display: flex; align-items: center; padding: 0 24px; gap: 16px;
+    }
+    .back-btn {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--gray-100); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; text-decoration: none; color: var(--navy);
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--navy); text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .header-count {
+      margin-left: auto; background: var(--gold-light);
+      color: var(--gold-dark); font-size: 13px; font-weight: 800;
+      padding: 6px 14px; border-radius: 100px;
+    }
+
+    /* ===== 메인 ===== */
+    main { padding-top: 64px; }
+    .container { max-width: 720px; margin: 0 auto; padding: 28px 20px 80px; }
+
+    /* 신청 조건 요약 */
+    .request-summary {
+      background: var(--navy); color: var(--white);
+      border-radius: 20px; padding: 20px 24px; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .request-summary h3 { font-size: 14px; font-weight: 800; margin-bottom: 8px; color: rgba(255,255,255,0.7); }
+    .request-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .request-tag {
+      background: rgba(255,255,255,0.15); color: var(--white);
+      font-size: 13px; font-weight: 700; padding: 5px 12px; border-radius: 100px;
+    }
+    .request-edit {
+      margin-left: auto; background: rgba(255,255,255,0.2); color: var(--white);
+      border: none; border-radius: 10px; padding: 8px 16px;
+      font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .request-edit:hover { background: rgba(255,255,255,0.3); }
+
+    /* 필터/정렬 */
+    .filter-bar {
+      display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 8px 18px; border-radius: 100px; font-size: 13px; font-weight: 700;
+      border: 2px solid var(--gray-200); background: var(--white);
+      cursor: pointer; transition: all 0.2s; color: var(--gray-600);
+    }
+    .filter-btn.active {
+      border-color: var(--navy); background: var(--navy); color: var(--white);
+    }
+    .filter-btn:hover:not(.active) { border-color: var(--navy); color: var(--navy); }
+
+    /* 견적 카드 */
+    .quote-list { display: flex; flex-direction: column; gap: 16px; }
+    .quote-card {
+      background: var(--white); border-radius: 20px;
+      box-shadow: var(--shadow-md); overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 2px solid transparent;
+    }
+    .quote-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .quote-card.best { border-color: var(--gold); }
+
+    /* 카드 상단 */
+    .quote-top {
+      display: flex; gap: 16px; padding: 22px 22px 16px; align-items: flex-start;
+    }
+    .q-avatar {
+      width: 64px; height: 64px; border-radius: 16px; flex-shrink: 0;
+      background: linear-gradient(135deg, #FFE09A, #F5A623);
+      display: flex; align-items: center; justify-content: center; font-size: 30px;
+    }
+    .q-avatar.silver { background: linear-gradient(135deg, #E8E8E8, #C0C0C0); }
+    .q-avatar.bronze { background: linear-gradient(135deg, #FFE0C0, #CD7F32); }
+    .q-info { flex: 1; }
+    .q-name-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+    }
+    .q-name { font-size: 18px; font-weight: 900; color: var(--navy); }
+    .q-license {
+      background: #EEF2FF; color: var(--navy);
+      font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 100px;
+    }
+    .q-spec { font-size: 13px; color: var(--gray-600); margin-bottom: 10px; }
+    .q-stats { display: flex; gap: 14px; flex-wrap: wrap; }
+    .q-stat { font-size: 13px; color: var(--gray-600); }
+    .q-stat strong { color: var(--navy); font-weight: 800; }
+    .q-star { color: var(--gold); font-weight: 800; }
+
+    /* 카드 가격 영역 */
+    .quote-price {
+      padding: 0 22px 16px;
+      display: flex; align-items: baseline; gap: 8px;
+    }
+    .price-main { font-size: 26px; font-weight: 900; color: var(--navy); }
+    .price-unit { font-size: 14px; color: var(--gray-600); }
+    .price-badge {
+      margin-left: auto; padding: 4px 12px; border-radius: 100px;
+      font-size: 12px; font-weight: 800;
+    }
+    .price-badge.lowest  { background: #EAF8EF; color: #27AE60; }
+    .price-badge.popular { background: var(--gold-light); color: var(--gold-dark); }
+
+    /* 선생님 메시지 */
+    .quote-msg {
+      margin: 0 22px 16px; background: var(--gray-100); border-radius: 14px;
+      padding: 14px 16px; font-size: 13px; color: var(--gray-900); line-height: 1.7;
+      border-left: 3px solid var(--gold);
+    }
+
+    /* 가능 일정 */
+    .quote-schedule {
+      margin: 0 22px 20px; display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .schedule-chip {
+      background: var(--gold-light); color: var(--gold-dark);
+      font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 100px;
+    }
+
+    /* 카드 버튼 영역 */
+    .quote-actions {
+      padding: 16px 22px; border-top: 1px solid var(--gray-100);
+      display: flex; gap: 10px;
+    }
+    .btn-select {
+      flex: 1; padding: 14px; background: var(--navy); color: var(--white);
+      border: none; border-radius: 12px; font-size: 15px; font-weight: 800;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-select:hover { background: var(--navy-light); }
+    .btn-select.gold-btn { background: var(--gold); }
+    .btn-select.gold-btn:hover { background: var(--gold-dark); }
+    .btn-profile {
+      padding: 14px 20px; background: var(--gray-100); color: var(--navy);
+      border: none; border-radius: 12px; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: background 0.2s; text-decoration: none;
+      display: flex; align-items: center; white-space: nowrap;
+    }
+    .btn-profile:hover { background: var(--gray-200); }
+
+    /* 베스트 배너 */
+    .best-banner {
+      background: var(--gold); color: var(--white);
+      padding: 8px 22px; font-size: 12px; font-weight: 800;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    /* 빈 상태 */
+    .empty-card {
+      background: var(--white); border-radius: 20px;
+      padding: 60px 24px; text-align: center; box-shadow: var(--shadow-md);
+    }
+    .empty-icon { font-size: 56px; margin-bottom: 20px; }
+    .empty-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
+    .empty-sub { font-size: 14px; color: var(--gray-600); line-height: 1.7; margin-bottom: 24px; }
+    .btn-back {
+      display: inline-block; padding: 14px 32px;
+      background: var(--navy); color: var(--white);
+      border-radius: 14px; font-size: 15px; font-weight: 800;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .btn-back:hover { background: var(--navy-light); }
+
+    /* 확정 모달 */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 9000;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white); border-radius: 24px;
+      padding: 36px 28px; max-width: 420px; width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: modalPop 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes modalPop {
+      from { transform: scale(0.8); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .modal-icon { font-size: 52px; text-align: center; margin-bottom: 20px; }
+    .modal-title { font-size: 22px; font-weight: 900; color: var(--navy); margin-bottom: 10px; text-align: center; }
+    .modal-sub { font-size: 14px; color: var(--gray-600); line-height: 1.7; text-align: center; margin-bottom: 28px; }
+    .modal-teacher {
+      background: var(--gold-light); border-radius: 14px;
+      padding: 16px 20px; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .modal-avatar {
+      width: 48px; height: 48px; border-radius: 12px; font-size: 24px;
+      background: linear-gradient(135deg, #FFE09A, #F5A623);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-teacher-name { font-size: 16px; font-weight: 900; color: var(--navy); }
+    .modal-teacher-info { font-size: 13px; color: var(--gray-600); }
+    .modal-btn-row { display: flex; gap: 10px; }
+    .modal-confirm {
+      flex: 1; padding: 15px; background: var(--gold); color: var(--white);
+      border: none; border-radius: 12px; font-size: 15px; font-weight: 800;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .modal-confirm:hover { background: var(--gold-dark); }
+    .modal-cancel {
+      padding: 15px 20px; background: var(--gray-100); color: var(--gray-600);
+      border: none; border-radius: 12px; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .modal-cancel:hover { background: var(--gray-200); }
+
+    /* 모바일 */
+    @media (max-width: 500px) {
+      .quote-top { padding: 18px 16px 12px; gap: 12px; }
+      .quote-price { padding: 0 16px 12px; }
+      .quote-msg { margin: 0 16px 14px; }
+      .quote-schedule { margin: 0 16px 16px; }
+      .quote-actions { padding: 14px 16px; }
+      .q-avatar { width: 52px; height: 52px; font-size: 24px; }
+      .q-name { font-size: 16px; }
+      .request-summary { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="javascript:history.back()" class="back-btn">←</a>
+  <a href="../index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+  </a>
+  <div class="header-count">📨 견적 4개 도착</div>
+</header>
+
+<main>
+  <div class="container">
+
+    <!-- 신청 조건 요약 -->
+    <div class="request-summary">
+      <div style="flex:1">
+        <h3>내 신청 조건</h3>
+        <div class="request-tags">
+          <span class="request-tag">뇌졸중 재활</span>
+          <span class="request-tag">서울 강남구 역삼동</span>
+          <span class="request-tag">5~7만원</span>
+          <span class="request-tag">주 2회</span>
+        </div>
+      </div>
+      <a href="../index.html#calc" class="request-edit">조건 수정</a>
+    </div>
+
+    <!-- 필터 -->
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="setFilter(this,'all')">전체 (4)</button>
+      <button class="filter-btn" onclick="setFilter(this,'rating')">⭐ 평점순</button>
+      <button class="filter-btn" onclick="setFilter(this,'price')">💰 낮은 가격순</button>
+      <button class="filter-btn" onclick="setFilter(this,'career')">🏅 경력순</button>
+    </div>
+
+    <!-- 견적 목록 -->
+    <div class="quote-list" id="quoteList">
+
+      <!-- 🥇 견적 1 (추천) -->
+      <div class="quote-card best" data-rating="4.99" data-price="60000" data-career="11">
+        <div class="best-banner">🏆 골든 시니어스 추천 · 이달의 베스트 선생님</div>
+        <div class="quote-top">
+          <div class="q-avatar">👨‍⚕️</div>
+          <div class="q-info">
+            <div class="q-name-row">
+              <span class="q-name">박성민 선생님</span>
+              <span class="q-license">물리치료사</span>
+            </div>
+            <div class="q-spec">관절·수술 후 재활 · 보행 훈련 전문</div>
+            <div class="q-stats">
+              <div class="q-stat"><span class="q-star">★</span> <strong>4.99</strong></div>
+              <div class="q-stat">방문 <strong>214회</strong></div>
+              <div class="q-stat">재예약 <strong>97%</strong></div>
+              <div class="q-stat">경력 <strong>11년</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="quote-price">
+          <span class="price-main">60,000원</span>
+          <span class="price-unit">/ 1회 방문</span>
+          <span class="price-badge popular">🔥 인기 선생님</span>
+        </div>
+        <div class="quote-msg">
+          "안녕하세요 보호자님! 뇌졸중 후 재활은 꾸준한 보행 훈련이 핵심입니다. 처음 방문 시 어르신 상태를 꼼꼼히 평가한 뒤 개인 맞춤 프로그램을 설계해드리겠습니다. 매 회차 운동 내용은 카카오톡으로 보내드립니다 😊"
+        </div>
+        <div class="quote-schedule">
+          <span class="schedule-chip">📅 화·목 오전 가능</span>
+          <span class="schedule-chip">📅 월·수·금 오후 가능</span>
+          <span class="schedule-chip">🚀 이번 주 시작 가능</span>
+        </div>
+        <div class="quote-actions">
+          <button class="btn-select gold-btn" onclick="openModal('박성민', '60,000원', '👨‍⚕️')">✅ 이 선생님 선택하기</button>
+          <a href="teacher.html" class="btn-profile">프로필 보기</a>
+        </div>
+      </div>
+
+      <!-- 견적 2 -->
+      <div class="quote-card" data-rating="4.98" data-price="55000" data-career="8">
+        <div class="quote-top">
+          <div class="q-avatar silver">👨‍⚕️</div>
+          <div class="q-info">
+            <div class="q-name-row">
+              <span class="q-name">김재훈 선생님</span>
+              <span class="q-license">물리치료사</span>
+            </div>
+            <div class="q-spec">뇌졸중 재활 · 보행 훈련 전문</div>
+            <div class="q-stats">
+              <div class="q-stat"><span class="q-star">★</span> <strong>4.98</strong></div>
+              <div class="q-stat">방문 <strong>127회</strong></div>
+              <div class="q-stat">재예약 <strong>94%</strong></div>
+              <div class="q-stat">경력 <strong>8년</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="quote-price">
+          <span class="price-main">55,000원</span>
+          <span class="price-unit">/ 1회 방문</span>
+          <span class="price-badge lowest">💚 최저가</span>
+        </div>
+        <div class="quote-msg">
+          "뇌졸중 재활 전문으로 보행 기능 회복에 집중합니다. 8년간 병원과 방문 재활을 병행해왔으며, 어르신의 페이스에 맞춰 무리 없이 진행합니다. 첫 방문은 상태 평가 위주로 진행하겠습니다."
+        </div>
+        <div class="quote-schedule">
+          <span class="schedule-chip">📅 월·수·금 오전 가능</span>
+          <span class="schedule-chip">🚀 다음 주 시작 가능</span>
+        </div>
+        <div class="quote-actions">
+          <button class="btn-select" onclick="openModal('김재훈', '55,000원', '👨‍⚕️')">이 선생님 선택하기</button>
+          <a href="teacher.html" class="btn-profile">프로필 보기</a>
+        </div>
+      </div>
+
+      <!-- 견적 3 -->
+      <div class="quote-card" data-rating="4.97" data-price="65000" data-career="5">
+        <div class="quote-top">
+          <div class="q-avatar" style="background:linear-gradient(135deg,#E8F4FF,#7BC8F8)">👩‍⚕️</div>
+          <div class="q-info">
+            <div class="q-name-row">
+              <span class="q-name">이수진 선생님</span>
+              <span class="q-license">운동처방사</span>
+            </div>
+            <div class="q-spec">낙상 예방 · 근력 강화 전문</div>
+            <div class="q-stats">
+              <div class="q-stat"><span class="q-star">★</span> <strong>4.97</strong></div>
+              <div class="q-stat">방문 <strong>98회</strong></div>
+              <div class="q-stat">재예약 <strong>91%</strong></div>
+              <div class="q-stat">경력 <strong>5년</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="quote-price">
+          <span class="price-main">65,000원</span>
+          <span class="price-unit">/ 1회 방문</span>
+        </div>
+        <div class="quote-msg">
+          "뇌졸중 후 하체 근력이 많이 약해지셨을 것 같아요. 저는 근력 회복과 함께 낙상 예방 훈련을 병행합니다. 어르신이 두려움 없이 혼자 이동할 수 있도록 차근차근 함께하겠습니다."
+        </div>
+        <div class="quote-schedule">
+          <span class="schedule-chip">📅 화·목 오후 가능</span>
+          <span class="schedule-chip">🚀 이번 주 시작 가능</span>
+        </div>
+        <div class="quote-actions">
+          <button class="btn-select" onclick="openModal('이수진', '65,000원', '👩‍⚕️')">이 선생님 선택하기</button>
+          <a href="teacher.html" class="btn-profile">프로필 보기</a>
+        </div>
+      </div>
+
+      <!-- 견적 4 -->
+      <div class="quote-card" data-rating="4.95" data-price="58000" data-career="7">
+        <div class="quote-top">
+          <div class="q-avatar bronze">👨‍⚕️</div>
+          <div class="q-info">
+            <div class="q-name-row">
+              <span class="q-name">정민호 선생님</span>
+              <span class="q-license">스포츠재활사</span>
+            </div>
+            <div class="q-spec">신경계 재활 · 균형 훈련 전문</div>
+            <div class="q-stats">
+              <div class="q-stat"><span class="q-star">★</span> <strong>4.95</strong></div>
+              <div class="q-stat">방문 <strong>86회</strong></div>
+              <div class="q-stat">재예약 <strong>89%</strong></div>
+              <div class="q-stat">경력 <strong>7년</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="quote-price">
+          <span class="price-main">58,000원</span>
+          <span class="price-unit">/ 1회 방문</span>
+        </div>
+        <div class="quote-msg">
+          "신경계 재활 전문으로 뇌졸중 후 균형 및 보행 기능 회복에 집중합니다. 주 2회 꾸준히 진행하시면 2~3개월 내 확실한 변화를 느끼실 수 있습니다."
+        </div>
+        <div class="quote-schedule">
+          <span class="schedule-chip">📅 월·수 오전 가능</span>
+          <span class="schedule-chip">📅 금 오전·오후 가능</span>
+        </div>
+        <div class="quote-actions">
+          <button class="btn-select" onclick="openModal('정민호', '58,000원', '👨‍⚕️')">이 선생님 선택하기</button>
+          <a href="teacher.html" class="btn-profile">프로필 보기</a>
+        </div>
+      </div>
+
+    </div><!-- /quote-list -->
+  </div>
+</main>
+
+<!-- 선택 확인 모달 -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-icon">🎉</div>
+    <h2 class="modal-title">선생님을 선택하시겠어요?</h2>
+    <p class="modal-sub">선택 후 선생님과 일정 조율이 시작됩니다.<br>카카오톡으로 연락이 갈 예정입니다.</p>
+    <div class="modal-teacher">
+      <div class="modal-avatar" id="modalAvatar">👨‍⚕️</div>
+      <div>
+        <div class="modal-teacher-name" id="modalName">박성민 선생님</div>
+        <div class="modal-teacher-info" id="modalPrice">1회 60,000원</div>
+      </div>
+    </div>
+    <div class="modal-btn-row">
+      <button class="modal-cancel" onclick="closeModal()">취소</button>
+      <button class="modal-confirm" onclick="confirmSelect()">✅ 선택 확정하기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 필터
+  function setFilter(btn, type) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cards = Array.from(document.querySelectorAll('.quote-card'));
+    const list = document.getElementById('quoteList');
+    cards.sort((a, b) => {
+      if (type === 'rating') return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+      if (type === 'price')  return parseInt(a.dataset.price)   - parseInt(b.dataset.price);
+      if (type === 'career') return parseInt(b.dataset.career)  - parseInt(a.dataset.career);
+      return 0; // all: 기본 순서
+    });
+    cards.forEach(c => list.appendChild(c));
+  }
+
+  // 모달
+  function openModal(name, price, avatar) {
+    document.getElementById('modalName').textContent  = name + ' 선생님';
+    document.getElementById('modalPrice').textContent = '1회 ' + price;
+    document.getElementById('modalAvatar').textContent = avatar;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
+  function confirmSelect() {
+    closeModal();
+    window.location.href = 'complete.html?selected=true';
+  }
+</script>
+
+</body>
+</html>

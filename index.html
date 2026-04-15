@@ -1669,7 +1669,7 @@
     <div class="best-layout">
 
       <!-- 🥇 1등 카드 -->
-      <div class="best-card best-card-1st">
+      <a href="pages/teacher.html" style="text-decoration:none;color:inherit;" class="best-card best-card-1st">
         <div class="best-photo">
           👨‍⚕️
           <div class="best-rank">🥇</div>
@@ -1688,13 +1688,13 @@
             <div class="best-review-author">— 보호자 김○○님 후기</div>
           </div>
         </div>
-      </div>
+      </a>
 
       <!-- 2·3등 오른쪽 컬럼 -->
       <div class="best-right">
 
         <!-- 🥈 2등 카드 -->
-        <div class="best-card best-card-2nd">
+        <a href="pages/teacher.html" style="text-decoration:none;color:inherit;" class="best-card best-card-2nd">
           <div class="best-photo">
             👨‍⚕️
             <div class="best-rank">🥈</div>
@@ -1709,10 +1709,10 @@
               <div class="best-stat">재예약 <strong>94%</strong></div>
             </div>
           </div>
-        </div>
+        </a>
 
         <!-- 🥉 3등 카드 -->
-        <div class="best-card best-card-3rd">
+        <a href="pages/teacher.html" style="text-decoration:none;color:inherit;" class="best-card best-card-3rd">
           <div class="best-photo">
             👩‍⚕️
             <div class="best-rank">🥉</div>
@@ -1727,7 +1727,7 @@
               <div class="best-stat">재예약 <strong>91%</strong></div>
             </div>
           </div>
-        </div>
+        </a>
 
       </div><!-- /best-right -->
     </div><!-- /best-layout -->
@@ -2158,19 +2158,18 @@
     if (!document.getElementById('a-name').value.trim())  { alert('이름을 입력해주세요.'); return; }
     if (!document.getElementById('a-phone').value.trim()) { alert('연락처를 입력해주세요.'); return; }
 
-    // 폼 숨기고 완료 화면 표시
-    document.getElementById('aSteps').style.display = 'none';
-    for (let i = 1; i <= 3; i++) document.getElementById('aPanel' + i).classList.remove('active');
-    document.getElementById('aDone').classList.add('active');
+    // 신청 정보 수집
+    const condition = document.getElementById('a-condition').value || '';
+    const region    = document.getElementById('a-region').value    || '';
+    const district  = document.getElementById('a-district').value  || '';
+    const dong      = document.getElementById('a-dong').value      || '';
+    const budget    = document.querySelector('.budget-chip.selected')?.textContent || '';
+    const freq      = document.getElementById('a-freq')?.value     || '';
+    const regionStr = [region, district, dong].filter(Boolean).join(' ');
 
-    // 입찰자 수 카운트업 애니메이션
-    let count = 0;
-    const target = Math.floor(Math.random() * 4) + 3; // 3~6명
-    const timer = setInterval(() => {
-      count++;
-      document.getElementById('bidCount').textContent = count;
-      if (count >= target) clearInterval(timer);
-    }, 400);
+    // URL 파라미터로 complete.html 이동
+    const params = new URLSearchParams({ condition, region: regionStr, budget, freq });
+    window.location.href = 'pages/complete.html?' + params.toString();
   }
 
   // 햄버거 메뉴

@@ -165,13 +165,7 @@
     .btn-select:hover { background: var(--navy-light); }
     .btn-select.gold-btn { background: var(--gold); }
     .btn-select.gold-btn:hover { background: var(--gold-dark); }
-    .btn-profile {
-      padding: 14px 20px; background: var(--gray-100); color: var(--navy);
-      border: none; border-radius: 12px; font-size: 14px; font-weight: 700;
-      cursor: pointer; transition: background 0.2s; text-decoration: none;
-      display: flex; align-items: center; white-space: nowrap;
-    }
-    .btn-profile:hover { background: var(--gray-200); }
+    /* 프로필 보기 버튼 제거됨 — 선택 후 공개 방식 */
 
     /* 베스트 배너 */
     .best-banner {
@@ -350,8 +344,7 @@
           <span class="schedule-chip">🚀 이번 주 시작 가능</span>
         </div>
         <div class="quote-actions">
-          <button class="btn-select gold-btn" onclick="openModal('박성민', '60,000원', '👨‍⚕️')">✅ 이 선생님 선택하기</button>
-          <a href="teacher.html" class="btn-profile">프로필 보기</a>
+          <button class="btn-select gold-btn" onclick="openModal('박성민', '60,000원', '👨‍⚕️')">✅ 선택하면 프로필 공개</button>
         </div>
       </div>
 
@@ -386,8 +379,7 @@
           <span class="schedule-chip">🚀 다음 주 시작 가능</span>
         </div>
         <div class="quote-actions">
-          <button class="btn-select" onclick="openModal('김재훈', '55,000원', '👨‍⚕️')">이 선생님 선택하기</button>
-          <a href="teacher.html" class="btn-profile">프로필 보기</a>
+          <button class="btn-select" onclick="openModal('김재훈', '55,000원', '👨‍⚕️')">선택하면 프로필 공개</button>
         </div>
       </div>
 
@@ -421,8 +413,7 @@
           <span class="schedule-chip">🚀 이번 주 시작 가능</span>
         </div>
         <div class="quote-actions">
-          <button class="btn-select" onclick="openModal('이수진', '65,000원', '👩‍⚕️')">이 선생님 선택하기</button>
-          <a href="teacher.html" class="btn-profile">프로필 보기</a>
+          <button class="btn-select" onclick="openModal('이수진', '65,000원', '👩‍⚕️')">선택하면 프로필 공개</button>
         </div>
       </div>
 
@@ -456,8 +447,7 @@
           <span class="schedule-chip">📅 금 오전·오후 가능</span>
         </div>
         <div class="quote-actions">
-          <button class="btn-select" onclick="openModal('정민호', '58,000원', '👨‍⚕️')">이 선생님 선택하기</button>
-          <a href="teacher.html" class="btn-profile">프로필 보기</a>
+          <button class="btn-select" onclick="openModal('정민호', '58,000원', '👨‍⚕️')">선택하면 프로필 공개</button>
         </div>
       </div>
 
@@ -469,9 +459,9 @@
 <!-- 선택 확인 모달 -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
   <div class="modal">
-    <div class="modal-icon">🎉</div>
-    <h2 class="modal-title">선생님을 선택하시겠어요?</h2>
-    <p class="modal-sub">선택 후 선생님과 일정 조율이 시작됩니다.<br>카카오톡으로 연락이 갈 예정입니다.</p>
+    <div class="modal-icon">🔓</div>
+    <h2 class="modal-title">선택하면 프로필이 공개돼요</h2>
+    <p class="modal-sub">확정 후 선생님의 상세 프로필·경력·후기를<br>확인하고 일정을 조율할 수 있어요.</p>
     <div class="modal-teacher">
       <div class="modal-avatar" id="modalAvatar">👨‍⚕️</div>
       <div>
@@ -481,7 +471,7 @@
     </div>
     <div class="modal-btn-row">
       <button class="modal-cancel" onclick="closeModal()">취소</button>
-      <button class="modal-confirm" onclick="confirmSelect()">✅ 선택 확정하기</button>
+      <button class="modal-confirm" onclick="confirmSelect()">🔓 확정하고 프로필 보기</button>
     </div>
   </div>
 </div>
@@ -548,7 +538,8 @@
   }
   function confirmSelect() {
     closeModal();
-    window.location.href = 'complete.html?selected=true';
+    // 선택 확정 후 → 선생님 프로필 공개 → 프로필에서 최종 일정 조율
+    window.location.href = 'teacher.html?from=selected';
   }
 </script>
 

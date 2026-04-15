@@ -18,6 +18,7 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--gray-100); color: var(--gray-900);
+      padding-top: 64px;
     }
 
     /* ===== 헤더 ===== */
@@ -50,6 +51,17 @@
       pointer-events: none;
     }
     .share-toast.show { opacity: 1; }
+
+    /* 선택 완료 배너 */
+    .selected-banner {
+      display: none;
+      position: fixed; top: 64px; left: 0; right: 0; z-index: 90;
+      background: linear-gradient(90deg, #27AE60, #2ECC71);
+      color: var(--white); padding: 14px 20px;
+      text-align: center; font-size: 14px; font-weight: 800;
+      gap: 8px; align-items: center; justify-content: center;
+    }
+    .selected-banner.show { display: flex; }
     .logo {
       display: flex; align-items: center; gap: 10px;
       font-size: 18px; font-weight: 900; color: var(--navy);
@@ -62,7 +74,7 @@
     }
 
     /* ===== 레이아웃 ===== */
-    main { padding-top: 64px; }
+    main { padding-top: 0; }
     .page-inner {
       max-width: 780px; margin: 0 auto;
       padding: 32px 20px 120px;
@@ -244,6 +256,9 @@
   <button class="share-btn" onclick="shareProfile()">🔗 공유하기</button>
 </header>
 <div class="share-toast" id="shareToast">📋 링크가 복사됐어요!</div>
+<div class="selected-banner" id="selectedBanner">
+  ✅ 이 선생님을 선택하셨어요! 아래에서 일정을 조율해보세요.
+</div>
 
 <main>
   <div class="page-inner">
@@ -457,6 +472,34 @@
 </div>
 
 <script>
+  // 견적 선택 후 진입 시 배너 + 버튼 변경
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('from') === 'selected') {
+      // 선택 완료 배너 표시 (fixed — 헤더 바로 아래)
+      const banner = document.getElementById('selectedBanner');
+      banner.classList.add('show');
+      // 배너 높이만큼 main 콘텐츠 밀어내기
+      setTimeout(() => {
+        document.querySelector('main').style.paddingTop = banner.offsetHeight + 'px';
+      }, 50);
+
+      // 사이드바 버튼 → 일정 조율 버튼으로 교체
+      const reqBtn = document.querySelector('.btn-request');
+      if (reqBtn) {
+        reqBtn.textContent = '📅 일정 조율 시작하기';
+        reqBtn.href = 'complete.html?selected=true';
+      }
+
+      // 모바일 하단 CTA도 교체
+      const mobileCta = document.querySelector('.mobile-cta .btn-request');
+      if (mobileCta) {
+        mobileCta.textContent = '📅 일정 조율 시작하기';
+        mobileCta.href = 'complete.html?selected=true';
+      }
+    }
+  })();
+
   function shareProfile() {
     const url  = window.location.href;
     const text = '박성민 선생님 프로필 | 골든 시니어스 방문재활운동';

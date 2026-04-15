@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>일정 조율 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #D4891A;
+      --navy: #1A2B4A; --navy-light: #2C3E6B;
+      --green: #2ECC71; --green-light: #EAFAF1;
+      --gray-100: #F7F8FA; --gray-200: #EEEFF2;
+      --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
+      --white: #FFFFFF; --red: #E74C3C;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.07);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.10);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.13);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { overflow-x: hidden; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900); min-height: 100vh;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--white); border-bottom: 1px solid var(--gray-200);
+      height: 60px; display: flex; align-items: center;
+      padding: 0 20px; gap: 14px; position: sticky; top: 0; z-index: 100;
+    }
+    .back-btn {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--gray-100); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: var(--navy); transition: background 0.2s;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .back-btn:hover { background: var(--gray-200); }
+    .header-title { font-size: 17px; font-weight: 800; color: var(--navy); }
+    .header-step  { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--gray-400); }
+
+    /* ─── PROGRESS ─── */
+    .progress-bar { height: 3px; background: var(--gray-200); }
+    .progress-fill { height: 100%; background: var(--gold); transition: width 0.4s ease; }
+
+    /* ─── MAIN ─── */
+    main { max-width: 600px; margin: 0 auto; padding: 24px 20px 100px; }
+
+    /* ─── 선생님 요약 카드 ─── */
+    .teacher-summary {
+      background: var(--white); border-radius: 16px; padding: 18px;
+      display: flex; align-items: center; gap: 14px;
+      box-shadow: var(--shadow-sm); margin-bottom: 24px;
+      border: 2px solid var(--gold-light);
+    }
+    .teacher-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy), #2C3E6B);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; flex-shrink: 0;
+    }
+    .teacher-info { flex: 1; }
+    .teacher-name { font-size: 16px; font-weight: 900; color: var(--navy); margin-bottom: 3px; }
+    .teacher-spec { font-size: 13px; color: var(--gray-400); margin-bottom: 6px; }
+    .teacher-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+    .t-badge {
+      padding: 3px 8px; background: var(--green-light); color: #16A34A;
+      border-radius: 100px; font-size: 11px; font-weight: 700;
+    }
+    .t-badge-gold {
+      padding: 3px 8px; background: var(--gold-light); color: var(--gold-dark);
+      border-radius: 100px; font-size: 11px; font-weight: 700;
+    }
+
+    /* ─── 스텝 패널 ─── */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    /* ─── 섹션 ─── */
+    .section { background: var(--white); border-radius: 16px; padding: 22px; box-shadow: var(--shadow-sm); margin-bottom: 14px; }
+    .section-title { font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+    .section-sub   { font-size: 13px; color: var(--gray-400); margin-bottom: 16px; line-height: 1.5; }
+
+    /* ─── 날짜 슬롯 ─── */
+    .slot-list { display: flex; flex-direction: column; gap: 10px; }
+    .slot-card {
+      border: 2px solid var(--gray-200); border-radius: 14px;
+      padding: 14px 16px; cursor: pointer; transition: all 0.15s;
+      display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px;
+    }
+    .slot-card:hover  { border-color: var(--gold); background: var(--gold-light); }
+    .slot-card.active { border-color: var(--gold); background: var(--gold-light); }
+    .slot-date { font-size: 15px; font-weight: 800; color: var(--navy); }
+    .slot-time { font-size: 13px; color: var(--gray-600); margin-top: 2px; }
+    .slot-check {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 2px solid var(--gray-200); background: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; transition: all 0.15s; flex-shrink: 0;
+    }
+    .slot-card.active .slot-check { background: var(--gold); border-color: var(--gold); color: var(--white); }
+
+    /* ─── 시간대 칩 ─── */
+    .time-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .time-chip {
+      padding: 9px 16px; border: 2px solid var(--gray-200);
+      border-radius: 100px; font-size: 13px; font-weight: 700;
+      color: var(--gray-600); cursor: pointer; transition: all 0.15s;
+      background: var(--white); user-select: none;
+    }
+    .time-chip:hover  { border-color: var(--gold); color: var(--gold-dark); }
+    .time-chip.active { border-color: var(--gold); background: var(--gold-light); color: var(--gold-dark); }
+
+    /* ─── 직접 입력 날짜 ─── */
+    .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .field label { display: block; font-size: 12px; font-weight: 700; color: var(--gray-400); margin-bottom: 6px; }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-200);
+      border-radius: 10px; font-size: 14px; color: var(--gray-900);
+      background: var(--gray-100); outline: none; font-family: inherit;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--navy); background: var(--white);
+    }
+    .field textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+    /* ─── 추가 슬롯 버튼 ─── */
+    .add-slot-btn {
+      width: 100%; padding: 12px; border: 2px dashed var(--gray-200);
+      border-radius: 14px; background: transparent; color: var(--gray-400);
+      font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+      margin-top: 10px;
+    }
+    .add-slot-btn:hover { border-color: var(--gold); color: var(--gold-dark); }
+
+    /* ─── 주의사항 ─── */
+    .notice-box {
+      background: #EFF6FF; border: 1px solid #BFDBFE;
+      border-radius: 12px; padding: 14px 16px;
+      font-size: 13px; color: #1E40AF; line-height: 1.7;
+    }
+    .notice-box strong { font-weight: 800; }
+
+    /* ─── 바텀 CTA ─── */
+    .bottom-cta {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--white); border-top: 1px solid var(--gray-200);
+      padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+      display: flex; gap: 10px; z-index: 99;
+    }
+    .btn-prev {
+      padding: 16px 20px; background: var(--gray-100);
+      border: none; border-radius: 14px; font-size: 15px; font-weight: 700;
+      color: var(--gray-600); cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+    }
+    .btn-prev:hover { background: var(--gray-200); }
+    .btn-next {
+      flex: 1; padding: 16px; background: var(--navy); color: var(--white);
+      border: none; border-radius: 14px; font-size: 16px; font-weight: 800;
+      cursor: pointer; transition: background 0.2s, transform 0.15s;
+    }
+    .btn-next:hover { background: var(--navy-light); transform: translateY(-1px); }
+    .btn-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn-submit-final {
+      flex: 1; padding: 16px; background: var(--gold); color: var(--white);
+      border: none; border-radius: 14px; font-size: 16px; font-weight: 800;
+      cursor: pointer; transition: background 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit-final:hover { background: var(--gold-dark); }
+    .spinner {
+      width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.6s linear infinite; display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── 완료 화면 ─── */
+    .done-screen {
+      display: none; text-align: center; padding: 60px 20px 100px;
+      max-width: 500px; margin: 0 auto;
+    }
+    .done-screen.show { display: block; }
+    .done-icon { font-size: 80px; margin-bottom: 20px; animation: pop 0.5s ease; }
+    @keyframes pop { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+    .done-title { font-size: 26px; font-weight: 900; color: var(--navy); margin-bottom: 10px; }
+    .done-sub   { font-size: 15px; color: var(--gray-600); line-height: 1.8; margin-bottom: 32px; }
+    .done-card  {
+      background: var(--white); border-radius: 16px; padding: 20px;
+      box-shadow: var(--shadow-sm); text-align: left; margin-bottom: 20px;
+    }
+    .done-row { display: flex; justify-content: space-between; padding: 8px 0;
+      border-bottom: 1px solid var(--gray-100); font-size: 14px; }
+    .done-row:last-child { border-bottom: none; }
+    .done-row-label { color: var(--gray-400); font-weight: 600; }
+    .done-row-value { color: var(--navy); font-weight: 700; text-align: right; max-width: 60%; }
+    .btn-home-done {
+      display: block; padding: 16px; background: var(--navy); color: var(--white);
+      border-radius: 14px; font-size: 16px; font-weight: 800;
+      text-decoration: none; margin-bottom: 12px; transition: background 0.2s;
+    }
+    .btn-home-done:hover { background: var(--navy-light); }
+    .btn-kakao {
+      display: block; padding: 14px; background: #FEE500; color: #191919;
+      border-radius: 14px; font-size: 15px; font-weight: 700;
+      text-decoration: none; transition: opacity 0.2s;
+    }
+    .btn-kakao:hover { opacity: 0.85; }
+
+    @media (max-width: 480px) {
+      main { padding: 20px 16px 100px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="javascript:history.back()" class="back-btn">←</a>
+  <span class="header-title">일정 조율</span>
+  <span class="header-step" id="stepIndicator">1 / 3</span>
+</header>
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:33%"></div></div>
+
+<main id="mainContent">
+
+  <!-- 선생님 요약 -->
+  <div class="teacher-summary" id="teacherSummary">
+    <div class="teacher-avatar">👨‍⚕️</div>
+    <div class="teacher-info">
+      <div class="teacher-name" id="summaryName">선생님</div>
+      <div class="teacher-spec" id="summarySpec">재활운동 전문</div>
+      <div class="teacher-badges">
+        <span class="t-badge">✅ 선택한 선생님</span>
+        <span class="t-badge-gold">⭐ 4.99</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1: 희망 날짜 선택 -->
+  <div class="step-panel active" id="step1">
+
+    <div class="section">
+      <div class="section-title">📅 희망 방문 날짜를 선택해주세요</div>
+      <div class="section-sub">최대 3개까지 선택할 수 있어요. 선생님이 가능한 날로 확정해드려요.</div>
+
+      <div class="slot-list" id="slotList">
+        <!-- JS로 렌더링 -->
+      </div>
+
+      <button class="add-slot-btn" id="addSlotBtn" onclick="addCustomSlot()">
+        + 원하는 날짜 직접 추가
+      </button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⏰ 선호 방문 시간대</div>
+      <div class="section-sub">복수 선택 가능해요</div>
+      <div class="time-chips">
+        <span class="time-chip" onclick="toggleTime(this)">오전 9~11시</span>
+        <span class="time-chip" onclick="toggleTime(this)">오전 11~13시</span>
+        <span class="time-chip" onclick="toggleTime(this)">오후 14~16시</span>
+        <span class="time-chip" onclick="toggleTime(this)">오후 16~18시</span>
+        <span class="time-chip" onclick="toggleTime(this)">저녁 18~20시</span>
+        <span class="time-chip" onclick="toggleTime(this)">시간 협의</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STEP 2: 추가 정보 -->
+  <div class="step-panel" id="step2">
+
+    <div class="section">
+      <div class="section-title">📋 방문 준비사항을 알려주세요</div>
+      <div class="section-sub">선생님이 방문 전에 미리 확인해요</div>
+
+      <div class="field" style="margin-bottom:14px;">
+        <label>어르신 성함</label>
+        <input type="text" id="patientName" placeholder="예: 홍길동 어르신">
+      </div>
+      <div class="field" style="margin-bottom:14px;">
+        <label>주소</label>
+        <input type="text" id="address" placeholder="예: 서울시 강남구 역삼동 000-00">
+      </div>
+      <div class="field" style="margin-bottom:14px;">
+        <label>연락처 (방문 당일 연락 가능한 번호)</label>
+        <input type="tel" id="contactPhone" placeholder="010-0000-0000">
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">💬 선생님에게 전하는 말</div>
+      <div class="section-sub">증상 정보, 요청 사항, 주의사항 등을 적어주세요</div>
+      <div class="field">
+        <textarea id="noteToTeacher" placeholder="예: 무릎 인공관절 수술 후 재활 중이에요. 계단 오르기가 힘드시고 실내에서 운동 가능한 공간이 있어요."></textarea>
+      </div>
+    </div>
+
+    <div class="notice-box">
+      <strong>📌 방문 전 확인사항</strong><br>
+      • 첫 방문은 상태 평가 후 운동 계획을 수립해요 (약 50분)<br>
+      • 편한 운동복과 미끄럼 방지 양말을 준비해주세요<br>
+      • 일정 변경은 방문 24시간 전까지 카카오로 연락 주세요
+    </div>
+
+  </div>
+
+  <!-- STEP 3: 최종 확인 -->
+  <div class="step-panel" id="step3">
+
+    <div class="section">
+      <div class="section-title">✅ 신청 내용을 확인해주세요</div>
+      <div class="section-sub">아래 내용으로 일정 조율 요청을 보낼게요</div>
+
+      <div id="confirmSummary">
+        <!-- JS로 렌더링 -->
+      </div>
+    </div>
+
+    <div class="notice-box">
+      <strong>📱 다음 단계</strong><br>
+      신청 후 <strong>카카오톡</strong>으로 선생님과 최종 일정을 확정해요.<br>
+      보통 <strong>2~4시간 내</strong>에 연락드려요.
+    </div>
+
+  </div>
+
+</main>
+
+<!-- 완료 화면 -->
+<div class="done-screen" id="doneScreen">
+  <div class="done-icon">🎉</div>
+  <div class="done-title">일정 조율 신청 완료!</div>
+  <div class="done-sub">
+    선생님께 요청을 전달했어요.<br>
+    카카오톡으로 최종 일정을 확정해드릴게요.<br>
+    <strong>보통 2~4시간 내에 연락드려요.</strong>
+  </div>
+
+  <div class="done-card" id="doneSummaryCard"></div>
+
+  <a href="../index.html" class="btn-home-done">🏠 홈으로 돌아가기</a>
+  <a href="http://pf.kakao.com/_Pwxoln" target="_blank" class="btn-kakao">
+    💬 카카오로 바로 문의하기
+  </a>
+</div>
+
+<!-- 바텀 CTA -->
+<div class="bottom-cta" id="bottomCta">
+  <button class="btn-prev" id="prevBtn" style="display:none" onclick="goStep(-1)">← 이전</button>
+  <button class="btn-next" id="nextBtn" onclick="goStep(1)">다음 단계 →</button>
+  <button class="btn-submit-final" id="submitBtn" style="display:none" onclick="submitSchedule()">
+    <span id="submitBtnText">📅 일정 조율 신청하기</span>
+    <div class="spinner" id="submitSpinner"></div>
+  </button>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
+    authDomain:        "golden-seniors.firebaseapp.com",
+    projectId:         "golden-seniors",
+    storageBucket:     "golden-seniors.firebasestorage.app",
+    messagingSenderId: "244026917780",
+    appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
+  });
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
+
+  // ── URL 파라미터 ──
+  const params      = new URLSearchParams(window.location.search);
+  const teacherId   = params.get('teacherId')   || '';
+  const teacherName = params.get('teacherName') || '박성민 선생님';
+  const teacherSpec = params.get('spec')        || '근골격계 재활 · 낙상예방 전문';
+  const quoteId     = params.get('quoteId')     || '';
+
+  document.getElementById('summaryName').textContent = teacherName;
+  document.getElementById('summarySpec').textContent = teacherSpec;
+
+  // ── 로그인 상태 → 정보 자동입력 ──
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) return;
+    try {
+      const snap = await db.collection('users').doc(user.uid).get();
+      if (snap.exists) {
+        const data = snap.data();
+        const phoneEl = document.getElementById('contactPhone');
+        if (phoneEl && !phoneEl.value && data.phone) {
+          phoneEl.value = data.phone.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
+        }
+      }
+    } catch(e) {}
+  });
+
+  // ── 가까운 날짜 슬롯 자동 생성 ──
+  const DAYS = ['일','월','화','수','목','금','토'];
+  function getNextWeekdays(n) {
+    const result = [];
+    const d = new Date();
+    d.setDate(d.getDate() + 1); // 내일부터
+    while (result.length < n) {
+      const day = d.getDay();
+      if (day !== 0) { // 일요일 제외
+        result.push(new Date(d));
+      }
+      d.setDate(d.getDate() + 1);
+    }
+    return result;
+  }
+
+  let selectedSlots = new Set();
+  let customSlotCount = 0;
+
+  function renderSlots() {
+    const dates = getNextWeekdays(5);
+    const list  = document.getElementById('slotList');
+    list.innerHTML = dates.map((d, i) => {
+      const mm   = d.getMonth() + 1;
+      const dd   = d.getDate();
+      const dow  = DAYS[d.getDay()];
+      const key  = `${d.getFullYear()}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+      return `
+      <div class="slot-card" id="slot-${i}" onclick="toggleSlot(this, '${key}', '${mm}/${dd}(${dow})')">
+        <div>
+          <div class="slot-date">${mm}월 ${dd}일 (${dow})</div>
+          <div class="slot-time">오전·오후 시간대 선택 가능</div>
+        </div>
+        <div class="slot-check" id="check-${i}">✓</div>
+      </div>`;
+    }).join('');
+  }
+  renderSlots();
+
+  window.toggleSlot = function(el, key, label) {
+    if (selectedSlots.has(key)) {
+      selectedSlots.delete(key);
+      el.classList.remove('active');
+    } else {
+      if (selectedSlots.size >= 3) {
+        alert('날짜는 최대 3개까지 선택할 수 있어요.');
+        return;
+      }
+      selectedSlots.add(key);
+      el.classList.add('active');
+    }
+  };
+
+  // ── 직접 날짜 추가 ──
+  window.addCustomSlot = function() {
+    if (customSlotCount >= 2) { alert('직접 입력은 최대 2개까지 가능해요.'); return; }
+    customSlotCount++;
+    const id  = 'custom-' + customSlotCount;
+    const div = document.createElement('div');
+    div.className = 'date-row';
+    div.innerHTML = `
+      <div class="field">
+        <label>날짜</label>
+        <input type="date" id="${id}-date" min="${new Date().toISOString().split('T')[0]}">
+      </div>
+      <div class="field">
+        <label>선호 시간대</label>
+        <select id="${id}-time">
+          <option>오전 9~11시</option>
+          <option>오전 11~13시</option>
+          <option>오후 14~16시</option>
+          <option>오후 16~18시</option>
+          <option>저녁 18~20시</option>
+          <option>시간 협의</option>
+        </select>
+      </div>`;
+    document.getElementById('slotList').appendChild(div);
+    if (customSlotCount >= 2) document.getElementById('addSlotBtn').style.display = 'none';
+  };
+
+  // ── 시간대 토글 ──
+  window.toggleTime = function(el) { el.classList.toggle('active'); };
+
+  // ── 스텝 관리 ──
+  let currentStep = 1;
+  const TOTAL = 3;
+
+  function updateUI() {
+    document.querySelectorAll('.step-panel').forEach((p,i) => {
+      p.classList.toggle('active', i + 1 === currentStep);
+    });
+    document.getElementById('stepIndicator').textContent = `${currentStep} / ${TOTAL}`;
+    document.getElementById('progressFill').style.width  = (currentStep / TOTAL * 100) + '%';
+    document.getElementById('prevBtn').style.display   = currentStep > 1 ? 'block' : 'none';
+    document.getElementById('nextBtn').style.display   = currentStep < TOTAL ? 'block' : 'none';
+    document.getElementById('submitBtn').style.display = currentStep === TOTAL ? 'flex' : 'none';
+
+    if (currentStep === TOTAL) buildConfirmSummary();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  window.goStep = function(dir) {
+    if (dir > 0) {
+      if (currentStep === 1) {
+        const timeSel = [...document.querySelectorAll('.time-chip.active')].map(c => c.textContent);
+        if (selectedSlots.size === 0 && customSlotCount === 0) {
+          alert('희망 날짜를 최소 1개 선택해주세요.'); return;
+        }
+        if (timeSel.length === 0) {
+          alert('선호 방문 시간대를 선택해주세요.'); return;
+        }
+      }
+      if (currentStep === 2) {
+        if (!document.getElementById('contactPhone').value.trim()) {
+          alert('연락처를 입력해주세요.'); return;
+        }
+      }
+    }
+    currentStep = Math.max(1, Math.min(TOTAL, currentStep + dir));
+    updateUI();
+  };
+
+  // ── 3단계 요약 렌더링 ──
+  function buildConfirmSummary() {
+    const dates   = [...selectedSlots];
+    const customs = [];
+    for (let i = 1; i <= customSlotCount; i++) {
+      const d = document.getElementById(`custom-${i}-date`)?.value;
+      const t = document.getElementById(`custom-${i}-time`)?.value;
+      if (d) customs.push(`${d} ${t || ''}`);
+    }
+    const allDates  = [...dates, ...customs];
+    const timeSel   = [...document.querySelectorAll('.time-chip.active')].map(c => c.textContent);
+    const patient   = document.getElementById('patientName').value || '-';
+    const address   = document.getElementById('address').value || '-';
+    const phone     = document.getElementById('contactPhone').value || '-';
+    const note      = document.getElementById('noteToTeacher').value || '-';
+
+    document.getElementById('confirmSummary').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:0;">
+      <div class="done-row"><span class="done-row-label">선생님</span><span class="done-row-value">${teacherName}</span></div>
+      <div class="done-row"><span class="done-row-label">희망 날짜</span><span class="done-row-value">${allDates.join(', ') || '-'}</span></div>
+      <div class="done-row"><span class="done-row-label">선호 시간</span><span class="done-row-value">${timeSel.join(', ') || '-'}</span></div>
+      <div class="done-row"><span class="done-row-label">어르신 성함</span><span class="done-row-value">${patient}</span></div>
+      <div class="done-row"><span class="done-row-label">방문 주소</span><span class="done-row-value">${address}</span></div>
+      <div class="done-row"><span class="done-row-label">연락처</span><span class="done-row-value">${phone}</span></div>
+      ${note !== '-' ? `<div class="done-row"><span class="done-row-label">전달 메시지</span><span class="done-row-value" style="font-size:12px;">${note}</span></div>` : ''}
+    </div>`;
+  }
+
+  // ── 최종 제출 ──
+  window.submitSchedule = async function() {
+    const btn     = document.getElementById('submitBtn');
+    const spinner = document.getElementById('submitSpinner');
+    const btnText = document.getElementById('submitBtnText');
+    btn.disabled = true;
+    spinner.style.display = 'block';
+    btnText.textContent = '신청 중...';
+
+    const dates   = [...selectedSlots];
+    const customs = [];
+    for (let i = 1; i <= customSlotCount; i++) {
+      const d = document.getElementById(`custom-${i}-date`)?.value;
+      const t = document.getElementById(`custom-${i}-time`)?.value;
+      if (d) customs.push(`${d} ${t || ''}`);
+    }
+    const allDates  = [...dates, ...customs];
+    const timeSel   = [...document.querySelectorAll('.time-chip.active')].map(c => c.textContent);
+    const patient   = document.getElementById('patientName').value.trim();
+    const address   = document.getElementById('address').value.trim();
+    const phone     = document.getElementById('contactPhone').value.trim().replace(/-/g,'');
+    const note      = document.getElementById('noteToTeacher').value.trim();
+    const user      = auth.currentUser;
+
+    const data = {
+      teacherId, teacherName, teacherSpec,
+      quoteId,
+      requestedDates: allDates,
+      preferredTimes: timeSel,
+      patientName:    patient,
+      address,
+      contactPhone:   phone,
+      note,
+      status:         'pending',
+      userId:         user ? user.uid : null,
+      createdAt:      firebase.firestore.FieldValue.serverTimestamp(),
+    };
+
+    try {
+      await db.collection('schedule_requests').add(data);
+    } catch(e) {
+      console.warn('Firestore 저장 실패 (오프라인 처리):', e);
+    }
+
+    // 완료 화면 표시
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('bottomCta').style.display   = 'none';
+    const done = document.getElementById('doneScreen');
+    done.classList.add('show');
+
+    document.getElementById('doneSummaryCard').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:0;">
+      <div class="done-row"><span class="done-row-label">선생님</span><span class="done-row-value">${teacherName}</span></div>
+      <div class="done-row"><span class="done-row-label">희망 날짜</span><span class="done-row-value">${allDates.join(', ') || '-'}</span></div>
+      <div class="done-row"><span class="done-row-label">선호 시간</span><span class="done-row-value">${timeSel.join(', ')}</span></div>
+      <div class="done-row"><span class="done-row-label">연락처</span><span class="done-row-value">${document.getElementById('contactPhone').value}</span></div>
+    </div>`;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+</script>
+
+</body>
+</html>

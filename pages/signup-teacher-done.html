@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>신청 완료 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #D4891A;
+      --navy: #1A2B4A; --navy-light: #2C3E6B;
+      --green: #2ECC71;
+      --gray-100: #F7F8FA; --gray-200: #EEEFF2;
+      --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
+      --white: #FFFFFF;
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.13);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900);
+      min-height: 100vh; display: flex; flex-direction: column;
+    }
+    header {
+      background: var(--white); border-bottom: 1px solid var(--gray-200);
+      height: 64px; display: flex; align-items: center; padding: 0 24px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--navy); text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    main {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 40px 20px;
+    }
+    .card {
+      background: var(--white); border-radius: 28px;
+      padding: 60px 40px; text-align: center;
+      box-shadow: var(--shadow-lg); max-width: 480px; width: 100%;
+    }
+    .success-icon {
+      font-size: 72px; margin-bottom: 20px;
+      animation: bounce 0.6s ease;
+    }
+    @keyframes bounce {
+      0%   { transform: scale(0.5); opacity: 0; }
+      70%  { transform: scale(1.1); }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    .title { font-size: 24px; font-weight: 900; color: var(--navy); margin-bottom: 10px; }
+    .sub   { font-size: 15px; color: var(--gray-600); line-height: 1.7; margin-bottom: 36px; }
+
+    /* 단계 안내 */
+    .steps { text-align: left; margin-bottom: 36px; }
+    .step {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 14px 0; border-bottom: 1px solid var(--gray-100);
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--navy); color: var(--white);
+      font-size: 13px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .step-num.done { background: var(--green); }
+    .step-body { flex: 1; }
+    .step-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+    .step-desc  { font-size: 12px; color: var(--gray-400); }
+
+    .btn-home {
+      display: block; padding: 16px;
+      background: var(--navy); color: var(--white);
+      border-radius: 14px; font-size: 16px; font-weight: 800;
+      text-decoration: none; transition: background 0.2s; margin-bottom: 12px;
+    }
+    .btn-home:hover { background: var(--navy-light); }
+    .btn-kakao {
+      display: block; padding: 14px;
+      background: #FEE500; color: #191919;
+      border-radius: 14px; font-size: 15px; font-weight: 700;
+      text-decoration: none; transition: opacity 0.2s;
+    }
+    .btn-kakao:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+  </a>
+</header>
+
+<main>
+  <div class="card">
+    <div class="success-icon">🎉</div>
+    <h1 class="title">신청이 완료됐어요!</h1>
+    <p class="sub">
+      가입 신청을 받았어요.<br>
+      자격 확인 후 빠르게 연락드릴게요.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num done">✓</div>
+        <div class="step-body">
+          <div class="step-title">가입 신청 완료</div>
+          <div class="step-desc">정보가 성공적으로 제출됐어요</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">자격 심사 (1~2 영업일)</div>
+          <div class="step-desc">자격증 및 경력을 검토해요</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">승인 완료 알림</div>
+          <div class="step-desc">이메일 및 카카오톡으로 알려드려요</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">견적 제출 시작</div>
+          <div class="step-desc">고객 견적 요청에 응답할 수 있어요</div>
+        </div>
+      </div>
+    </div>
+
+    <a href="../index.html" class="btn-home">🏠 홈으로 돌아가기</a>
+    <a href="http://pf.kakao.com/_Pwxoln" target="_blank" class="btn-kakao">
+      💬 카카오로 진행 상황 문의
+    </a>
+  </div>
+</main>
+
+</body>
+</html>

@@ -66,6 +66,26 @@
       transition: background 0.2s, transform 0.15s;
     }
     .header-cta:hover { background: var(--gold-dark); transform: translateY(-1px); }
+    .header-login {
+      padding: 9px 18px; background: transparent;
+      border: 1.5px solid var(--gray-200); border-radius: 10px;
+      font-size: 14px; font-weight: 600; color: var(--gray-600);
+      cursor: pointer; text-decoration: none; transition: all 0.2s;
+    }
+    .header-login:hover { border-color: var(--navy); color: var(--navy); }
+    .header-user {
+      display: none; align-items: center; gap: 10px;
+    }
+    .header-user-name {
+      font-size: 14px; font-weight: 700; color: var(--navy);
+    }
+    .header-logout {
+      padding: 7px 14px; background: var(--gray-100);
+      border: none; border-radius: 8px;
+      font-size: 13px; font-weight: 600; color: var(--gray-600);
+      cursor: pointer; transition: background 0.2s;
+    }
+    .header-logout:hover { background: var(--gray-200); }
 
     /* ======= HERO ======= */
     .hero {
@@ -1018,7 +1038,16 @@
     <a href="#reviews" onclick="closeNav()">이용 후기</a>
     <a href="#calc" class="header-cta mobile-nav-cta" onclick="closeNav()">무료 상담 신청</a>
   </nav>
-  <a href="#calc" class="header-cta desktop-cta">무료 상담 신청</a>
+  <!-- 비로그인 상태 -->
+  <div id="headerGuest" style="display:flex;align-items:center;gap:10px;">
+    <a href="pages/login.html" class="header-login">로그인</a>
+    <a href="#calc" class="header-cta desktop-cta">무료 상담 신청</a>
+  </div>
+  <!-- 로그인 상태 -->
+  <div id="headerUser" class="header-user">
+    <span class="header-user-name" id="headerUserName">👋 안녕하세요</span>
+    <button class="header-logout" onclick="handleLogout()">로그아웃</button>
+  </div>
   <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="메뉴">
     <span></span><span></span><span></span>
   </button>
@@ -2246,6 +2275,60 @@
     document.querySelectorAll('.budget-chip').forEach(c => c.classList.remove('selected'));
     currentStep = 1;
     aNext(1);
+  }
+</script>
+
+<!-- ======= FIREBASE 인증 상태 감지 ======= -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script>
+  if (!firebase.apps.length) {
+    firebase.initializeApp({
+      apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
+      authDomain:        "golden-seniors.firebaseapp.com",
+      projectId:         "golden-seniors",
+      storageBucket:     "golden-seniors.firebasestorage.app",
+      messagingSenderId: "244026917780",
+      appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
+    });
+  }
+  const _auth = firebase.auth();
+
+  _auth.onAuthStateChanged((user) => {
+    const guestArea = document.getElementById('headerGuest');
+    const userArea  = document.getElementById('headerUser');
+    const userName  = document.getElementById('headerUserName');
+
+    if (user) {
+      guestArea.style.display = 'none';
+      userArea.style.display  = 'flex';
+      const name = user.displayName || user.email.split('@')[0];
+      userName.textContent = `👋 ${name}님`;
+    } else {
+      guestArea.style.display = 'flex';
+      userArea.style.display  = 'none';
+    }
+  });
+
+  window.handleLogout = async function() {
+    await _auth.signOut();
+    window.location.reload();
+  };
+
+  // ── 가입 완료 후 환영 토스트 ──
+  const _params = new URLSearchParams(window.location.search);
+  if (_params.get('welcome') === '1') {
+    history.replaceState({}, '', window.location.pathname);
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position:fixed; bottom:32px; left:50%; transform:translateX(-50%);
+      background:#1A2B4A; color:#fff; padding:14px 28px; border-radius:14px;
+      font-size:15px; font-weight:700; z-index:9999;
+      box-shadow:0 4px 20px rgba(0,0,0,0.2); white-space:nowrap;
+    `;
+    toast.textContent = '🎉 가입을 축하드려요! 골든 시니어스에 오신 걸 환영합니다.';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
   }
 </script>
 

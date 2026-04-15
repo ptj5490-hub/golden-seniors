@@ -2,9 +2,9 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "cta-preview",
-      "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "cd '/Users/jun/Desktop/클로드/golden-seniors' && LANG=en_US.UTF-8 RUBYOPT='-E utf-8' ruby -run -e httpd . -p 3000"],
+      "name": "golden-seniors",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["/Users/jun/Desktop/클로드/golden-seniors/server.py"],
       "port": 3000
     }
   ]

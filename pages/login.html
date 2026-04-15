@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #D4891A;
+      --navy: #1A2B4A; --navy-light: #2C3E6B;
+      --green: #2ECC71; --red: #E74C3C;
+      --gray-100: #F7F8FA; --gray-200: #EEEFF2; --gray-300: #D1D5DB;
+      --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
+      --white: #FFFFFF;
+      --shadow-md: 0 4px 24px rgba(0,0,0,0.10);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.13);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { overflow-x: hidden; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900);
+      min-height: 100vh; display: flex; flex-direction: column;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      height: 64px; display: flex; align-items: center; padding: 0 24px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--navy);
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+
+    /* ─── MAIN ─── */
+    main {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 40px 20px;
+    }
+    .auth-card {
+      background: var(--white); border-radius: 24px;
+      padding: 48px 40px; width: 100%; max-width: 440px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .auth-icon { font-size: 48px; text-align: center; margin-bottom: 8px; }
+    .auth-title {
+      font-size: 24px; font-weight: 900; color: var(--navy);
+      text-align: center; margin-bottom: 6px;
+    }
+    .auth-sub {
+      font-size: 14px; color: var(--gray-400);
+      text-align: center; margin-bottom: 32px;
+    }
+
+    /* ─── FORM ─── */
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block; font-size: 13px; font-weight: 700;
+      color: var(--gray-600); margin-bottom: 7px;
+    }
+    .field input {
+      width: 100%; padding: 14px 16px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 12px; font-size: 15px; color: var(--gray-900);
+      background: var(--gray-100);
+      transition: border-color 0.2s, background 0.2s;
+      outline: none;
+    }
+    .field input:focus {
+      border-color: var(--navy); background: var(--white);
+    }
+    .field input.error { border-color: var(--red); }
+
+    .field-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+    .forgot-link { font-size: 12px; color: var(--gray-400); text-decoration: none; }
+    .forgot-link:hover { color: var(--navy); }
+
+    /* ─── SUBMIT ─── */
+    .btn-submit {
+      width: 100%; padding: 16px;
+      background: var(--navy); color: var(--white);
+      border: none; border-radius: 14px;
+      font-size: 16px; font-weight: 800; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover { background: var(--navy-light); transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ─── ERROR MESSAGE ─── */
+    .error-msg {
+      display: none; background: #FEF2F2; border: 1px solid #FCA5A5;
+      border-radius: 10px; padding: 12px 14px;
+      font-size: 13px; color: var(--red); font-weight: 600;
+      margin-bottom: 18px; text-align: center;
+    }
+    .error-msg.show { display: block; }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--gray-200);
+    }
+    .divider span { font-size: 12px; color: var(--gray-400); font-weight: 600; white-space: nowrap; }
+
+    /* ─── SIGNUP LINK ─── */
+    .signup-link {
+      text-align: center; font-size: 14px; color: var(--gray-600);
+    }
+    .signup-link a {
+      color: var(--navy); font-weight: 700; text-decoration: none;
+    }
+    .signup-link a:hover { text-decoration: underline; }
+
+    /* ─── TEACHER LINK ─── */
+    .teacher-link {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--gold-light); border: 1px solid rgba(245,166,35,0.3);
+      border-radius: 14px; padding: 14px 16px;
+      text-decoration: none; color: var(--navy);
+      font-size: 14px; font-weight: 700;
+      margin-top: 14px; transition: background 0.2s;
+    }
+    .teacher-link:hover { background: #FFF0D0; }
+    .teacher-link span { flex: 1; }
+    .teacher-link .arrow { color: var(--gold-dark); font-size: 16px; }
+
+    /* ─── LOADING SPINNER ─── */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.6s linear infinite; display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 480px) {
+      .auth-card { padding: 32px 24px; border-radius: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+  </a>
+</header>
+
+<main>
+  <div class="auth-card">
+    <div class="auth-icon">👋</div>
+    <h1 class="auth-title">다시 만나서 반가워요!</h1>
+    <p class="auth-sub">로그인하고 맞춤 재활운동 서비스를 이용하세요</p>
+
+    <div class="error-msg" id="errorMsg">이메일 또는 비밀번호를 확인해주세요.</div>
+
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="field">
+        <label for="email">이메일</label>
+        <input type="email" id="email" placeholder="example@email.com" required autocomplete="email">
+      </div>
+
+      <div class="field">
+        <div class="field-row">
+          <label for="password">비밀번호</label>
+          <a href="#" class="forgot-link" onclick="handleForgotPassword(event)">비밀번호 찾기</a>
+        </div>
+        <input type="password" id="password" placeholder="비밀번호 입력" required autocomplete="current-password" minlength="6">
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <span id="btnText">로그인</span>
+        <div class="spinner" id="spinner"></div>
+      </button>
+    </form>
+
+    <div class="divider"><span>아직 회원이 아니신가요?</span></div>
+
+    <div class="signup-link">
+      <a href="signup.html">고객 회원가입 →</a>
+    </div>
+
+    <a href="signup-teacher.html" class="teacher-link">
+      <span>👨‍⚕️ 재활운동사로 활동하고 싶으신가요?</span>
+      <span class="arrow">›</span>
+    </a>
+  </div>
+</main>
+
+<!-- Firebase compat CDN (모듈 불필요) -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
+    authDomain:        "golden-seniors.firebaseapp.com",
+    projectId:         "golden-seniors",
+    storageBucket:     "golden-seniors.firebasestorage.app",
+    messagingSenderId: "244026917780",
+    appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
+
+  // ── 이미 로그인된 경우 리디렉트 ──
+  let isLoggingIn = false;
+  auth.onAuthStateChanged(async (user) => {
+    if (user && !isLoggingIn) {
+      const snap = await db.collection('users').doc(user.uid).get();
+      const role = snap.exists ? snap.data().role : 'customer';
+      redirectByRole(role);
+    }
+  });
+
+  function redirectByRole(role) {
+    if (role === 'teacher') {
+      window.location.href = 'dashboard-teacher.html';
+    } else {
+      window.location.href = '../index.html';
+    }
+  }
+
+  // ── 로그인 ──
+  window.handleLogin = async function(e) {
+    e.preventDefault();
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn      = document.getElementById('submitBtn');
+    const spinner  = document.getElementById('spinner');
+    const btnText  = document.getElementById('btnText');
+    const errorMsg = document.getElementById('errorMsg');
+
+    btn.disabled = true;
+    spinner.style.display = 'block';
+    btnText.textContent = '로그인 중...';
+    errorMsg.classList.remove('show');
+
+    try {
+      isLoggingIn = true;
+      const cred = await auth.signInWithEmailAndPassword(email, password);
+      const snap = await db.collection('users').doc(cred.user.uid).get();
+      const role = snap.exists ? snap.data().role : 'customer';
+      redirectByRole(role);
+    } catch (err) {
+      isLoggingIn = false;
+      const msg = getKoreanError(err.code);
+      errorMsg.textContent = msg;
+      errorMsg.classList.add('show');
+      document.getElementById('email').classList.add('error');
+      document.getElementById('password').classList.add('error');
+    } finally {
+      btn.disabled = false;
+      spinner.style.display = 'none';
+      btnText.textContent = '로그인';
+    }
+  };
+
+  // ── 비밀번호 찾기 ──
+  window.handleForgotPassword = async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    if (!email) {
+      alert('위에 이메일을 먼저 입력해주세요.');
+      document.getElementById('email').focus();
+      return;
+    }
+    try {
+      await auth.sendPasswordResetEmail(email);
+      alert(`📧 ${email} 으로 비밀번호 재설정 메일을 보냈어요.\n메일함을 확인해주세요.`);
+    } catch (err) {
+      alert('등록되지 않은 이메일이에요. 다시 확인해주세요.');
+    }
+  };
+
+  // ── 에러 메시지 한국어 변환 ──
+  function getKoreanError(code) {
+    const map = {
+      'auth/user-not-found':       '등록되지 않은 이메일이에요.',
+      'auth/wrong-password':       '비밀번호가 틀렸어요.',
+      'auth/invalid-email':        '이메일 형식이 올바르지 않아요.',
+      'auth/too-many-requests':    '로그인 시도가 너무 많아요. 잠시 후 다시 시도해주세요.',
+      'auth/user-disabled':        '비활성화된 계정이에요. 고객센터에 문의해주세요.',
+      'auth/invalid-credential':   '이메일 또는 비밀번호를 확인해주세요.',
+      'auth/network-request-failed': '인터넷 연결을 확인해주세요.',
+    };
+    return map[code] || '로그인 중 오류가 발생했어요. 다시 시도해주세요.';
+  }
+
+  // ── 입력 시 에러 스타일 초기화 ──
+  ['email', 'password'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      document.getElementById(id).classList.remove('error');
+      document.getElementById('errorMsg').classList.remove('show');
+    });
+  });
+</script>
+
+</body>
+</html>

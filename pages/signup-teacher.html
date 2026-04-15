@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>선생님 회원가입 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #D4891A;
+      --navy: #1A2B4A; --navy-light: #2C3E6B;
+      --green: #2ECC71; --red: #E74C3C;
+      --gray-100: #F7F8FA; --gray-200: #EEEFF2;
+      --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
+      --white: #FFFFFF;
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.13);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { overflow-x: hidden; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900);
+      min-height: 100vh; display: flex; flex-direction: column;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--white); border-bottom: 1px solid var(--gray-200);
+      height: 64px; display: flex; align-items: center; padding: 0 24px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--navy); text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+
+    /* ─── PROGRESS ─── */
+    .progress-bar { height: 3px; background: var(--gray-200); }
+    .progress-fill { height: 100%; background: var(--gold); transition: width 0.4s ease; width: 10%; }
+
+    /* ─── MAIN ─── */
+    main {
+      flex: 1; display: flex; align-items: flex-start; justify-content: center;
+      padding: 40px 20px 80px;
+    }
+    .auth-card {
+      background: var(--white); border-radius: 24px;
+      padding: 48px 40px; width: 100%; max-width: 520px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* ─── HERO BANNER ─── */
+    .hero-banner {
+      background: linear-gradient(135deg, var(--navy) 0%, #2C3E6B 100%);
+      border-radius: 16px; padding: 24px; margin-bottom: 32px;
+      text-align: center; color: var(--white);
+    }
+    .hero-banner .icon { font-size: 40px; margin-bottom: 10px; }
+    .hero-banner h2 { font-size: 18px; font-weight: 900; margin-bottom: 6px; }
+    .hero-banner p { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.6; }
+    .hero-badge-row {
+      display: flex; justify-content: center; gap: 8px; margin-top: 14px; flex-wrap: wrap;
+    }
+    .hero-badge {
+      background: rgba(245,166,35,0.2); border: 1px solid rgba(245,166,35,0.4);
+      color: var(--gold); border-radius: 100px;
+      padding: 4px 12px; font-size: 12px; font-weight: 700;
+    }
+
+    /* ─── FIELD ─── */
+    .section-label {
+      font-size: 11px; font-weight: 700; color: var(--gray-400);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin: 24px 0 14px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block; font-size: 13px; font-weight: 700;
+      color: var(--gray-600); margin-bottom: 7px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 14px 16px;
+      border: 1.5px solid var(--gray-200); border-radius: 12px;
+      font-size: 15px; color: var(--gray-900);
+      background: var(--gray-100); outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      font-family: inherit;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--navy); background: var(--white);
+    }
+    .field textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+    .field-hint { font-size: 11px; color: var(--gray-400); margin-top: 5px; }
+    .field-hint.success { color: var(--green); }
+    .field-hint.danger  { color: var(--red); }
+
+    /* ─── 전문분야 칩 ─── */
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      padding: 8px 14px; border: 1.5px solid var(--gray-200);
+      border-radius: 100px; font-size: 13px; font-weight: 600;
+      color: var(--gray-600); cursor: pointer;
+      transition: all 0.15s; user-select: none;
+      background: var(--white);
+    }
+    .chip.selected {
+      background: var(--navy); color: var(--white);
+      border-color: var(--navy);
+    }
+
+    /* ─── PASSWORD ─── */
+    .pw-strength { display: flex; gap: 4px; margin-top: 8px; }
+    .pw-strength-bar {
+      flex: 1; height: 4px; border-radius: 2px;
+      background: var(--gray-200); transition: background 0.3s;
+    }
+    .pw-strength-bar.weak   { background: var(--red); }
+    .pw-strength-bar.medium { background: var(--gold); }
+    .pw-strength-bar.strong { background: var(--green); }
+
+    /* ─── TERMS ─── */
+    .terms-box {
+      background: var(--gray-100); border-radius: 12px;
+      padding: 16px; margin-bottom: 20px;
+    }
+    .terms-all {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 800; color: var(--navy);
+      cursor: pointer; margin-bottom: 12px;
+    }
+    .terms-item {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--gray-600);
+      cursor: pointer; margin-bottom: 8px;
+    }
+    .terms-item:last-child { margin-bottom: 0; }
+    .terms-item a { color: var(--navy); font-weight: 600; text-decoration: underline; }
+    input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--navy); cursor: pointer; }
+
+    /* ─── ERROR / SUBMIT ─── */
+    .error-msg {
+      display: none; background: #FEF2F2; border: 1px solid #FCA5A5;
+      border-radius: 10px; padding: 12px 14px;
+      font-size: 13px; color: var(--red); font-weight: 600;
+      margin-bottom: 18px; text-align: center;
+    }
+    .error-msg.show { display: block; }
+    .btn-submit {
+      width: 100%; padding: 16px;
+      background: var(--gold); color: var(--white);
+      border: none; border-radius: 14px;
+      font-size: 16px; font-weight: 800; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover { background: var(--gold-dark); transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .login-link { text-align: center; font-size: 14px; color: var(--gray-600); margin-top: 20px; }
+    .login-link a { color: var(--navy); font-weight: 700; text-decoration: none; }
+    .login-link a:hover { text-decoration: underline; }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.6s linear infinite; display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── 심사 안내 배너 ─── */
+    .review-notice {
+      background: #EFF6FF; border: 1px solid #BFDBFE;
+      border-radius: 12px; padding: 14px 16px;
+      font-size: 13px; color: #1E40AF; line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .review-notice strong { font-weight: 800; }
+
+    @media (max-width: 480px) {
+      .auth-card { padding: 28px 20px; border-radius: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+  </a>
+</header>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<main>
+  <div class="auth-card">
+
+    <div class="hero-banner">
+      <div class="icon">👨‍⚕️</div>
+      <h2>재활운동사로 활동 시작하기</h2>
+      <p>전문 자격을 갖춘 선생님을 찾는<br>어르신 고객과 연결해드려요</p>
+      <div class="hero-badge-row">
+        <span class="hero-badge">📋 간편 가입</span>
+        <span class="hero-badge">✅ 심사 후 활동</span>
+        <span class="hero-badge">💰 수수료 최소화</span>
+      </div>
+    </div>
+
+    <div class="review-notice">
+      <strong>📌 활동 심사 안내</strong><br>
+      가입 후 자격증 및 경력을 검토하는 심사 과정이 있어요. 승인 완료 후 견적 제출이 가능해요. (평균 1~2 영업일 소요)
+    </div>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+    <form id="signupForm" onsubmit="handleSignup(event)">
+
+      <!-- 기본 정보 -->
+      <div class="section-label">기본 정보</div>
+
+      <div class="field">
+        <label for="name">이름 (실명) *</label>
+        <input type="text" id="name" placeholder="홍길동" required autocomplete="name">
+      </div>
+
+      <div class="field">
+        <label for="phone">휴대폰 번호 *</label>
+        <input type="tel" id="phone" placeholder="010-0000-0000" required autocomplete="tel">
+      </div>
+
+      <!-- 전문 정보 -->
+      <div class="section-label">전문 정보</div>
+
+      <div class="field">
+        <label>전문분야 * (중복 선택 가능)</label>
+        <div class="chip-group" id="specChips">
+          <div class="chip" onclick="toggleChip(this)" data-value="근골격계">🦴 근골격계</div>
+          <div class="chip" onclick="toggleChip(this)" data-value="뇌졸중">🧠 뇌졸중</div>
+          <div class="chip" onclick="toggleChip(this)" data-value="치매예방">💆 치매예방</div>
+          <div class="chip" onclick="toggleChip(this)" data-value="낙상예방">🚶 낙상예방</div>
+          <div class="chip" onclick="toggleChip(this)" data-value="파킨슨">⚕️ 파킨슨</div>
+          <div class="chip" onclick="toggleChip(this)" data-value="심폐기능">❤️ 심폐기능</div>
+          <div class="chip" onclick="toggleChip(this)" data-value="통증관리">💊 통증관리</div>
+          <div class="chip" onclick="toggleChip(this)" data-value="기타">기타</div>
+        </div>
+        <div class="field-hint" id="specHint"></div>
+      </div>
+
+      <div class="field">
+        <label for="license">보유 자격증 *</label>
+        <input type="text" id="license" placeholder="예: 물리치료사, 작업치료사, 건강운동관리사" required>
+        <div class="field-hint">쉼표로 구분하여 입력해주세요</div>
+      </div>
+
+      <div class="field">
+        <label for="career">경력 연수 *</label>
+        <select id="career" required>
+          <option value="">선택해주세요</option>
+          <option value="1">1년 미만</option>
+          <option value="1~3">1~3년</option>
+          <option value="3~5">3~5년</option>
+          <option value="5~10">5~10년</option>
+          <option value="10+">10년 이상</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="area">주요 활동 지역 *</label>
+        <input type="text" id="area" placeholder="예: 서울 강남구, 서초구" required>
+        <div class="field-hint">방문 가능한 지역을 입력해주세요</div>
+      </div>
+
+      <div class="field">
+        <label for="intro">자기소개 *</label>
+        <textarea id="intro" placeholder="전문성, 경력, 케어 철학 등을 소개해주세요 (최소 50자)" required minlength="50"></textarea>
+        <div class="field-hint" id="introCount">0 / 최소 50자</div>
+      </div>
+
+      <!-- 계정 정보 -->
+      <div class="section-label">계정 정보</div>
+
+      <div class="field">
+        <label for="email">이메일 *</label>
+        <input type="email" id="email" placeholder="example@email.com" required autocomplete="email">
+      </div>
+
+      <div class="field">
+        <label for="password">비밀번호 *</label>
+        <input type="password" id="password" placeholder="6자리 이상 입력" required minlength="6"
+               autocomplete="new-password" oninput="checkPasswordStrength(this.value)">
+        <div class="pw-strength">
+          <div class="pw-strength-bar" id="pb1"></div>
+          <div class="pw-strength-bar" id="pb2"></div>
+          <div class="pw-strength-bar" id="pb3"></div>
+        </div>
+        <div class="field-hint" id="pwLabel">비밀번호를 입력해주세요</div>
+      </div>
+
+      <div class="field">
+        <label for="passwordConfirm">비밀번호 확인 *</label>
+        <input type="password" id="passwordConfirm" placeholder="비밀번호를 다시 입력해주세요"
+               required autocomplete="new-password" oninput="checkPasswordMatch()">
+        <div class="field-hint" id="pwMatchHint"></div>
+      </div>
+
+      <!-- 약관 동의 -->
+      <div class="section-label">약관 동의</div>
+      <div class="terms-box">
+        <label class="terms-all">
+          <input type="checkbox" id="agreeAll" onchange="toggleAll(this)">
+          전체 동의
+        </label>
+        <label class="terms-item">
+          <input type="checkbox" id="agreeService" required>
+          <span>[필수] <a href="#" onclick="return false">서비스 이용약관</a> 동의</span>
+        </label>
+        <label class="terms-item">
+          <input type="checkbox" id="agreePrivacy" required>
+          <span>[필수] <a href="#" onclick="return false">개인정보 처리방침</a> 동의</span>
+        </label>
+        <label class="terms-item">
+          <input type="checkbox" id="agreeBackground">
+          <span>[필수] 신원조회 및 자격 확인 동의</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <span id="btnText">👨‍⚕️ 선생님으로 가입 신청</span>
+        <div class="spinner" id="spinner"></div>
+      </button>
+    </form>
+
+    <div class="login-link">
+      이미 계정이 있으신가요? <a href="login.html">로그인 →</a>
+    </div>
+
+  </div>
+</main>
+
+<!-- Firebase compat CDN -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
+    authDomain:        "golden-seniors.firebaseapp.com",
+    projectId:         "golden-seniors",
+    storageBucket:     "golden-seniors.firebasestorage.app",
+    messagingSenderId: "244026917780",
+    appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
+  });
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
+
+  // ── 이미 로그인된 경우 리디렉트 ──
+  let isSigningUp = false;
+  auth.onAuthStateChanged((user) => {
+    if (user && !isSigningUp) window.location.href = '../index.html';
+  });
+
+  // ── 전문분야 칩 토글 ──
+  window.toggleChip = function(el) {
+    el.classList.toggle('selected');
+    updateProgress();
+  };
+
+  // ── 자기소개 글자수 ──
+  document.getElementById('intro').addEventListener('input', function() {
+    const len = this.value.length;
+    const hint = document.getElementById('introCount');
+    hint.textContent = `${len} / 최소 50자`;
+    hint.className = 'field-hint' + (len >= 50 ? ' success' : '');
+    updateProgress();
+  });
+
+  // ── 비밀번호 강도 ──
+  window.checkPasswordStrength = function(pw) {
+    const bars  = ['pb1','pb2','pb3'].map(id => document.getElementById(id));
+    const label = document.getElementById('pwLabel');
+    bars.forEach(b => b.className = 'pw-strength-bar');
+    if (!pw) { label.textContent = '비밀번호를 입력해주세요'; return; }
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (/[A-Z]/.test(pw) || /[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    const levels = [
+      { cls: 'weak',   text: '약함 — 숫자나 특수문자를 추가해보세요', count: 1 },
+      { cls: 'medium', text: '보통 — 조금 더 강화해보세요',            count: 2 },
+      { cls: 'strong', text: '강함 ✓',                                   count: 3 },
+    ];
+    const lv = levels[score - 1] || levels[0];
+    for (let i = 0; i < lv.count; i++) bars[i].classList.add(lv.cls);
+    label.textContent = lv.text;
+    updateProgress();
+  };
+
+  // ── 비밀번호 확인 ──
+  window.checkPasswordMatch = function() {
+    const pw  = document.getElementById('password').value;
+    const pw2 = document.getElementById('passwordConfirm').value;
+    const hint = document.getElementById('pwMatchHint');
+    if (!pw2) { hint.textContent = ''; return; }
+    if (pw === pw2) { hint.textContent = '✓ 비밀번호가 일치해요'; hint.className = 'field-hint success'; }
+    else            { hint.textContent = '비밀번호가 일치하지 않아요'; hint.className = 'field-hint danger'; }
+  };
+
+  // ── 전체 동의 ──
+  window.toggleAll = function(el) {
+    ['agreeService','agreePrivacy','agreeBackground'].forEach(id => {
+      document.getElementById(id).checked = el.checked;
+    });
+  };
+  ['agreeService','agreePrivacy','agreeBackground'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => {
+      const all = ['agreeService','agreePrivacy','agreeBackground'].every(i => document.getElementById(i).checked);
+      document.getElementById('agreeAll').checked = all;
+    });
+  });
+
+  // ── 회원가입 ──
+  window.handleSignup = async function(e) {
+    e.preventDefault();
+
+    const name     = document.getElementById('name').value.trim();
+    const phone    = document.getElementById('phone').value.trim().replace(/-/g,'');
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const password2= document.getElementById('passwordConfirm').value;
+    const license  = document.getElementById('license').value.trim();
+    const career   = document.getElementById('career').value;
+    const area     = document.getElementById('area').value.trim();
+    const intro    = document.getElementById('intro').value.trim();
+    const specs    = [...document.querySelectorAll('#specChips .chip.selected')].map(c => c.dataset.value);
+    const bgCheck  = document.getElementById('agreeBackground').checked;
+
+    // 유효성 검사
+    if (password !== password2) { showError('비밀번호가 일치하지 않아요.'); return; }
+    if (phone.length < 10)       { showError('휴대폰 번호를 올바르게 입력해주세요.'); return; }
+    if (specs.length === 0)      { showError('전문분야를 최소 1개 이상 선택해주세요.'); return; }
+    if (intro.length < 50)       { showError('자기소개를 50자 이상 입력해주세요.'); return; }
+    if (!bgCheck)                { showError('신원조회 및 자격 확인에 동의해주세요.'); return; }
+
+    const btn     = document.getElementById('submitBtn');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btnText');
+    btn.disabled = true;
+    spinner.style.display = 'block';
+    btnText.textContent = '신청 중...';
+    document.getElementById('errorMsg').classList.remove('show');
+
+    try {
+      isSigningUp = true;
+
+      // 1. Firebase Auth 계정 생성
+      const cred = await auth.createUserWithEmailAndPassword(email, password);
+
+      // 2. 표시 이름 설정
+      await cred.user.updateProfile({ displayName: name });
+
+      // 3. Firestore 저장 (role: teacher, status: pending 심사 대기)
+      await db.collection('users').doc(cred.user.uid).set({
+        name, email, phone, license, career, area, intro,
+        specs,
+        role:      'teacher',
+        status:    'pending',   // pending | approved | rejected
+        rating:    0,
+        reviewCount: 0,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // 4. 완료 페이지
+      window.location.href = 'signup-teacher-done.html';
+
+    } catch (err) {
+      isSigningUp = false;
+      showError(getKoreanError(err.code));
+    } finally {
+      btn.disabled = false;
+      spinner.style.display = 'none';
+      btnText.textContent = '👨‍⚕️ 선생님으로 가입 신청';
+    }
+  };
+
+  function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.classList.add('show');
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function getKoreanError(code) {
+    const map = {
+      'auth/email-already-in-use':  '이미 사용 중인 이메일이에요.',
+      'auth/invalid-email':          '이메일 형식이 올바르지 않아요.',
+      'auth/weak-password':          '비밀번호는 6자리 이상이어야 해요.',
+      'auth/network-request-failed': '인터넷 연결을 확인해주세요.',
+    };
+    return map[code] || '가입 신청 중 오류가 발생했어요. 다시 시도해주세요.';
+  }
+
+  // ── 진행 바 ──
+  const trackFields = ['name','phone','email','password','passwordConfirm','license','career','area','intro'];
+  trackFields.forEach(id => {
+    document.getElementById(id).addEventListener('input', updateProgress);
+    if (document.getElementById(id).tagName === 'SELECT') {
+      document.getElementById(id).addEventListener('change', updateProgress);
+    }
+  });
+  function updateProgress() {
+    const filled = trackFields.filter(id => document.getElementById(id).value.length > 0).length;
+    const hasSpec = document.querySelectorAll('#specChips .chip.selected').length > 0;
+    const pct = 10 + ((filled + (hasSpec ? 1 : 0)) / (trackFields.length + 1)) * 88;
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+</script>
+
+</body>
+</html>

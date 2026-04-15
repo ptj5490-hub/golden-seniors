@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>페이지를 찾을 수 없어요 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #C17D0E;
+      --navy: #1A3B6E; --navy-light: #2A5298; --white: #FFFFFF;
+      --gray-100: #F8F9FA; --gray-200: #E9ECEF; --gray-400: #9CA3AF;
+      --gray-600: #6B7280; --gray-900: #1F2937;
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { overflow-x: hidden; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900);
+      min-height: 100vh; display: flex; flex-direction: column;
+    }
+
+    /* 헤더 */
+    header {
+      background: var(--white); box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+      height: 64px; display: flex; align-items: center; padding: 0 24px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--navy); text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+
+    /* 메인 */
+    main {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 40px 20px;
+    }
+    .error-card {
+      background: var(--white); border-radius: 28px;
+      padding: 60px 40px; text-align: center;
+      box-shadow: var(--shadow-lg); max-width: 480px; width: 100%;
+    }
+    .error-icon {
+      font-size: 80px; margin-bottom: 24px;
+      animation: wobble 2s ease-in-out infinite;
+    }
+    @keyframes wobble {
+      0%,100% { transform: rotate(-5deg); }
+      50%      { transform: rotate(5deg); }
+    }
+    .error-code {
+      font-size: 72px; font-weight: 900;
+      color: var(--gray-200); letter-spacing: -2px;
+      line-height: 1; margin-bottom: 16px;
+    }
+    .error-title {
+      font-size: 22px; font-weight: 900; color: var(--navy); margin-bottom: 12px;
+    }
+    .error-sub {
+      font-size: 15px; color: var(--gray-600); line-height: 1.7; margin-bottom: 36px;
+    }
+    .btn-home {
+      display: inline-block; padding: 16px 40px;
+      background: var(--navy); color: var(--white);
+      border-radius: 14px; font-size: 16px; font-weight: 800;
+      text-decoration: none; transition: background 0.2s; margin-bottom: 12px;
+      width: 100%;
+    }
+    .btn-home:hover { background: var(--navy-light); }
+    .btn-back {
+      display: inline-block; padding: 14px 40px;
+      background: transparent; color: var(--gray-600);
+      border: 1.5px solid var(--gray-200); border-radius: 14px;
+      font-size: 15px; font-weight: 600; text-decoration: none;
+      transition: all 0.2s; width: 100%;
+    }
+    .btn-back:hover { border-color: var(--navy); color: var(--navy); }
+
+    /* 빠른 이동 */
+    .quick-links {
+      margin-top: 32px; padding-top: 24px;
+      border-top: 1px solid var(--gray-100);
+    }
+    .quick-links p {
+      font-size: 13px; color: var(--gray-400); margin-bottom: 14px; font-weight: 700;
+    }
+    .quick-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .quick-item {
+      background: var(--gray-100); border-radius: 12px;
+      padding: 12px 14px; text-decoration: none; color: var(--navy);
+      font-size: 13px; font-weight: 700; transition: background 0.2s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .quick-item:hover { background: var(--gray-200); }
+
+    @media (max-width: 480px) {
+      .error-card { padding: 40px 24px; }
+      .error-code { font-size: 56px; }
+      .error-title { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+  </a>
+</header>
+
+<main>
+  <div class="error-card">
+    <div class="error-icon">🗺️</div>
+    <div class="error-code">404</div>
+    <h1 class="error-title">페이지를 찾을 수 없어요</h1>
+    <p class="error-sub">
+      요청하신 페이지가 삭제됐거나<br>
+      주소가 바뀌었을 수 있어요.<br>
+      아래 버튼으로 돌아가세요.
+    </p>
+    <a href="index.html" class="btn-home">🏠 홈으로 돌아가기</a>
+    <a href="javascript:history.back()" class="btn-back">← 이전 페이지</a>
+
+    <div class="quick-links">
+      <p>빠른 이동</p>
+      <div class="quick-grid">
+        <a href="index.html#calc" class="quick-item">📋 견적 신청하기</a>
+        <a href="pages/teachers.html" class="quick-item">👨‍⚕️ 선생님 찾기</a>
+        <a href="index.html#services" class="quick-item">🏥 서비스 소개</a>
+        <a href="http://pf.kakao.com/_Pwxoln" target="_blank" class="quick-item">💬 카카오 문의</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

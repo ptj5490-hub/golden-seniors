@@ -34,6 +34,22 @@
       transition: background 0.2s;
     }
     .back-btn:hover { background: var(--gray-200); }
+    .share-btn {
+      margin-left: auto; display: flex; align-items: center; gap: 6px;
+      background: var(--gray-100); border: none; border-radius: 10px;
+      padding: 8px 14px; font-size: 13px; font-weight: 700;
+      color: var(--navy); cursor: pointer; transition: background 0.2s;
+    }
+    .share-btn:hover { background: var(--gray-200); }
+    .share-toast {
+      position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+      background: var(--navy); color: var(--white);
+      padding: 12px 24px; border-radius: 100px;
+      font-size: 14px; font-weight: 700;
+      opacity: 0; transition: opacity 0.3s; z-index: 9999; white-space: nowrap;
+      pointer-events: none;
+    }
+    .share-toast.show { opacity: 1; }
     .logo {
       display: flex; align-items: center; gap: 10px;
       font-size: 18px; font-weight: 900; color: var(--navy);
@@ -225,7 +241,9 @@
     <div class="logo-icon">🏃</div>
     골든 시니어스
   </a>
+  <button class="share-btn" onclick="shareProfile()">🔗 공유하기</button>
 </header>
+<div class="share-toast" id="shareToast">📋 링크가 복사됐어요!</div>
 
 <main>
   <div class="page-inner">
@@ -434,8 +452,27 @@
 <!-- 모바일 하단 고정 버튼 -->
 <div class="mobile-cta">
   <a href="quotes.html" class="btn-request" style="flex:1">📋 견적 요청</a>
+  <button onclick="shareProfile()" style="width:52px;height:52px;border-radius:14px;background:var(--gray-100);border:none;font-size:20px;cursor:pointer;flex-shrink:0;">🔗</button>
   <a href="http://pf.kakao.com/_Pwxoln" target="_blank" class="btn-chat" style="width:56px;border-radius:14px;">💬</a>
 </div>
+
+<script>
+  function shareProfile() {
+    const url  = window.location.href;
+    const text = '박성민 선생님 프로필 | 골든 시니어스 방문재활운동';
+    if (navigator.share) {
+      navigator.share({ title: text, url: url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        const toast = document.getElementById('shareToast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      }).catch(() => {
+        prompt('아래 링크를 복사하세요:', url);
+      });
+    }
+  }
+</script>
 
 </body>
 </html>

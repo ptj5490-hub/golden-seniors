@@ -1409,6 +1409,32 @@
               <input type="text" id="a-dong" placeholder="예: 역삼동, 수내동, 일산동">
             </div>
             <div class="a-field">
+              <label>어르신 나이대</label>
+              <div class="budget-chips">
+                <span class="budget-chip" onclick="selectChipGroup(this,'ageGroup')">60대</span>
+                <span class="budget-chip" onclick="selectChipGroup(this,'ageGroup')">70대</span>
+                <span class="budget-chip" onclick="selectChipGroup(this,'ageGroup')">80대</span>
+                <span class="budget-chip" onclick="selectChipGroup(this,'ageGroup')">90대 이상</span>
+              </div>
+            </div>
+            <div class="a-field">
+              <label>거동 가능 여부</label>
+              <div class="budget-chips">
+                <span class="budget-chip" onclick="selectChipGroup(this,'mobilityGroup')">혼자 보행 가능</span>
+                <span class="budget-chip" onclick="selectChipGroup(this,'mobilityGroup')">부축 필요</span>
+                <span class="budget-chip" onclick="selectChipGroup(this,'mobilityGroup')">휠체어 사용</span>
+                <span class="budget-chip" onclick="selectChipGroup(this,'mobilityGroup')">침상 생활</span>
+              </div>
+            </div>
+            <div class="a-field">
+              <label>보호자 동반 여부</label>
+              <div class="budget-chips">
+                <span class="budget-chip" onclick="selectChipGroup(this,'caregiverGroup')">항상 동반</span>
+                <span class="budget-chip" onclick="selectChipGroup(this,'caregiverGroup')">필요시 동반</span>
+                <span class="budget-chip" onclick="selectChipGroup(this,'caregiverGroup')">어르신 혼자</span>
+              </div>
+            </div>
+            <div class="a-field">
               <label>희망 방문 시간대 (복수 선택 가능)</label>
               <div class="budget-chips" id="timeChips">
                 <span class="budget-chip" onclick="toggleChip(this)">오전 (9~12시)</span>
@@ -1738,6 +1764,7 @@
         매달 1일 새로운 베스트 선생님이 선정됩니다.<br>
         <strong>골든 시니어스</strong>의 모든 선생님은 자격증·면접·실기 테스트를 통과했습니다.
       </div>
+      <a href="pages/teachers.html" class="best-join" style="background:var(--gold);color:var(--white);">전체 선생님 보기 →</a>
       <a href="#calc" class="best-join">재활운동사로 등록하기 →</a>
     </div>
 
@@ -2035,6 +2062,13 @@
 <!-- ======= CALCULATOR JS ======= -->
 <script>
 
+  // ── 단일 선택 칩 그룹 ──
+  function selectChipGroup(el, group) {
+    el.closest('.budget-chips').querySelectorAll('.budget-chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    el.dataset.group = group;
+  }
+
   // ── 기타 직접 입력 토글 ──
   function toggleEtcInput() {
     const sel = document.getElementById('a-condition');
@@ -2159,16 +2193,19 @@
     if (!document.getElementById('a-phone').value.trim()) { alert('연락처를 입력해주세요.'); return; }
 
     // 신청 정보 수집
-    const condition = document.getElementById('a-condition').value || '';
-    const region    = document.getElementById('a-region').value    || '';
-    const district  = document.getElementById('a-district').value  || '';
-    const dong      = document.getElementById('a-dong').value      || '';
-    const budget    = document.querySelector('.budget-chip.selected')?.textContent || '';
+    const condition  = document.getElementById('a-condition').value || '';
+    const region     = document.getElementById('a-region').value    || '';
+    const district   = document.getElementById('a-district').value  || '';
+    const dong       = document.getElementById('a-dong').value      || '';
+    const budget     = document.querySelector('#budgetChips .budget-chip.selected')?.textContent || '';
+    const ageGroup   = document.querySelector('[data-group="ageGroup"]')?.textContent || '';
+    const mobility   = document.querySelector('[data-group="mobilityGroup"]')?.textContent || '';
+    const caregiver  = document.querySelector('[data-group="caregiverGroup"]')?.textContent || '';
     const freq      = document.getElementById('a-freq')?.value     || '';
     const regionStr = [region, district, dong].filter(Boolean).join(' ');
 
     // URL 파라미터로 complete.html 이동
-    const params = new URLSearchParams({ condition, region: regionStr, budget, freq });
+    const params = new URLSearchParams({ condition, region: regionStr, budget, freq, ageGroup, mobility, caregiver });
     window.location.href = 'pages/complete.html?' + params.toString();
   }
 

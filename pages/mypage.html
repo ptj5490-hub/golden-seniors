@@ -173,6 +173,55 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
+    /* ─── 회원탈퇴 ─── */
+    .danger-zone {
+      border: 1.5px solid #FCA5A5; border-radius: 14px;
+      padding: 20px; margin-top: 16px;
+    }
+    .danger-title { font-size: 14px; font-weight: 800; color: var(--red); margin-bottom: 6px; }
+    .danger-desc  { font-size: 13px; color: var(--gray-600); line-height: 1.6; margin-bottom: 14px; }
+    .btn-danger {
+      width: 100%; padding: 13px; background: transparent;
+      border: 1.5px solid var(--red); border-radius: 12px;
+      font-size: 14px; font-weight: 700; color: var(--red);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-danger:hover { background: var(--red); color: var(--white); }
+
+    /* ─── 탈퇴 확인 모달 ─── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 500;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white); border-radius: 24px; padding: 36px 28px;
+      width: 100%; max-width: 400px; text-align: center;
+    }
+    .modal-icon  { font-size: 48px; margin-bottom: 14px; }
+    .modal-title { font-size: 20px; font-weight: 900; color: var(--navy); margin-bottom: 8px; }
+    .modal-desc  { font-size: 14px; color: var(--gray-600); line-height: 1.7; margin-bottom: 6px; }
+    .modal-warn  { font-size: 13px; color: var(--red); font-weight: 700; margin-bottom: 24px; }
+    .modal-input {
+      width: 100%; padding: 13px 14px; border: 1.5px solid var(--gray-200);
+      border-radius: 10px; font-size: 15px; outline: none; font-family: inherit;
+      background: var(--gray-100); margin-bottom: 16px; text-align: center;
+      transition: border-color 0.2s;
+    }
+    .modal-input:focus { border-color: var(--red); background: var(--white); }
+    .modal-btns { display: flex; gap: 10px; }
+    .btn-modal-cancel {
+      flex: 1; padding: 14px; background: var(--gray-100); color: var(--gray-600);
+      border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer;
+    }
+    .btn-modal-delete {
+      flex: 1; padding: 14px; background: var(--red); color: var(--white);
+      border: none; border-radius: 12px; font-size: 15px; font-weight: 800;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .btn-modal-delete:disabled { opacity: 0.4; cursor: not-allowed; }
+
     @media (max-width: 600px) {
       .profile-card { flex-direction: column; text-align: center; }
       .profile-stats { justify-content: center; }
@@ -256,9 +305,37 @@
       <button class="btn-view" style="width:100%;padding:14px;font-size:15px;" onclick="saveInfo()">
         저장하기
       </button>
+
+      <!-- 회원 탈퇴 -->
+      <div class="danger-zone">
+        <div class="danger-title">⚠️ 회원 탈퇴</div>
+        <div class="danger-desc">
+          탈퇴 시 모든 견적 내역과 개인정보가 삭제되며<br>복구할 수 없어요.
+        </div>
+        <button class="btn-danger" onclick="openDeleteModal()">회원 탈퇴하기</button>
+      </div>
     </div>
   </div>
 
+</div>
+
+<!-- 탈퇴 확인 모달 -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <div class="modal-icon">😢</div>
+    <div class="modal-title">정말 탈퇴하시겠어요?</div>
+    <div class="modal-desc">탈퇴하면 모든 견적 내역과<br>개인정보가 영구 삭제돼요.</div>
+    <div class="modal-warn">이 작업은 되돌릴 수 없어요.</div>
+    <input class="modal-input" id="deleteConfirmInput"
+      placeholder="'탈퇴합니다' 입력 후 버튼 활성화"
+      oninput="checkDeleteConfirm(this.value)">
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="closeDeleteModal()">취소</button>
+      <button class="btn-modal-delete" id="deleteConfirmBtn" disabled onclick="handleDeleteAccount()">
+        탈퇴하기
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- Firebase -->
@@ -426,6 +503,44 @@
   window.handleLogout = async function() {
     await auth.signOut();
     window.location.href = '../index.html';
+  };
+
+  // ── 회원탈퇴 ──
+  window.openDeleteModal = function() {
+    document.getElementById('deleteConfirmInput').value = '';
+    document.getElementById('deleteConfirmBtn').disabled = true;
+    document.getElementById('deleteModal').classList.add('open');
+  };
+  window.closeDeleteModal = function() {
+    document.getElementById('deleteModal').classList.remove('open');
+  };
+  window.checkDeleteConfirm = function(val) {
+    document.getElementById('deleteConfirmBtn').disabled = val.trim() !== '탈퇴합니다';
+  };
+  window.handleDeleteAccount = async function() {
+    if (!currentUser) return;
+    const btn = document.getElementById('deleteConfirmBtn');
+    btn.disabled = true;
+    btn.textContent = '처리 중...';
+    try {
+      // 1. Firestore 사용자 문서 삭제
+      await db.collection('users').doc(currentUser.uid).delete();
+      // 2. Firebase Auth 계정 삭제
+      await currentUser.delete();
+      // 3. 홈으로 이동
+      alert('탈퇴가 완료됐어요. 그동안 이용해주셔서 감사해요.');
+      window.location.href = '../index.html';
+    } catch (err) {
+      if (err.code === 'auth/requires-recent-login') {
+        alert('보안을 위해 다시 로그인 후 탈퇴해주세요.\n로그인 페이지로 이동합니다.');
+        await auth.signOut();
+        window.location.href = 'login.html';
+      } else {
+        alert('탈퇴 처리 중 오류가 발생했어요: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = '탈퇴하기';
+      }
+    }
   };
 </script>
 

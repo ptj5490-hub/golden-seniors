@@ -294,9 +294,44 @@
       <button class="btn-quote" style="width:100%;padding:14px;font-size:15px;" onclick="saveProfile()">
         저장하기
       </button>
+
+      <!-- 회원 탈퇴 -->
+      <div style="border:1.5px solid #FCA5A5;border-radius:14px;padding:20px;margin-top:20px;">
+        <div style="font-size:14px;font-weight:800;color:#E74C3C;margin-bottom:6px;">⚠️ 회원 탈퇴</div>
+        <div style="font-size:13px;color:var(--gray-600);line-height:1.6;margin-bottom:14px;">
+          탈퇴 시 프로필·제출 견적·모든 정보가 삭제되며 복구할 수 없어요.
+        </div>
+        <button onclick="openDeleteModal()"
+          style="width:100%;padding:13px;background:transparent;border:1.5px solid #E74C3C;
+                 border-radius:12px;font-size:14px;font-weight:700;color:#E74C3C;cursor:pointer;">
+          회원 탈퇴하기
+        </button>
+      </div>
     </div>
   </div>
 
+</div>
+
+<!-- 탈퇴 확인 모달 -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal" style="text-align:center;">
+    <div style="font-size:48px;margin-bottom:14px;">😢</div>
+    <h2 class="modal-title">정말 탈퇴하시겠어요?</h2>
+    <p class="modal-sub">탈퇴하면 모든 프로필과<br>개인정보가 영구 삭제돼요.<br>이 작업은 되돌릴 수 없어요.</p>
+    <input style="width:100%;padding:13px;border:1.5px solid var(--gray-200);border-radius:10px;
+                  font-size:15px;outline:none;font-family:inherit;background:var(--gray-100);
+                  margin:16px 0;text-align:center;"
+      id="deleteConfirmInput" placeholder="'탈퇴합니다' 입력 후 버튼 활성화"
+      oninput="checkDeleteConfirm(this.value)">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeDeleteModal()">취소</button>
+      <button id="deleteConfirmBtn" disabled onclick="handleDeleteAccount()"
+        style="flex:1;padding:14px;background:#E74C3C;color:white;border:none;
+               border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;opacity:0.4;">
+        탈퇴하기
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- 견적 작성 모달 -->
@@ -577,6 +612,43 @@
   window.handleLogout = async function() {
     await auth.signOut();
     window.location.href = '../index.html';
+  };
+
+  // ── 회원탈퇴 ──
+  window.openDeleteModal = function() {
+    document.getElementById('deleteConfirmInput').value = '';
+    const btn = document.getElementById('deleteConfirmBtn');
+    btn.disabled = true; btn.style.opacity = '0.4';
+    document.getElementById('deleteModal').classList.add('open');
+  };
+  window.closeDeleteModal = function() {
+    document.getElementById('deleteModal').classList.remove('open');
+  };
+  window.checkDeleteConfirm = function(val) {
+    const btn = document.getElementById('deleteConfirmBtn');
+    const ok = val.trim() === '탈퇴합니다';
+    btn.disabled = !ok;
+    btn.style.opacity = ok ? '1' : '0.4';
+  };
+  window.handleDeleteAccount = async function() {
+    if (!currentUser) return;
+    const btn = document.getElementById('deleteConfirmBtn');
+    btn.disabled = true; btn.textContent = '처리 중...';
+    try {
+      await db.collection('users').doc(currentUser.uid).delete();
+      await currentUser.delete();
+      alert('탈퇴가 완료됐어요. 그동안 함께해주셔서 감사해요.');
+      window.location.href = '../index.html';
+    } catch (err) {
+      if (err.code === 'auth/requires-recent-login') {
+        alert('보안을 위해 다시 로그인 후 탈퇴해주세요.');
+        await auth.signOut();
+        window.location.href = 'login.html';
+      } else {
+        alert('탈퇴 처리 중 오류가 발생했어요: ' + err.message);
+        btn.disabled = false; btn.textContent = '탈퇴하기';
+      }
+    }
   };
 
   function emptyHTML(icon, title, sub) {

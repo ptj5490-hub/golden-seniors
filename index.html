@@ -1069,6 +1069,8 @@
     <a href="#calc" onclick="closeNav()">재활운동사 찾기</a>
     <a href="#services" onclick="closeNav()">서비스 소개</a>
     <a href="#reviews" onclick="closeNav()">이용 후기</a>
+    <!-- 로그인 시에만 표시 -->
+    <a href="pages/mypage.html" id="mobileMypage" onclick="closeNav()" style="display:none;">📋 마이페이지</a>
     <a href="#calc" class="header-cta mobile-nav-cta" onclick="closeNav()">무료 상담 신청</a>
   </nav>
   <!-- 비로그인 상태 -->
@@ -2460,6 +2462,10 @@
       const name = user.displayName || user.email.split('@')[0];
       userName.textContent = `👋 ${name}님`;
 
+      // 모바일 메뉴 마이페이지 표시
+      const mobileMypageLink = document.getElementById('mobileMypage');
+      if (mobileMypageLink) mobileMypageLink.style.display = 'block';
+
       // 역할에 따라 마이페이지 링크 변경
       try {
         const snap = await _db.collection('users').doc(user.uid).get();
@@ -2468,6 +2474,10 @@
           if (data.role === 'teacher') {
             mypageBtn.href = 'pages/dashboard-teacher.html';
             mypageBtn.textContent = '대시보드';
+            if (mobileMypageLink) {
+              mobileMypageLink.href = 'pages/dashboard-teacher.html';
+              mobileMypageLink.textContent = '📋 대시보드';
+            }
           }
           // 폼 자동 입력 (9번)
           const nameEl  = document.getElementById('a-name');

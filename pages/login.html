@@ -124,6 +124,25 @@
     }
     .signup-link a:hover { text-decoration: underline; }
 
+    /* ─── 카카오 버튼 ─── */
+    .btn-kakao {
+      width: 100%; padding: 15px;
+      background: #FEE500; color: #3A1D00;
+      border: none; border-radius: 14px;
+      font-size: 15px; font-weight: 800; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: opacity 0.2s; margin-bottom: 0;
+    }
+    .btn-kakao:hover { opacity: 0.88; }
+    .kakao-icon { width: 22px; height: 22px; }
+    .or-divider {
+      display: flex; align-items: center; gap: 12px; margin: 20px 0;
+    }
+    .or-divider::before, .or-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--gray-200);
+    }
+    .or-divider span { font-size: 12px; color: var(--gray-400); font-weight: 600; }
+
     /* ─── TEACHER LINK ─── */
     .teacher-link {
       display: flex; align-items: center; gap: 10px;
@@ -166,6 +185,16 @@
     <h1 class="auth-title">다시 만나서 반가워요!</h1>
     <p class="auth-sub">로그인하고 맞춤 재활운동 서비스를 이용하세요</p>
 
+    <!-- 카카오 로그인 -->
+    <button class="btn-kakao" onclick="kakaoLogin()">
+      <svg class="kakao-icon" viewBox="0 0 24 24" fill="#3A1D00">
+        <path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.7 1.7 5.08 4.3 6.5L5.2 21l5.1-2.7c.55.07 1.12.1 1.7.1 5.523 0 10-3.477 10-7.8C22 6.477 17.523 3 12 3z"/>
+      </svg>
+      카카오로 1초 로그인
+    </button>
+
+    <div class="or-divider"><span>또는 이메일로 로그인</span></div>
+
     <div class="error-msg" id="errorMsg">이메일 또는 비밀번호를 확인해주세요.</div>
 
     <form id="loginForm" onsubmit="handleLogin(event)">
@@ -200,6 +229,9 @@
     </a>
   </div>
 </main>
+
+<!-- 카카오 SDK -->
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
 
 <!-- Firebase compat CDN (모듈 불필요) -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -309,6 +341,100 @@
       document.getElementById('errorMsg').classList.remove('show');
     });
   });
+
+  // ── 카카오 키 설정 ──
+  const KAKAO_JS_KEY   = 'fa3e0d822344045ef8c622a230b76118';  // JavaScript 키
+  const KAKAO_REST_KEY = '70012d9ea3ffd20dbf10a6feff8f5271';   // REST API 키
+  const KAKAO_REDIRECT = `${location.origin}/pages/login.html`;
+
+  try {
+    if (!Kakao.isInitialized()) Kakao.init(KAKAO_JS_KEY);
+  } catch(e) {
+    console.warn('카카오 SDK 초기화 실패:', e);
+  }
+
+  // ── 카카오 리다이렉트 처리 (?code= 파라미터로 돌아왔을 때) ──
+  (async function handleKakaoReturn() {
+    const urlParams = new URLSearchParams(location.search);
+    const code = urlParams.get('code');
+    if (!code) return;
+
+    // URL 파라미터 정리 (뒤로가기 방지)
+    history.replaceState(null, '', location.pathname);
+
+    // 로딩 표시
+    const kakaoBtn = document.querySelector('.btn-kakao');
+    if (kakaoBtn) {
+      kakaoBtn.disabled = true;
+      kakaoBtn.textContent = '카카오 로그인 처리 중...';
+    }
+
+    try {
+      // 1단계: authorization code → access token 교환
+      const tokenRes = await fetch('https://kauth.kakao.com/oauth/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
+        body: new URLSearchParams({
+          grant_type:   'authorization_code',
+          client_id:    KAKAO_REST_KEY,
+          redirect_uri: KAKAO_REDIRECT,
+          code:         code,
+        }),
+      });
+      const tokenData = await tokenRes.json();
+
+      if (tokenData.error) {
+        throw new Error(`토큰 오류: ${tokenData.error_description || tokenData.error}`);
+      }
+
+      const accessToken = tokenData.access_token;
+      Kakao.Auth.setAccessToken(accessToken);
+
+      // 2단계: 사용자 정보 가져오기 (SDK v2 - Promise 방식)
+      const user = await Kakao.API.request({ url: '/v2/user/me' });
+
+      const kakaoId   = String(user.id);
+      const kakaoName = user.kakao_account?.profile?.nickname
+                      || user.properties?.nickname
+                      || '카카오회원';
+      const syntheticEmail    = `kakao_${kakaoId}@golden-seniors.internal`;
+      const syntheticPassword = `kakao_${kakaoId}_gs_pw!`;
+
+      // 3단계: Firebase 로그인 시도 (기존 계정 있으면 로그인, 없으면 회원가입)
+      isLoggingIn = true;
+      try {
+        const cred = await auth.signInWithEmailAndPassword(syntheticEmail, syntheticPassword);
+        const snap = await db.collection('users').doc(cred.user.uid).get();
+        redirectByRole(snap.exists ? snap.data().role : 'customer');
+      } catch (loginErr) {
+        if (loginErr.code === 'auth/user-not-found' || loginErr.code === 'auth/invalid-credential') {
+          // 신규 카카오 유저 → 회원가입 페이지로
+          const params = new URLSearchParams({ kakaoId, kakaoName, syntheticEmail, syntheticPassword });
+          location.href = `signup.html?${params.toString()}`;
+        } else {
+          throw loginErr;
+        }
+      }
+    } catch(e) {
+      isLoggingIn = false;
+      console.error('카카오 처리 오류:', e);
+      document.getElementById('errorMsg').textContent = '카카오 로그인 중 오류가 발생했어요. 다시 시도해주세요.';
+      document.getElementById('errorMsg').classList.add('show');
+      if (kakaoBtn) { kakaoBtn.disabled = false; kakaoBtn.innerHTML = '<svg class="kakao-icon" viewBox="0 0 24 24" fill="#3A1D00"><path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.7 1.7 5.08 4.3 6.5L5.2 21l5.1-2.7c.55.07 1.12.1 1.7.1 5.523 0 10-3.477 10-7.8C22 6.477 17.523 3 12 3z"/></svg>카카오로 1초 로그인'; }
+    }
+  })();
+
+  // ── 카카오 버튼 클릭 → 카카오 인증 페이지로 이동 ──
+  window.kakaoLogin = function() {
+    if (typeof Kakao === 'undefined' || !Kakao.isInitialized()) {
+      alert('카카오 SDK 로딩 중이에요. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+    Kakao.Auth.authorize({
+      redirectUri: KAKAO_REDIRECT,
+      scope: 'profile_nickname',
+    });
+  };
 </script>
 
 </body>

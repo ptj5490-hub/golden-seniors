@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>채팅 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #D4891A;
+      --navy: #1A2B4A; --navy-light: #2C3E6B;
+      --gray-100: #F7F8FA; --gray-200: #EEEFF2; --gray-300: #D1D5DB;
+      --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
+      --white: #FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900);
+      display: flex; flex-direction: column;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--navy); height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; flex-shrink: 0;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--white); text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .header-back {
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600;
+      color: var(--white); cursor: pointer; text-decoration: none;
+    }
+    .header-back:hover { background: rgba(255,255,255,0.2); }
+
+    /* ─── LAYOUT ─── */
+    .chat-layout {
+      flex: 1; display: flex; overflow: hidden;
+    }
+
+    /* ─── SIDEBAR ─── */
+    .chat-sidebar {
+      width: 300px; flex-shrink: 0;
+      background: var(--white); border-right: 1px solid var(--gray-200);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .sidebar-head {
+      padding: 18px 20px; border-bottom: 1px solid var(--gray-200);
+      font-size: 15px; font-weight: 800; color: var(--navy);
+    }
+    .chat-list { flex: 1; overflow-y: auto; }
+    .chat-item {
+      padding: 14px 18px; border-bottom: 1px solid var(--gray-100);
+      cursor: pointer; display: flex; align-items: center; gap: 12px;
+      transition: background 0.15s; position: relative;
+    }
+    .chat-item:hover { background: var(--gray-100); }
+    .chat-item.active { background: var(--gold-light); border-left: 3px solid var(--gold); padding-left: 15px; }
+    .avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--navy); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800; flex-shrink: 0;
+    }
+    .chat-item-body { flex: 1; min-width: 0; }
+    .chat-item-name { font-size: 14px; font-weight: 700; color: var(--gray-900); margin-bottom: 3px; }
+    .chat-item-preview {
+      font-size: 12px; color: var(--gray-400);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .chat-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+    .chat-item-time { font-size: 11px; color: var(--gray-400); }
+    .unread-dot {
+      background: var(--gold); color: white; border-radius: 10px;
+      padding: 2px 7px; font-size: 11px; font-weight: 800;
+    }
+    .list-empty {
+      padding: 48px 20px; text-align: center;
+      font-size: 14px; color: var(--gray-400); line-height: 1.8;
+    }
+
+    /* ─── MAIN CHAT AREA ─── */
+    .chat-main {
+      flex: 1; display: flex; flex-direction: column; overflow: hidden;
+      background: var(--gray-100);
+    }
+
+    /* ─── ROOM HEADER ─── */
+    .room-header {
+      background: var(--white); border-bottom: 1px solid var(--gray-200);
+      padding: 14px 24px; display: flex; align-items: center; gap: 14px;
+      flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .btn-back-mobile {
+      display: none; background: none; border: none;
+      font-size: 22px; cursor: pointer; color: var(--gray-600); padding: 0 6px 0 0;
+    }
+    .room-partner-name { font-size: 16px; font-weight: 800; color: var(--navy); }
+    .room-quote-title { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+    /* ─── MESSAGES ─── */
+    .messages-area {
+      flex: 1; overflow-y: auto; padding: 20px;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .date-sep {
+      text-align: center; font-size: 12px; color: var(--gray-400);
+      margin: 14px 0; display: flex; align-items: center; gap: 10px;
+    }
+    .date-sep::before, .date-sep::after {
+      content: ''; flex: 1; height: 1px; background: var(--gray-200);
+    }
+
+    .msg-row { display: flex; align-items: flex-end; gap: 8px; margin-bottom: 3px; }
+    .msg-row.mine { flex-direction: row-reverse; }
+    .msg-row.mine + .msg-row:not(.mine),
+    .msg-row:not(.mine) + .msg-row.mine { margin-top: 10px; }
+
+    .msg-sender-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--navy); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; flex-shrink: 0; margin-bottom: 2px;
+    }
+    .msg-content-wrap { display: flex; flex-direction: column; max-width: 65%; }
+    .msg-row.mine .msg-content-wrap { align-items: flex-end; }
+    .msg-sender-label {
+      font-size: 11px; font-weight: 700; color: var(--gray-400);
+      margin-bottom: 3px; margin-left: 2px;
+    }
+    .msg-inner { display: flex; align-items: flex-end; gap: 5px; }
+    .msg-row.mine .msg-inner { flex-direction: row-reverse; }
+
+    .bubble {
+      padding: 10px 14px; border-radius: 18px;
+      font-size: 14px; line-height: 1.55; word-break: break-word;
+    }
+    .msg-row:not(.mine) .bubble {
+      background: var(--white); color: var(--gray-900);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .msg-row.mine .bubble {
+      background: var(--navy); color: white;
+      border-bottom-right-radius: 4px;
+    }
+    .msg-time { font-size: 10px; color: var(--gray-400); white-space: nowrap; flex-shrink: 0; }
+
+    /* ─── INPUT ─── */
+    .input-area {
+      background: var(--white); border-top: 1px solid var(--gray-200);
+      padding: 14px 20px; display: flex; gap: 10px; align-items: flex-end;
+      flex-shrink: 0;
+    }
+    .msg-input {
+      flex: 1; border: 1.5px solid var(--gray-200); border-radius: 22px;
+      padding: 10px 18px; font-size: 15px; color: var(--gray-900);
+      background: var(--gray-100); outline: none; resize: none;
+      max-height: 120px; line-height: 1.5; font-family: inherit;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .msg-input:focus { border-color: var(--navy); background: var(--white); }
+    .btn-send {
+      width: 44px; height: 44px; flex-shrink: 0;
+      background: var(--navy); border: none; border-radius: 50%;
+      color: white; font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-send:hover { background: var(--navy-light); transform: scale(1.06); }
+    .btn-send:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+    /* ─── EMPTY / LOADING STATES ─── */
+    .chat-empty-state {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: var(--gray-400); gap: 12px;
+    }
+    .chat-empty-state .ei { font-size: 60px; }
+    .chat-empty-state p { font-size: 16px; font-weight: 600; }
+    .chat-empty-state small { font-size: 13px; }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 768px) {
+      .chat-sidebar {
+        width: 100%; position: absolute; left: 0; top: 64px; bottom: 0;
+        z-index: 10; transition: transform 0.3s ease;
+      }
+      .chat-sidebar.slide-out { transform: translateX(-100%); }
+      .btn-back-mobile { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+  </a>
+  <div class="header-right">
+    <a id="headerBackBtn" href="#" class="header-back">← 돌아가기</a>
+  </div>
+</header>
+
+<div class="chat-layout">
+
+  <!-- 사이드바: 채팅 목록 -->
+  <aside class="chat-sidebar" id="chatSidebar">
+    <div class="sidebar-head">💬 내 채팅</div>
+    <div class="chat-list" id="chatList">
+      <div class="list-empty">로딩 중...</div>
+    </div>
+  </aside>
+
+  <!-- 메인: 채팅방 -->
+  <main class="chat-main" id="chatMain">
+    <div class="chat-empty-state">
+      <div class="ei">💬</div>
+      <p>채팅을 선택해주세요</p>
+      <small>왼쪽에서 대화를 선택해요</small>
+    </div>
+  </main>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
+    authDomain:        "golden-seniors.firebaseapp.com",
+    projectId:         "golden-seniors",
+    storageBucket:     "golden-seniors.firebasestorage.app",
+    messagingSenderId: "244026917780",
+    appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
+  });
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
+
+  let me = null;           // { uid, name, role }
+  let activeChatId = null;
+  let unsubMessages = null;
+  let unsubChatList = null;
+
+  // URL 파라미터
+  const params       = new URLSearchParams(location.search);
+  const initChatId   = params.get('chatId');
+  const initPartnerUid  = params.get('partnerUid');
+  const initPartnerName = params.get('partnerName');
+  const initTitle    = params.get('quoteTitle') || '재활운동 서비스';
+  const fromPage     = params.get('from') || '';   // 'mypage' or 'teacher'
+
+  // 뒤로가기 버튼 설정
+  document.getElementById('headerBackBtn').href =
+    fromPage === 'teacher' ? 'dashboard-teacher.html' : 'mypage.html';
+
+  // ── 인증 ──
+  auth.onAuthStateChanged(async user => {
+    if (!user) { location.href = 'login.html'; return; }
+    const snap = await db.collection('users').doc(user.uid).get();
+    me = {
+      uid:  user.uid,
+      name: snap.exists ? snap.data().name : (user.displayName || '사용자'),
+      role: snap.exists ? snap.data().role : 'customer',
+    };
+    subscribeChats();
+
+    if (initChatId) {
+      if (initPartnerUid) {
+        try {
+          await ensureChat(initChatId, initPartnerUid, initPartnerName, initTitle);
+        } catch(e) {
+          console.warn('채팅방 생성 실패(기존 채팅방으로 진행):', e);
+        }
+      }
+      openRoom(initChatId, initPartnerName || '상대방', initTitle);
+    }
+  });
+
+  // ── 채팅방 생성/확인 ──
+  async function ensureChat(chatId, partnerUid, partnerName, title) {
+    const ref  = db.collection('chats').doc(chatId);
+    const snap = await ref.get();
+    if (!snap.exists) {
+      await ref.set({
+        participants: [me.uid, partnerUid],
+        participantNames: {
+          [me.uid]: me.name,
+          [partnerUid]: partnerName || '상대방',
+        },
+        quoteTitle:     title,
+        lastMessage:    '',
+        lastMessageAt:  firebase.firestore.FieldValue.serverTimestamp(),
+        unread:         { [me.uid]: 0, [partnerUid]: 0 },
+        createdAt:      firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+  }
+
+  // ── 채팅 목록 실시간 구독 ──
+  function subscribeChats() {
+    if (unsubChatList) unsubChatList();
+    const listEl = document.getElementById('chatList');
+
+    // 목록 쿼리 (lastMessageAt 정렬은 인덱스 필요 → fallback 처리)
+    const query = db.collection('chats')
+      .where('participants', 'array-contains', me.uid);
+
+    unsubChatList = query.onSnapshot(snap => {
+      if (snap.empty) {
+        listEl.innerHTML = '<div class="list-empty">💬 아직 채팅이 없어요<br><small>견적이 매칭되면 채팅이 생성돼요</small></div>';
+        return;
+      }
+      // 클라이언트 정렬 (lastMessageAt desc)
+      const docs = snap.docs.slice().sort((a, b) => {
+        const ta = a.data().lastMessageAt?.seconds || 0;
+        const tb = b.data().lastMessageAt?.seconds || 0;
+        return tb - ta;
+      });
+      listEl.innerHTML = '';
+      docs.forEach(doc => renderChatItem(doc));
+    }, err => {
+      console.warn('채팅 목록 오류:', err);
+      listEl.innerHTML = '<div class="list-empty">목록을 불러올 수 없어요</div>';
+    });
+  }
+
+  function renderChatItem(doc) {
+    const d = doc.data();
+    const partnerUid  = d.participants.find(uid => uid !== me.uid) || '';
+    const partnerName = d.participantNames?.[partnerUid] || '상대방';
+    const unread      = d.unread?.[me.uid] || 0;
+    const preview     = d.lastMessage || '채팅을 시작해보세요';
+    const timeStr     = d.lastMessageAt ? relTime(d.lastMessageAt.toDate()) : '';
+
+    const el = document.createElement('div');
+    el.className = 'chat-item' + (doc.id === activeChatId ? ' active' : '');
+    el.dataset.id = doc.id;
+    el.innerHTML = `
+      <div class="avatar">${partnerName[0] || '?'}</div>
+      <div class="chat-item-body">
+        <div class="chat-item-name">${escHtml(partnerName)}</div>
+        <div class="chat-item-preview">${escHtml(preview)}</div>
+      </div>
+      <div class="chat-item-right">
+        <div class="chat-item-time">${timeStr}</div>
+        ${unread > 0 ? `<div class="unread-dot">${unread}</div>` : ''}
+      </div>
+    `;
+    el.addEventListener('click', () => {
+      openRoom(doc.id, partnerName, d.quoteTitle || '');
+      if (window.innerWidth <= 768) {
+        document.getElementById('chatSidebar').classList.add('slide-out');
+      }
+    });
+    document.getElementById('chatList').appendChild(el);
+  }
+
+  // ── 채팅방 열기 ──
+  function openRoom(chatId, partnerName, quoteTitle) {
+    activeChatId = chatId;
+
+    // 사이드바 active 갱신
+    document.querySelectorAll('.chat-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.id === chatId);
+    });
+
+    const mainEl = document.getElementById('chatMain');
+    // 결제 버튼: 고객이 선생님과 채팅할 때만 노출
+    const showPayBtn = me.role !== 'teacher' && initPartnerUid;
+    const payUrl = showPayBtn
+      ? `payment.html?quoteId=${chatId}&teacherUid=${initPartnerUid}&teacherName=${encodeURIComponent(partnerName||'선생님')}&serviceName=${encodeURIComponent(quoteTitle||'방문 재활운동 서비스')}`
+      : '';
+    mainEl.innerHTML = `
+      <div class="room-header">
+        <button class="btn-back-mobile" onclick="mobileBack()">‹</button>
+        <div class="avatar" style="width:38px;height:38px;font-size:14px;">${(partnerName||'?')[0]}</div>
+        <div style="flex:1;">
+          <div class="room-partner-name">${escHtml(partnerName || '상대방')}</div>
+          ${quoteTitle ? `<div class="room-quote-title">📋 ${escHtml(quoteTitle)}</div>` : ''}
+        </div>
+        ${showPayBtn ? `<a href="${payUrl}" style="padding:8px 14px;background:#F5A623;color:#fff;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap;flex-shrink:0;">💳 결제하기</a>` : ''}
+      </div>
+      <div class="messages-area" id="msgArea"></div>
+      <div class="input-area">
+        <textarea class="msg-input" id="msgInput" rows="1"
+          placeholder="메시지를 입력하세요…"
+          oninput="autoResize(this)"
+          onkeydown="handleKey(event)"
+          oncompositionstart="window._imeComposing=true"
+          oncompositionend="window._imeComposing=false"></textarea>
+        <button class="btn-send" id="sendBtn" onclick="sendMsg()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    `;
+    markRead(chatId);
+    subscribeMessages(chatId);
+    document.getElementById('msgInput').focus();
+  }
+
+  // ── 메시지 실시간 구독 ──
+  function subscribeMessages(chatId) {
+    if (unsubMessages) unsubMessages();
+    const area = () => document.getElementById('msgArea');
+
+    unsubMessages = db.collection('chats').doc(chatId)
+      .collection('messages')
+      .orderBy('createdAt', 'asc')
+      .onSnapshot(snap => {
+        const el = area();
+        if (!el) return;
+        renderMessages(snap.docs, el);
+      });
+  }
+
+  // ── 메시지 렌더링 ──
+  function renderMessages(docs, container) {
+    const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 120;
+    container.innerHTML = '';
+    let lastDate = '';
+
+    docs.forEach(doc => {
+      const m   = doc.data();
+      const isMe = m.senderId === me.uid;
+      const dt   = m.createdAt ? m.createdAt.toDate() : new Date();
+      const dStr = fmtDate(dt);
+      const tStr = fmtTime(dt);
+
+      if (dStr !== lastDate) {
+        lastDate = dStr;
+        const sep = document.createElement('div');
+        sep.className = 'date-sep';
+        sep.textContent = dStr;
+        container.appendChild(sep);
+      }
+
+      const row = document.createElement('div');
+      row.className = 'msg-row' + (isMe ? ' mine' : '');
+      row.innerHTML = `
+        ${!isMe ? `<div class="msg-sender-avatar">${(m.senderName||'?')[0]}</div>` : ''}
+        <div class="msg-content-wrap">
+          ${!isMe ? `<div class="msg-sender-label">${escHtml(m.senderName||'')}</div>` : ''}
+          <div class="msg-inner">
+            <div class="bubble">${escHtml(m.text).replace(/\n/g,'<br>')}</div>
+            <div class="msg-time">${tStr}</div>
+          </div>
+        </div>
+      `;
+      container.appendChild(row);
+    });
+
+    if (atBottom || docs.length <= 30) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }
+
+  // ── 메시지 전송 ──
+  let _sending = false;
+  async function sendMsg() {
+    if (_sending) return;
+    const input = document.getElementById('msgInput');
+    const btn   = document.getElementById('sendBtn');
+    if (!input || !activeChatId) return;
+    const text = input.value.trim();
+    if (!text) return;
+
+    _sending = true;
+    btn.disabled = true;
+    input.value  = '';
+    autoResize(input);
+
+    try {
+      // 1. 메시지 전송 (핵심 작업)
+      const chatRef = db.collection('chats').doc(activeChatId);
+      await chatRef.collection('messages').add({
+        senderId:   me.uid,
+        senderName: me.name,
+        text,
+        createdAt:  firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // 2. 채팅방 메타데이터 업데이트 (실패해도 OK)
+      chatRef.get().then(snap => {
+        if (!snap.exists) return;
+        const partnerUid = snap.data().participants.find(u => u !== me.uid);
+        const preview = text.length > 40 ? text.slice(0,40) + '…' : text;
+        const update = {
+          lastMessage:   preview,
+          lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        if (partnerUid) update[`unread.${partnerUid}`] = firebase.firestore.FieldValue.increment(1);
+        chatRef.update(update).catch(() => {});
+      }).catch(() => {});
+
+    } catch(e) {
+      console.error('메시지 전송 오류:', e);
+      // 메시지 전송 자체가 실패한 경우에만 알림
+      input.value = text; // 입력값 복구
+      autoResize(input);
+      alert('메시지 전송에 실패했어요. 다시 시도해주세요.');
+    } finally {
+      setTimeout(() => { _sending = false; }, 300);
+      btn.disabled = false;
+      input.focus();
+    }
+  }
+
+  // ── 읽음 처리 ──
+  async function markRead(chatId) {
+    if (!me) return;
+    db.collection('chats').doc(chatId)
+      .update({ [`unread.${me.uid}`]: 0 })
+      .catch(() => {});
+  }
+
+  // ── 모바일: 목록으로 돌아가기 ──
+  window.mobileBack = function() {
+    document.getElementById('chatSidebar').classList.remove('slide-out');
+    document.getElementById('chatMain').innerHTML = `
+      <div class="chat-empty-state">
+        <div class="ei">💬</div><p>채팅을 선택해주세요</p>
+      </div>`;
+    activeChatId = null;
+    if (unsubMessages) { unsubMessages(); unsubMessages = null; }
+  };
+
+  // ── 유틸 ──
+  window.autoResize = function(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  };
+  window.handleKey = function(e) {
+    if (e.key !== 'Enter' || e.shiftKey) return;
+    e.preventDefault();
+    // IME 조합 중이면 조합만 끝내고 전송은 하지 않음
+    if (e.isComposing || e.keyCode === 229 || window._imeComposing) return;
+    sendMsg();
+  };
+  function escHtml(s) {
+    return String(s||'')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function fmtDate(d) {
+    const now = new Date();
+    if (d.toDateString() === now.toDateString()) return '오늘';
+    const y = d.getFullYear(), m = d.getMonth()+1, day = d.getDate();
+    return `${y}년 ${m}월 ${day}일`;
+  }
+  function fmtTime(d) {
+    const h = d.getHours(), m = String(d.getMinutes()).padStart(2,'0');
+    return `${h<12?'오전':'오후'} ${h%12||12}:${m}`;
+  }
+  function relTime(d) {
+    const diff = Date.now() - d;
+    if (diff < 60000)    return '방금';
+    if (diff < 3600000)  return Math.floor(diff/60000) + '분 전';
+    const now = new Date();
+    if (d.toDateString() === now.toDateString()) return fmtTime(d);
+    return `${d.getMonth()+1}/${d.getDate()}`;
+  }
+</script>
+</body>
+</html>

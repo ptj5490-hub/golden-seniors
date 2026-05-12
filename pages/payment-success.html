@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>결제 완료 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC;
+      --navy: #1A2B4A; --navy-light: #2C3E6B;
+      --green: #2ECC71; --green-light: #EAFAF1;
+      --gray-100: #F7F8FA; --gray-200: #EEEFF2;
+      --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
+      --white: #FFFFFF;
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.13);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900); min-height: 100vh;
+    }
+    header {
+      background: var(--navy); height: 64px;
+      display: flex; align-items: center; padding: 0 24px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: white; text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    main { max-width: 480px; margin: 0 auto; padding: 48px 20px 80px; }
+
+    .success-card {
+      background: var(--white); border-radius: 24px; padding: 40px 32px;
+      box-shadow: var(--shadow-lg); text-align: center;
+    }
+    .success-icon {
+      width: 80px; height: 80px; background: var(--green-light);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 36px; margin: 0 auto 24px;
+    }
+    .success-title {
+      font-size: 24px; font-weight: 900; color: var(--navy); margin-bottom: 10px;
+    }
+    .success-sub {
+      font-size: 15px; color: var(--gray-600); line-height: 1.7; margin-bottom: 32px;
+    }
+
+    .detail-box {
+      background: var(--gray-100); border-radius: 16px; padding: 20px;
+      margin-bottom: 32px; text-align: left;
+    }
+    .detail-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; font-size: 14px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-row .label { color: var(--gray-400); font-weight: 600; }
+    .detail-row .value { color: var(--gray-900); font-weight: 700; }
+    .detail-row .value.amount {
+      font-size: 20px; color: var(--navy); font-weight: 900;
+    }
+
+    .btn-group { display: flex; flex-direction: column; gap: 12px; }
+    .btn-primary {
+      width: 100%; padding: 16px; background: var(--navy); color: white;
+      border: none; border-radius: 14px; font-size: 16px; font-weight: 800;
+      cursor: pointer; text-decoration: none; display: block; text-align: center;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: var(--navy-light); }
+    .btn-secondary {
+      width: 100%; padding: 16px; background: var(--gray-200); color: var(--gray-900);
+      border: none; border-radius: 14px; font-size: 16px; font-weight: 700;
+      cursor: pointer; text-decoration: none; display: block; text-align: center;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: var(--gray-200); opacity: 0.8; }
+
+    .loading-state { text-align: center; padding: 60px 20px; color: var(--gray-400); }
+    .spinner {
+      width: 40px; height: 40px; margin: 0 auto 16px;
+      border: 3px solid var(--gray-200); border-top-color: var(--navy);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+  </a>
+</header>
+
+<main>
+  <div id="loadingState" class="loading-state">
+    <div class="spinner"></div>
+    결제 결과를 처리 중...
+  </div>
+
+  <div id="successContent" style="display:none;">
+    <div class="success-card">
+      <div class="success-icon">✅</div>
+      <div class="success-title">결제가 완료됐어요!</div>
+      <div class="success-sub">
+        선생님과의 방문 일정을 확인하고<br>채팅으로 소통해보세요.
+      </div>
+
+      <div class="detail-box">
+        <div class="detail-row">
+          <span class="label">주문 번호</span>
+          <span class="value" id="displayOrderId" style="font-family:monospace;font-size:12px;">-</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">서비스</span>
+          <span class="value" id="displayOrderName">-</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">결제 수단</span>
+          <span class="value" id="displayMethod">-</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">결제 금액</span>
+          <span class="value amount" id="displayAmount">-</span>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <a id="btnChat" href="chat.html" class="btn-primary">💬 선생님과 채팅하기</a>
+        <a href="mypage.html" class="btn-secondary">📋 내 서비스 현황 보기</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
+    authDomain:        "golden-seniors.firebaseapp.com",
+    projectId:         "golden-seniors",
+    storageBucket:     "golden-seniors.firebasestorage.app",
+    messagingSenderId: "244026917780",
+    appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
+  });
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
+
+  const params    = new URLSearchParams(location.search);
+  const paymentKey = params.get('paymentKey') || '';
+  const orderId    = params.get('orderId')    || '';
+  const amount     = parseInt(params.get('amount') || '0', 10);
+
+  auth.onAuthStateChanged(async user => {
+    if (!user) { location.href = 'login.html'; return; }
+
+    try {
+      // ── 1. Firestore payment 문서 업데이트 (success) ──
+      let paymentDoc = null;
+      if (orderId) {
+        const docRef = db.collection('payments').doc(orderId);
+        await docRef.update({
+          status:     'success',
+          paymentKey,
+          paidAmount: amount,
+          paidAt:     firebase.firestore.FieldValue.serverTimestamp(),
+        });
+        const snap = await docRef.get();
+        paymentDoc = snap.exists ? snap.data() : null;
+      }
+
+      // ── 2. UI 업데이트 ──
+      document.getElementById('displayOrderId').textContent = orderId ? orderId.toUpperCase() : '-';
+      document.getElementById('displayOrderName').textContent = paymentDoc?.orderName || paymentDoc?.serviceName || '방문 재활운동 서비스';
+      document.getElementById('displayMethod').textContent = '카드 / 간편결제';
+      document.getElementById('displayAmount').textContent = amount ? `${amount.toLocaleString()}원` : '-';
+
+      // 채팅 링크 설정
+      if (paymentDoc?.quoteId && paymentDoc?.teacherUid) {
+        const chatHref = `chat.html?chatId=${paymentDoc.quoteId}&partnerUid=${paymentDoc.teacherUid}&partnerName=${encodeURIComponent(paymentDoc.teacherName||'선생님')}&from=payment`;
+        document.getElementById('btnChat').href = chatHref;
+      }
+
+      // ── 3. quote 상태를 'paid'로 업데이트 ──
+      if (paymentDoc?.quoteId) {
+        db.collection('quotes').doc(paymentDoc.quoteId)
+          .update({ paymentStatus: 'paid', paidAt: firebase.firestore.FieldValue.serverTimestamp() })
+          .catch(() => {});
+      }
+
+    } catch(e) {
+      console.error('결제 완료 처리 오류:', e);
+      document.getElementById('loadingState').innerHTML =
+        '<p style="color:#E74C3C;font-weight:700;">결제 정보 처리 중 오류가 발생했어요.<br>고객센터에 문의해주세요.</p>';
+      return;
+    }
+
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('successContent').style.display = 'block';
+  });
+</script>
+</body>
+</html>

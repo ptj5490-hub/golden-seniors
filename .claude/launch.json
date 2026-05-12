@@ -4,7 +4,7 @@
     {
       "name": "golden-seniors",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["/Users/jun/Desktop/클로드/golden-seniors/server.py"],
+      "runtimeArgs": ["-m", "http.server", "3000"],
       "port": 3000
     }
   ]

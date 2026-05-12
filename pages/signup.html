@@ -226,11 +226,11 @@
         </label>
         <label class="terms-item">
           <input type="checkbox" id="agreeService" name="terms" required>
-          <span>[필수] <a href="#" onclick="return false">서비스 이용약관</a> 동의</span>
+          <span>[필수] <a href="terms.html" target="_blank">서비스 이용약관</a> 동의</span>
         </label>
         <label class="terms-item">
           <input type="checkbox" id="agreePrivacy" name="terms" required>
-          <span>[필수] <a href="#" onclick="return false">개인정보 처리방침</a> 동의</span>
+          <span>[필수] <a href="privacy.html" target="_blank">개인정보 처리방침</a> 동의</span>
         </label>
         <label class="terms-item">
           <input type="checkbox" id="agreeMarketing">
@@ -272,6 +272,36 @@
   auth.onAuthStateChanged((user) => {
     if (user && !isSigningUp) window.location.href = '../index.html';
   });
+
+  // ── 카카오로 온 경우 자동 완성 ──
+  (function prefillKakao() {
+    const p = new URLSearchParams(location.search);
+    if (!p.get('kakaoId')) return;
+
+    const nameEl  = document.getElementById('name');
+    const emailEl = document.getElementById('email');
+    const pwEl    = document.getElementById('password');
+    const pw2El   = document.getElementById('passwordConfirm');
+
+    // 이름 자동입력
+    if (nameEl) nameEl.value = p.get('kakaoName') || '';
+
+    // 이메일 필드: 합성 이메일로 채우고 숨김
+    if (emailEl) {
+      emailEl.value = p.get('syntheticEmail') || '';
+      emailEl.closest('.field').style.display = 'none';
+    }
+
+    // 비밀번호 자동 입력 후 숨김
+    if (pwEl)  { pwEl.value  = p.get('syntheticPassword') || ''; pwEl.closest('.field').style.display='none'; }
+    if (pw2El) { pw2El.value = p.get('syntheticPassword') || ''; pw2El.closest('.field').style.display='none'; }
+
+    // 카카오 가입 배지
+    const badge = document.createElement('div');
+    badge.style.cssText = 'background:#FEE500;color:#3A1D00;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:700;margin-bottom:16px;text-align:center;';
+    badge.textContent = '💛 카카오 계정으로 가입합니다';
+    document.getElementById('signupForm').prepend(badge);
+  })();
 
   // ── 비밀번호 강도 체크 ──
   window.checkPasswordStrength = function(pw) {
@@ -368,12 +398,15 @@
       await cred.user.updateProfile({ displayName: name });
 
       // 3. Firestore 에 사용자 문서 저장
+      const kakaoId = new URLSearchParams(location.search).get('kakaoId') || null;
       await db.collection('users').doc(cred.user.uid).set({
         name,
         email,
         phone,
         role:        'customer',
         marketing,
+        kakaoId,
+        loginType:   kakaoId ? 'kakao' : 'email',
         createdAt:   firebase.firestore.FieldValue.serverTimestamp(),
         quoteCount:  0,
       });

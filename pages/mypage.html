@@ -132,7 +132,28 @@
       border-radius: 10px; font-size: 13px; font-weight: 700;
       text-decoration: none; transition: background 0.2s; border: none; cursor: pointer;
     }
+    .btn-review {
+      padding: 8px 16px; background: var(--gold-light); color: var(--gold-dark);
+      border-radius: 10px; font-size: 13px; font-weight: 700;
+      text-decoration: none; border: 1.5px solid var(--gold); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-review:hover { background: var(--gold); color: var(--white); }
     .btn-view:hover { background: var(--navy-light); }
+    .btn-chat {
+      padding: 8px 16px; background: var(--navy-light); color: var(--white);
+      border-radius: 10px; font-size: 13px; font-weight: 700;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-chat:hover { background: var(--navy); }
+    .btn-pay {
+      padding: 8px 16px; background: var(--gold); color: var(--white);
+      border-radius: 10px; font-size: 13px; font-weight: 700;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-pay:hover { background: var(--gold-dark); }
 
     /* ─── 빈 상태 ─── */
     .empty-state {
@@ -236,6 +257,7 @@
     골든 시니어스
   </a>
   <div class="header-right">
+    <a href="chat.html?from=mypage" class="btn-small btn-outline">💬 채팅</a>
     <a href="../index.html#calc" class="btn-small btn-gold">+ 새 견적 신청</a>
     <button class="btn-small btn-outline" onclick="handleLogout()">로그아웃</button>
   </div>
@@ -453,7 +475,23 @@
       </div>
       <div class="quote-footer">
         <span class="quote-id">#${q.id.substring(0,8).toUpperCase()}</span>
-        <button class="btn-view" onclick="viewQuote('${q.id}')">견적 보기 →</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${(q.status === 'matched' || q.status === 'closed') && q.matchedTeacherUid ? `
+            <a class="btn-chat"
+               href="chat.html?chatId=${q.id}&partnerUid=${q.matchedTeacherUid}&partnerName=${encodeURIComponent(q.matchedTeacherName||'선생님')}&quoteTitle=${encodeURIComponent((q.condition||'재활운동')+' · '+(q.region||''))}&from=mypage">
+              💬 채팅
+            </a>
+            ${q.paymentStatus !== 'paid' ? `
+            <a class="btn-pay"
+               href="payment.html?quoteId=${q.id}&teacherUid=${q.matchedTeacherUid}&teacherName=${encodeURIComponent(q.matchedTeacherName||'선생님')}&serviceName=${encodeURIComponent((q.condition||'방문 재활운동')+' 서비스')}">
+              💳 결제하기
+            </a>` : `<span style="padding:8px 12px;background:#EAFAF1;color:#2ECC71;border-radius:10px;font-size:13px;font-weight:700;">✅ 결제완료</span>`}
+            <a class="btn-review"
+               href="review.html?quoteId=${q.id}&teacherUid=${q.matchedTeacherUid || ''}&teacherName=${encodeURIComponent(q.matchedTeacherName || '선생님')}">
+              ⭐ 후기
+            </a>` : ''}
+          <button class="btn-view" onclick="viewQuote('${q.id}')">견적 보기 →</button>
+        </div>
       </div>
     </div>`;
   }

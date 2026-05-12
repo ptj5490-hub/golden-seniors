@@ -18,7 +18,7 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--gray-100); color: var(--gray-900);
-      padding-top: 64px; /* 고정 헤더 높이만큼 — 마진 붕괴 방지 */
+      padding-top: 64px;
     }
 
     /* ===== 헤더 ===== */
@@ -72,17 +72,13 @@
     .request-edit:hover { background: rgba(255,255,255,0.3); }
 
     /* 필터/정렬 */
-    .filter-bar {
-      display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
-    }
+    .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
     .filter-btn {
       padding: 8px 18px; border-radius: 100px; font-size: 13px; font-weight: 700;
       border: 2px solid var(--gray-200); background: var(--white);
       cursor: pointer; transition: all 0.2s; color: var(--gray-600);
     }
-    .filter-btn.active {
-      border-color: var(--navy); background: var(--navy); color: var(--white);
-    }
+    .filter-btn.active { border-color: var(--navy); background: var(--navy); color: var(--white); }
     .filter-btn:hover:not(.active) { border-color: var(--navy); color: var(--navy); }
 
     /* 견적 카드 */
@@ -97,9 +93,7 @@
     .quote-card.best { border-color: var(--gold); }
 
     /* 카드 상단 */
-    .quote-top {
-      display: flex; gap: 16px; padding: 22px 22px 16px; align-items: flex-start;
-    }
+    .quote-top { display: flex; gap: 16px; padding: 22px 22px 16px; align-items: flex-start; }
     .q-avatar {
       width: 64px; height: 64px; border-radius: 16px; flex-shrink: 0;
       background: linear-gradient(135deg, #FFE09A, #F5A623);
@@ -108,9 +102,7 @@
     .q-avatar.silver { background: linear-gradient(135deg, #E8E8E8, #C0C0C0); }
     .q-avatar.bronze { background: linear-gradient(135deg, #FFE0C0, #CD7F32); }
     .q-info { flex: 1; }
-    .q-name-row {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
-    }
+    .q-name-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
     .q-name { font-size: 18px; font-weight: 900; color: var(--navy); }
     .q-license {
       background: #EEF2FF; color: var(--navy);
@@ -123,16 +115,10 @@
     .q-star { color: var(--gold); font-weight: 800; }
 
     /* 카드 가격 영역 */
-    .quote-price {
-      padding: 0 22px 16px;
-      display: flex; align-items: baseline; gap: 8px;
-    }
+    .quote-price { padding: 0 22px 16px; display: flex; align-items: baseline; gap: 8px; }
     .price-main { font-size: 26px; font-weight: 900; color: var(--navy); }
     .price-unit { font-size: 14px; color: var(--gray-600); }
-    .price-badge {
-      margin-left: auto; padding: 4px 12px; border-radius: 100px;
-      font-size: 12px; font-weight: 800;
-    }
+    .price-badge { margin-left: auto; padding: 4px 12px; border-radius: 100px; font-size: 12px; font-weight: 800; }
     .price-badge.lowest  { background: #EAF8EF; color: #27AE60; }
     .price-badge.popular { background: var(--gold-light); color: var(--gold-dark); }
 
@@ -143,20 +129,18 @@
       border-left: 3px solid var(--gold);
     }
 
-    /* 가능 일정 */
-    .quote-schedule {
-      margin: 0 22px 20px; display: flex; gap: 8px; flex-wrap: wrap;
+    /* 신뢰 배지 */
+    .trust-badges { padding: 0 22px 16px; display: flex; gap: 7px; flex-wrap: wrap; }
+    .trust-badge {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 100px;
     }
-    .schedule-chip {
-      background: var(--gold-light); color: var(--gold-dark);
-      font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 100px;
-    }
+    .trust-badge.cert { background: #EEF2FF; color: var(--navy); }
+    .trust-badge.safe { background: #EAF8EF; color: #27AE60; }
+    .trust-badge.ins  { background: #FFF3DC; color: var(--gold-dark); }
 
     /* 카드 버튼 영역 */
-    .quote-actions {
-      padding: 16px 22px; border-top: 1px solid var(--gray-100);
-      display: flex; gap: 10px;
-    }
+    .quote-actions { padding: 16px 22px; border-top: 1px solid var(--gray-100); display: flex; gap: 10px; }
     .btn-select {
       flex: 1; padding: 14px; background: var(--navy); color: var(--white);
       border: none; border-radius: 12px; font-size: 15px; font-weight: 800;
@@ -165,68 +149,6 @@
     .btn-select:hover { background: var(--navy-light); }
     .btn-select.gold-btn { background: var(--gold); }
     .btn-select.gold-btn:hover { background: var(--gold-dark); }
-    /* 프로필 보기 버튼 제거됨 — 선택 후 공개 방식 */
-
-    /* ① 신뢰 배지 */
-    .trust-badges {
-      padding: 0 22px 16px; display: flex; gap: 7px; flex-wrap: wrap;
-    }
-    .trust-badge {
-      display: flex; align-items: center; gap: 4px;
-      font-size: 11px; font-weight: 700;
-      padding: 4px 10px; border-radius: 100px;
-    }
-    .trust-badge.cert { background: #EEF2FF; color: var(--navy); }
-    .trust-badge.safe { background: #EAF8EF; color: #27AE60; }
-    .trust-badge.ins  { background: #FFF3DC; color: var(--gold-dark); }
-
-    /* ② 유사 케이스 + ④ AI 매칭 */
-    .match-bar {
-      margin: 0 22px 14px; display: flex; gap: 8px; flex-wrap: wrap;
-    }
-    .match-tag {
-      display: flex; align-items: center; gap: 6px;
-      background: linear-gradient(90deg, #EEF2FF, #E8F4FF);
-      border-radius: 10px; padding: 8px 12px;
-      font-size: 12px; font-weight: 800; color: var(--navy); flex: 1;
-    }
-    .case-tag {
-      background: var(--gold-light); color: var(--gold-dark);
-      font-size: 12px; font-weight: 800;
-      padding: 8px 12px; border-radius: 10px; white-space: nowrap;
-    }
-
-    /* ③ 한줄 후기 발췌 */
-    .mini-review {
-      margin: 0 22px 16px;
-      background: #F0FFF4; border-radius: 12px;
-      padding: 12px 14px; border-left: 3px solid #27AE60;
-    }
-    .mini-review-text {
-      font-size: 13px; color: var(--gray-900); line-height: 1.6; font-style: italic;
-    }
-    .mini-review-author { font-size: 11px; color: var(--gray-400); margin-top: 5px; }
-
-    /* ⑤ Q&A 아코디언 */
-    .qna-section {
-      margin: 0 22px 16px;
-      border: 1px solid var(--gray-200); border-radius: 14px; overflow: hidden;
-    }
-    .qna-toggle {
-      width: 100%; padding: 12px 16px; background: var(--white); border: none;
-      display: flex; align-items: center; justify-content: space-between;
-      cursor: pointer; font-size: 13px; font-weight: 800; color: var(--navy);
-      text-align: left; transition: background 0.2s;
-    }
-    .qna-toggle:hover { background: var(--gray-100); }
-    .qna-arrow { font-size: 11px; color: var(--gray-400); transition: transform 0.2s; }
-    .qna-toggle.open .qna-arrow { transform: rotate(180deg); }
-    .qna-body { display: none; padding: 4px 16px 14px; }
-    .qna-body.open { display: block; }
-    .qna-item { padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
-    .qna-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .qna-q { font-size: 12px; font-weight: 800; color: var(--navy); margin-bottom: 5px; }
-    .qna-a { font-size: 12px; color: var(--gray-600); line-height: 1.7; }
 
     /* 베스트 배너 */
     .best-banner {
@@ -297,7 +219,7 @@
     }
     .modal-cancel:hover { background: var(--gray-200); }
 
-    /* ===== 만료 타이머 배너 ===== */
+    /* 만료 타이머 배너 */
     .timer-banner {
       background: linear-gradient(90deg, #1A3B6E, #2A5298);
       color: var(--white); padding: 10px 20px;
@@ -312,12 +234,20 @@
     }
     .timer-urgent { color: #FF6B6B; }
 
+    /* 로딩 */
+    .loading-state { text-align: center; padding: 60px 20px; color: var(--gray-400); }
+    .spinner {
+      width: 40px; height: 40px; margin: 0 auto 16px;
+      border: 3px solid var(--gray-200); border-top-color: var(--navy);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     /* 모바일 */
     @media (max-width: 500px) {
       .quote-top { padding: 18px 16px 12px; gap: 12px; }
       .quote-price { padding: 0 16px 12px; }
       .quote-msg { margin: 0 16px 14px; }
-      .quote-schedule { margin: 0 16px 16px; }
       .quote-actions { padding: 14px 16px; }
       .q-avatar { width: 52px; height: 52px; font-size: 24px; }
       .q-name { font-size: 16px; }
@@ -334,7 +264,7 @@
     <div class="logo-icon">🏃</div>
     골든 시니어스
   </a>
-  <div class="header-count">📨 견적 4개 도착</div>
+  <div class="header-count" id="headerCount">📨 불러오는 중...</div>
 </header>
 
 <!-- 견적 만료 타이머 배너 -->
@@ -351,303 +281,31 @@
     <div class="request-summary">
       <div style="flex:1">
         <h3>내 신청 조건</h3>
-        <div class="request-tags">
-          <span class="request-tag">뇌졸중 재활</span>
-          <span class="request-tag">서울 강남구 역삼동</span>
-          <span class="request-tag">5~7만원</span>
-          <span class="request-tag">주 2회</span>
+        <div class="request-tags" id="requestTags">
+          <span class="request-tag">불러오는 중...</span>
         </div>
       </div>
-      <a href="../index.html#calc" class="request-edit">조건 수정</a>
+      <a href="mypage.html" class="request-edit">← 마이페이지</a>
     </div>
 
     <!-- 필터 -->
     <div class="filter-bar">
-      <button class="filter-btn active" onclick="setFilter(this,'all')">전체 (4)</button>
-      <button class="filter-btn" onclick="setFilter(this,'rating')">⭐ 평점순</button>
+      <button class="filter-btn active" onclick="setFilter(this,'all')">전체</button>
       <button class="filter-btn" onclick="setFilter(this,'price')">💰 낮은 가격순</button>
       <button class="filter-btn" onclick="setFilter(this,'career')">🏅 경력순</button>
     </div>
 
+    <!-- 로딩 -->
+    <div id="loadingState" class="loading-state">
+      <div class="spinner"></div>
+      선생님 견적을 불러오는 중...
+    </div>
+
     <!-- 견적 목록 -->
-    <div class="quote-list" id="quoteList">
+    <div class="quote-list" id="quoteList" style="display:none;"></div>
 
-      <!-- 🥇 견적 1 (추천) -->
-      <div class="quote-card best" data-rating="4.99" data-price="60000" data-career="11">
-        <div class="best-banner">🏆 골든 시니어스 추천 · 이달의 베스트 선생님</div>
-        <div class="quote-top">
-          <div class="q-avatar">👨‍⚕️</div>
-          <div class="q-info">
-            <div class="q-name-row">
-              <span class="q-name">박성민 선생님</span>
-              <span class="q-license">물리치료사</span>
-            </div>
-            <div class="q-spec">관절·수술 후 재활 · 보행 훈련 전문</div>
-            <div class="q-stats">
-              <div class="q-stat"><span class="q-star">★</span> <strong>4.99</strong></div>
-              <div class="q-stat">방문 <strong>214회</strong></div>
-              <div class="q-stat">재예약 <strong>97%</strong></div>
-              <div class="q-stat">경력 <strong>11년</strong></div>
-            </div>
-          </div>
-        </div>
-        <!-- ① 신뢰 배지 -->
-        <div class="trust-badges">
-          <span class="trust-badge cert">📜 물리치료사 국가면허</span>
-          <span class="trust-badge safe">✅ 신원인증</span>
-          <span class="trust-badge ins">🛡️ 배상보험 가입</span>
-        </div>
-        <!-- ④ AI 매칭 + ② 유사 케이스 -->
-        <div class="match-bar">
-          <div class="match-tag">🎯 고객님 조건 일치율 <strong>97%</strong> · 역삼동 인근 활동</div>
-          <div class="case-tag">🧠 뇌졸중 재활 47건</div>
-        </div>
-        <div class="quote-price">
-          <span class="price-main">60,000원</span>
-          <span class="price-unit">/ 1회 방문</span>
-          <span class="price-badge popular">🔥 인기 선생님</span>
-        </div>
-        <div class="quote-msg">
-          "안녕하세요 보호자님! 뇌졸중 후 재활은 꾸준한 보행 훈련이 핵심입니다. 처음 방문 시 어르신 상태를 꼼꼼히 평가한 뒤 개인 맞춤 프로그램을 설계해드리겠습니다. 매 회차 운동 내용은 카카오톡으로 보내드립니다 😊"
-        </div>
-        <!-- ③ 한줄 후기 발췌 -->
-        <div class="mini-review">
-          <div class="mini-review-text">"3개월 만에 아버지가 혼자 산책하실 수 있게 됐어요. 정말 감사합니다."</div>
-          <div class="mini-review-author">💬 보호자 이○○님 · 뇌졸중 재활 · 주 3회 12주 진행</div>
-        </div>
-        <div class="quote-schedule">
-          <span class="schedule-chip">📅 화·목 오전 가능</span>
-          <span class="schedule-chip">📅 월·수·금 오후 가능</span>
-          <span class="schedule-chip">🚀 이번 주 시작 가능</span>
-        </div>
-        <!-- ⑤ Q&A -->
-        <div class="qna-section">
-          <button class="qna-toggle" onclick="toggleQna(this)">
-            💬 선생님께 자주 묻는 질문 (2)
-            <span class="qna-arrow">▼</span>
-          </button>
-          <div class="qna-body">
-            <div class="qna-item">
-              <div class="qna-q">Q. 첫 방문 때 어떻게 진행되나요?</div>
-              <div class="qna-a">A. 첫 방문은 약 50분으로, 어르신 상태 평가와 목표 설정에 집중합니다. 보호자분과 함께 현재 기능 수준을 확인하고, 2회차부터 본격적인 운동 프로그램을 시작합니다.</div>
-            </div>
-            <div class="qna-item">
-              <div class="qna-q">Q. 방문 후 운동 기록을 공유해 주시나요?</div>
-              <div class="qna-a">A. 네, 매 회차 진행한 운동 내용과 어르신 상태 변화를 카카오톡으로 보내드립니다. 멀리 계신 보호자분도 실시간으로 확인하실 수 있습니다.</div>
-            </div>
-          </div>
-        </div>
-        <div class="quote-actions">
-          <button class="btn-select gold-btn" onclick="openModal('박성민', '60,000원', '👨‍⚕️')">🔓 선택하면 프로필 공개</button>
-        </div>
-      </div>
-
-      <!-- 견적 2 -->
-      <div class="quote-card" data-rating="4.98" data-price="55000" data-career="8">
-        <div class="quote-top">
-          <div class="q-avatar silver">👨‍⚕️</div>
-          <div class="q-info">
-            <div class="q-name-row">
-              <span class="q-name">김재훈 선생님</span>
-              <span class="q-license">물리치료사</span>
-            </div>
-            <div class="q-spec">뇌졸중 재활 · 보행 훈련 전문</div>
-            <div class="q-stats">
-              <div class="q-stat"><span class="q-star">★</span> <strong>4.98</strong></div>
-              <div class="q-stat">방문 <strong>127회</strong></div>
-              <div class="q-stat">재예약 <strong>94%</strong></div>
-              <div class="q-stat">경력 <strong>8년</strong></div>
-            </div>
-          </div>
-        </div>
-        <!-- ① 신뢰 배지 -->
-        <div class="trust-badges">
-          <span class="trust-badge cert">📜 물리치료사 국가면허</span>
-          <span class="trust-badge safe">✅ 신원인증</span>
-          <span class="trust-badge ins">🛡️ 배상보험 가입</span>
-        </div>
-        <!-- ④ AI 매칭 + ② 유사 케이스 -->
-        <div class="match-bar">
-          <div class="match-tag">🎯 고객님 조건 일치율 <strong>94%</strong> · 강남구 인근 활동</div>
-          <div class="case-tag">🧠 뇌졸중 재활 32건</div>
-        </div>
-        <div class="quote-price">
-          <span class="price-main">55,000원</span>
-          <span class="price-unit">/ 1회 방문</span>
-          <span class="price-badge lowest">💚 최저가</span>
-        </div>
-        <div class="quote-msg">
-          "뇌졸중 재활 전문으로 보행 기능 회복에 집중합니다. 8년간 병원과 방문 재활을 병행해왔으며, 어르신의 페이스에 맞춰 무리 없이 진행합니다. 첫 방문은 상태 평가 위주로 진행하겠습니다."
-        </div>
-        <!-- ③ 한줄 후기 발췌 -->
-        <div class="mini-review">
-          <div class="mini-review-text">"어르신 페이스에 맞게 진행해 주셔서 부담 없이 꾸준히 하실 수 있었어요."</div>
-          <div class="mini-review-author">💬 보호자 박○○님 · 뇌졸중 재활 · 주 2회 8주 진행</div>
-        </div>
-        <div class="quote-schedule">
-          <span class="schedule-chip">📅 월·수·금 오전 가능</span>
-          <span class="schedule-chip">🚀 다음 주 시작 가능</span>
-        </div>
-        <!-- ⑤ Q&A -->
-        <div class="qna-section">
-          <button class="qna-toggle" onclick="toggleQna(this)">
-            💬 선생님께 자주 묻는 질문 (2)
-            <span class="qna-arrow">▼</span>
-          </button>
-          <div class="qna-body">
-            <div class="qna-item">
-              <div class="qna-q">Q. 병원 재활과 방문 재활을 동시에 해도 되나요?</div>
-              <div class="qna-a">A. 네, 병원 재활과 병행하시면 더욱 효과적입니다. 병원 치료 내용을 공유해 주시면 연계해서 프로그램을 설계해 드립니다.</div>
-            </div>
-            <div class="qna-item">
-              <div class="qna-q">Q. 거동이 불편하신 분도 가능한가요?</div>
-              <div class="qna-a">A. 물론입니다. 침상에서 시작하는 기본 운동부터 단계적으로 진행합니다. 어르신의 현재 상태에 맞게 조정하니 걱정 안 하셔도 됩니다.</div>
-            </div>
-          </div>
-        </div>
-        <div class="quote-actions">
-          <button class="btn-select" onclick="openModal('김재훈', '55,000원', '👨‍⚕️')">🔓 선택하면 프로필 공개</button>
-        </div>
-      </div>
-
-      <!-- 견적 3 -->
-      <div class="quote-card" data-rating="4.97" data-price="65000" data-career="5">
-        <div class="quote-top">
-          <div class="q-avatar" style="background:linear-gradient(135deg,#E8F4FF,#7BC8F8)">👩‍⚕️</div>
-          <div class="q-info">
-            <div class="q-name-row">
-              <span class="q-name">이수진 선생님</span>
-              <span class="q-license">운동처방사</span>
-            </div>
-            <div class="q-spec">낙상 예방 · 근력 강화 전문</div>
-            <div class="q-stats">
-              <div class="q-stat"><span class="q-star">★</span> <strong>4.97</strong></div>
-              <div class="q-stat">방문 <strong>98회</strong></div>
-              <div class="q-stat">재예약 <strong>91%</strong></div>
-              <div class="q-stat">경력 <strong>5년</strong></div>
-            </div>
-          </div>
-        </div>
-        <!-- ① 신뢰 배지 -->
-        <div class="trust-badges">
-          <span class="trust-badge cert">📜 운동처방사 자격증</span>
-          <span class="trust-badge safe">✅ 신원인증</span>
-          <span class="trust-badge ins">🛡️ 배상보험 가입</span>
-        </div>
-        <!-- ④ AI 매칭 + ② 유사 케이스 -->
-        <div class="match-bar">
-          <div class="match-tag">🎯 고객님 조건 일치율 <strong>88%</strong> · 서초구 인근 활동</div>
-          <div class="case-tag">🚶 보행훈련 29건</div>
-        </div>
-        <div class="quote-price">
-          <span class="price-main">65,000원</span>
-          <span class="price-unit">/ 1회 방문</span>
-        </div>
-        <div class="quote-msg">
-          "뇌졸중 후 하체 근력이 많이 약해지셨을 것 같아요. 저는 근력 회복과 함께 낙상 예방 훈련을 병행합니다. 어르신이 두려움 없이 혼자 이동할 수 있도록 차근차근 함께하겠습니다."
-        </div>
-        <!-- ③ 한줄 후기 발췌 -->
-        <div class="mini-review">
-          <div class="mini-review-text">"선생님이 너무 친절하고 세심해서 어머니가 운동하는 날을 기다리세요."</div>
-          <div class="mini-review-author">💬 보호자 최○○님 · 보행 재활 · 주 2회 10주 진행</div>
-        </div>
-        <div class="quote-schedule">
-          <span class="schedule-chip">📅 화·목 오후 가능</span>
-          <span class="schedule-chip">🚀 이번 주 시작 가능</span>
-        </div>
-        <!-- ⑤ Q&A -->
-        <div class="qna-section">
-          <button class="qna-toggle" onclick="toggleQna(this)">
-            💬 선생님께 자주 묻는 질문 (2)
-            <span class="qna-arrow">▼</span>
-          </button>
-          <div class="qna-body">
-            <div class="qna-item">
-              <div class="qna-q">Q. 여성 어르신도 편하게 받을 수 있나요?</div>
-              <div class="qna-a">A. 네, 여성 선생님으로 여성 어르신들이 특히 편안해 하세요. 신체 접촉이 필요한 동작도 세심하게 설명하고 진행합니다.</div>
-            </div>
-            <div class="qna-item">
-              <div class="qna-q">Q. 낙상 예방 운동은 얼마나 걸려야 효과가 나나요?</div>
-              <div class="qna-a">A. 보통 4~6주 꾸준히 하시면 균형 감각과 하체 근력 향상을 느끼실 수 있습니다. 개인차가 있지만 대부분 8주 이내에 확실한 변화를 경험하십니다.</div>
-            </div>
-          </div>
-        </div>
-        <div class="quote-actions">
-          <button class="btn-select" onclick="openModal('이수진', '65,000원', '👩‍⚕️')">🔓 선택하면 프로필 공개</button>
-        </div>
-      </div>
-
-      <!-- 견적 4 -->
-      <div class="quote-card" data-rating="4.95" data-price="58000" data-career="7">
-        <div class="quote-top">
-          <div class="q-avatar bronze">👨‍⚕️</div>
-          <div class="q-info">
-            <div class="q-name-row">
-              <span class="q-name">정민호 선생님</span>
-              <span class="q-license">스포츠재활사</span>
-            </div>
-            <div class="q-spec">신경계 재활 · 균형 훈련 전문</div>
-            <div class="q-stats">
-              <div class="q-stat"><span class="q-star">★</span> <strong>4.95</strong></div>
-              <div class="q-stat">방문 <strong>86회</strong></div>
-              <div class="q-stat">재예약 <strong>89%</strong></div>
-              <div class="q-stat">경력 <strong>7년</strong></div>
-            </div>
-          </div>
-        </div>
-        <!-- ① 신뢰 배지 -->
-        <div class="trust-badges">
-          <span class="trust-badge cert">📜 스포츠재활사 자격증</span>
-          <span class="trust-badge safe">✅ 신원인증</span>
-          <span class="trust-badge ins">🛡️ 배상보험 가입</span>
-        </div>
-        <!-- ④ AI 매칭 + ② 유사 케이스 -->
-        <div class="match-bar">
-          <div class="match-tag">🎯 고객님 조건 일치율 <strong>91%</strong> · 강남구 인근 활동</div>
-          <div class="case-tag">🧠 신경계 재활 38건</div>
-        </div>
-        <div class="quote-price">
-          <span class="price-main">58,000원</span>
-          <span class="price-unit">/ 1회 방문</span>
-        </div>
-        <div class="quote-msg">
-          "신경계 재활 전문으로 뇌졸중 후 균형 및 보행 기능 회복에 집중합니다. 주 2회 꾸준히 진행하시면 2~3개월 내 확실한 변화를 느끼실 수 있습니다."
-        </div>
-        <!-- ③ 한줄 후기 발췌 -->
-        <div class="mini-review">
-          <div class="mini-review-text">"균형을 잡지 못하던 아버지가 이제 지팡이 없이 집 안을 다니세요."</div>
-          <div class="mini-review-author">💬 보호자 김○○님 · 신경계 재활 · 주 2회 16주 진행</div>
-        </div>
-        <div class="quote-schedule">
-          <span class="schedule-chip">📅 월·수 오전 가능</span>
-          <span class="schedule-chip">📅 금 오전·오후 가능</span>
-        </div>
-        <!-- ⑤ Q&A -->
-        <div class="qna-section">
-          <button class="qna-toggle" onclick="toggleQna(this)">
-            💬 선생님께 자주 묻는 질문 (2)
-            <span class="qna-arrow">▼</span>
-          </button>
-          <div class="qna-body">
-            <div class="qna-item">
-              <div class="qna-q">Q. 균형 훈련이 뇌졸중 재활에 얼마나 중요한가요?</div>
-              <div class="qna-a">A. 매우 중요합니다. 뇌졸중 후 균형 감각 저하가 낙상의 주원인이거든요. 균형 훈련을 먼저 안정시켜야 보행 훈련의 효과가 극대화됩니다.</div>
-            </div>
-            <div class="qna-item">
-              <div class="qna-q">Q. 주 2회로 충분한가요?</div>
-              <div class="qna-a">A. 초기에는 주 2~3회가 이상적입니다. 어르신 체력과 회복 속도에 따라 조정하며, 홈 운동 프로그램도 함께 드려 매일 조금씩 하실 수 있게 도와드립니다.</div>
-            </div>
-          </div>
-        </div>
-        <div class="quote-actions">
-          <button class="btn-select" onclick="openModal('정민호', '58,000원', '👨‍⚕️')">선택하면 프로필 공개</button>
-        </div>
-      </div>
-
-    </div><!-- /quote-list -->
   </div>
 </main>
-
 
 <!-- 선택 확인 모달 -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
@@ -658,8 +316,8 @@
     <div class="modal-teacher">
       <div class="modal-avatar" id="modalAvatar">👨‍⚕️</div>
       <div>
-        <div class="modal-teacher-name" id="modalName">박성민 선생님</div>
-        <div class="modal-teacher-info" id="modalPrice">1회 60,000원</div>
+        <div class="modal-teacher-name" id="modalName">선생님</div>
+        <div class="modal-teacher-info" id="modalPrice">1회 방문</div>
       </div>
     </div>
     <div class="modal-btn-row">
@@ -669,63 +327,232 @@
   </div>
 </div>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
-  // 브라우저 스크롤 복원 방지 + 최상단으로
-  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-  window.scrollTo(0, 0);
+  firebase.initializeApp({
+    apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
+    authDomain:        "golden-seniors.firebaseapp.com",
+    projectId:         "golden-seniors",
+    storageBucket:     "golden-seniors.firebasestorage.app",
+    messagingSenderId: "244026917780",
+    appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
+  });
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
 
-  // ===== 견적 만료 타이머 =====
+  const params  = new URLSearchParams(location.search);
+  const quoteId = params.get('quoteId') || '';
+
+  // 선택된 선생님 정보 (모달용)
+  let selectedTeacherUid  = '';
+  let selectedTeacherName = '';
+  let selectedPrice       = '';
+  let quoteData           = null;
+
+  // ── 타이머 ──
   (function() {
-    const KEY = 'quoteExpiry';
+    const KEY = 'quoteExpiry_' + quoteId;
     let expiry = sessionStorage.getItem(KEY);
     if (!expiry) {
-      expiry = Date.now() + 24 * 60 * 60 * 1000; // 24시간
+      expiry = Date.now() + 24 * 60 * 60 * 1000;
       sessionStorage.setItem(KEY, expiry);
     }
     function tick() {
       const left = parseInt(expiry) - Date.now();
       const el   = document.getElementById('timerDisplay');
-      const banner = document.getElementById('timerBanner');
-      if (left <= 0) {
-        el.textContent = '만료됨';
-        el.classList.add('timer-urgent');
-        return;
-      }
+      if (left <= 0) { el.textContent = '만료됨'; el.classList.add('timer-urgent'); return; }
       const h = String(Math.floor(left / 3600000)).padStart(2,'0');
       const m = String(Math.floor((left % 3600000) / 60000)).padStart(2,'0');
       const s = String(Math.floor((left % 60000) / 1000)).padStart(2,'0');
       el.textContent = `${h}:${m}:${s}`;
-      if (left < 3 * 3600000) el.classList.add('timer-urgent'); // 3시간 미만 빨간색
+      if (left < 3 * 3600000) el.classList.add('timer-urgent');
       setTimeout(tick, 1000);
     }
     tick();
   })();
 
-  // Q&A 아코디언 토글
-  function toggleQna(btn) {
-    const body = btn.nextElementSibling;
-    const isOpen = body.classList.contains('open');
-    btn.classList.toggle('open', !isOpen);
-    body.classList.toggle('open', !isOpen);
+  // ── 인증 확인 후 데이터 로드 ──
+  auth.onAuthStateChanged(async user => {
+    if (!user) { location.href = 'login.html'; return; }
+    if (!quoteId) { showEmpty('견적 정보가 없어요', '마이페이지에서 다시 접근해주세요.'); return; }
+    await loadData(quoteId);
+  });
+
+  async function loadData(qId) {
+    try {
+      // 1. 고객 견적 조회
+      const qSnap = await db.collection('quotes').doc(qId).get();
+      if (qSnap.exists) {
+        quoteData = qSnap.data();
+        renderRequestSummary(quoteData);
+      }
+
+      // 2. 선생님 견적 조회 (teacher_quotes) — orderBy 없이 조회 후 JS에서 정렬
+      const tqSnap = await db.collection('teacher_quotes')
+        .where('quoteId', '==', qId)
+        .get();
+
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('quoteList').style.display = 'flex';
+
+      if (tqSnap.empty) {
+        showEmpty('아직 도착한 견적이 없어요',
+          '선생님들이 견적을 검토 중이에요.<br>보통 수 시간~하루 이내에 견적이 도착해요. 😊');
+        return;
+      }
+
+      // 3. JS에서 최신순 정렬 + teacherUid 정규화 (teacherId 폴백)
+      const teacherQuotes = tqSnap.docs
+        .map(d => {
+          const data = d.data();
+          return {
+            id: d.id,
+            ...data,
+            teacherUid: data.teacherUid || data.teacherId || '',  // 필드명 통일
+          };
+        })
+        .sort((a, b) => {
+          const ta = a.createdAt?.toMillis?.() || 0;
+          const tb = b.createdAt?.toMillis?.() || 0;
+          return tb - ta;
+        });
+      const teacherUids = [...new Set(teacherQuotes.map(tq => tq.teacherUid).filter(Boolean))];
+      const teacherSnaps = await Promise.all(
+        teacherUids.map(uid => db.collection('users').doc(uid).get())
+      );
+      const teacherMap = {};
+      teacherSnaps.forEach(s => { if (s.exists) teacherMap[s.id] = s.data(); });
+
+      // 4. 카드 렌더링
+      document.getElementById('headerCount').textContent = `📨 견적 ${teacherQuotes.length}개 도착`;
+      document.querySelector('.filter-btn.active').textContent = `전체 (${teacherQuotes.length})`;
+
+      // 가격 최저가 계산
+      const prices = teacherQuotes.map(tq => parsePrice(tq.price)).filter(p => p > 0);
+      const minPrice = prices.length ? Math.min(...prices) : 0;
+
+      teacherQuotes.forEach((tq, idx) => {
+        const teacher = teacherMap[tq.teacherUid] || {};
+        const isBest  = idx === 0; // 첫 번째가 추천 (최신순)
+        const price   = parsePrice(tq.price);
+        const isLowest = price > 0 && price === minPrice && prices.filter(p=>p===minPrice).length === 1;
+        renderCard(tq, teacher, isBest, isLowest, idx);
+      });
+
+    } catch(e) {
+      console.error('견적 로드 오류:', e);
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('quoteList').style.display = 'flex';
+      showEmpty('견적을 불러오지 못했어요', '잠시 후 다시 시도해주세요.');
+    }
   }
 
-  // 필터
+  function parsePrice(str) {
+    if (!str) return 0;
+    return parseInt(String(str).replace(/[^0-9]/g, ''), 10) || 0;
+  }
+
+  function renderRequestSummary(q) {
+    const tags = [
+      q.condition, q.region,
+      q.budget ? q.budget + '원' : null,
+      q.frequency
+    ].filter(Boolean);
+    const html = tags.map(t => `<span class="request-tag">${t}</span>`).join('');
+    document.getElementById('requestTags').innerHTML = html || '<span class="request-tag">조건 없음</span>';
+  }
+
+  function renderCard(tq, teacher, isBest, isLowest, idx) {
+    const name     = teacher.name || tq.teacherName || '선생님';
+    const license  = teacher.license || teacher.specialty || '재활운동전문가';
+    const spec     = (teacher.specialties || []).join(' · ') || teacher.bio?.substring(0,30) || '';
+    const exp      = teacher.experience ? teacher.experience + '년' : '';
+    const msg      = tq.message || tq.intro || teacher.intro || '';
+    const priceNum = parsePrice(tq.price);
+    const priceStr = priceNum ? priceNum.toLocaleString() + '원' : tq.price || '협의';
+    const avatarIdx= idx % 3;
+    const avatarCls= avatarIdx === 0 ? '' : avatarIdx === 1 ? 'silver' : 'bronze';
+    const avatarEmoji = teacher.role === 'teacher' ? '👨‍⚕️' : '🧑‍⚕️';
+
+    const list = document.getElementById('quoteList');
+    const card = document.createElement('div');
+    card.className = 'quote-card' + (isBest ? ' best' : '');
+    card.dataset.price  = priceNum || 99999;
+    card.dataset.career = parseInt(teacher.experience) || 0;
+
+    card.innerHTML = `
+      ${isBest ? `<div class="best-banner">🏆 골든 시니어스 추천 · 최신 견적</div>` : ''}
+      <div class="quote-top">
+        <div class="q-avatar ${avatarCls}">${avatarEmoji}</div>
+        <div class="q-info">
+          <div class="q-name-row">
+            <span class="q-name">${name} 선생님</span>
+            ${license ? `<span class="q-license">${license}</span>` : ''}
+          </div>
+          ${spec ? `<div class="q-spec">${spec}</div>` : ''}
+          <div class="q-stats">
+            ${exp ? `<div class="q-stat">경력 <strong>${exp}</strong></div>` : ''}
+            ${teacher.visitCount ? `<div class="q-stat">방문 <strong>${teacher.visitCount}회</strong></div>` : ''}
+            ${teacher.rebookRate ? `<div class="q-stat">재예약 <strong>${teacher.rebookRate}%</strong></div>` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="trust-badges">
+        ${license ? `<span class="trust-badge cert">📜 ${license}</span>` : ''}
+        ${teacher.verified ? `<span class="trust-badge safe">✅ 신원인증</span>` : ''}
+        ${teacher.hasInsurance ? `<span class="trust-badge ins">🛡️ 배상보험 가입</span>` : ''}
+      </div>
+      <div class="quote-price">
+        <span class="price-main">${priceStr}</span>
+        <span class="price-unit">/ 1회 방문</span>
+        ${isLowest ? `<span class="price-badge lowest">💚 최저가</span>` : ''}
+        ${isBest ? `<span class="price-badge popular">🔥 추천</span>` : ''}
+      </div>
+      ${msg ? `<div class="quote-msg">"${msg}"</div>` : ''}
+      <div class="quote-actions">
+        <button class="btn-select ${isBest ? 'gold-btn' : ''}"
+          onclick="openModal('${tq.teacherUid}','${name}','${priceStr}','${avatarEmoji}')">
+          🔓 선택하면 프로필 공개
+        </button>
+      </div>
+    `;
+    list.appendChild(card);
+  }
+
+  function showEmpty(title, sub) {
+    const list = document.getElementById('quoteList');
+    list.style.display = 'flex';
+    list.innerHTML = `
+      <div class="empty-card">
+        <div class="empty-icon">📭</div>
+        <div class="empty-title">${title}</div>
+        <div class="empty-sub">${sub}</div>
+        <a href="mypage.html" class="btn-back">← 마이페이지로</a>
+      </div>`;
+  }
+
+  // ── 필터 ──
   function setFilter(btn, type) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const cards = Array.from(document.querySelectorAll('.quote-card'));
-    const list = document.getElementById('quoteList');
+    const list  = document.getElementById('quoteList');
     cards.sort((a, b) => {
-      if (type === 'rating') return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
-      if (type === 'price')  return parseInt(a.dataset.price)   - parseInt(b.dataset.price);
-      if (type === 'career') return parseInt(b.dataset.career)  - parseInt(a.dataset.career);
-      return 0; // all: 기본 순서
+      if (type === 'price')  return parseInt(a.dataset.price)  - parseInt(b.dataset.price);
+      if (type === 'career') return parseInt(b.dataset.career) - parseInt(a.dataset.career);
+      return 0;
     });
     cards.forEach(c => list.appendChild(c));
   }
 
-  // 모달
-  function openModal(name, price, avatar) {
+  // ── 모달 ──
+  function openModal(teacherUid, name, price, avatar) {
+    selectedTeacherUid  = teacherUid;
+    selectedTeacherName = name;
+    selectedPrice       = price;
     document.getElementById('modalName').textContent  = name + ' 선생님';
     document.getElementById('modalPrice').textContent = '1회 ' + price;
     document.getElementById('modalAvatar').textContent = avatar;
@@ -737,12 +564,39 @@
   function closeModalOutside(e) {
     if (e.target === document.getElementById('modalOverlay')) closeModal();
   }
-  function confirmSelect() {
+
+  async function confirmSelect() {
     closeModal();
-    // 선택 확정 후 → 선생님 프로필 공개 → 프로필에서 최종 일정 조율
-    window.location.href = 'teacher.html?from=selected';
+    if (!selectedTeacherUid) {
+      alert('선생님 정보를 찾을 수 없어요. 다시 시도해주세요.');
+      return;
+    }
+
+    try {
+      // 견적 상태를 'matched'로 업데이트
+      if (quoteId) {
+        await db.collection('quotes').doc(quoteId).update({
+          status:           'matched',
+          matchedTeacherUid:  selectedTeacherUid,
+          matchedTeacherName: selectedTeacherName,
+          matchedAt:          firebase.firestore.FieldValue.serverTimestamp(),
+        });
+        // 선택된 teacher_quote의 status를 'won'으로
+        const tqSnap = await db.collection('teacher_quotes')
+          .where('quoteId', '==', quoteId)
+          .where('teacherUid', '==', selectedTeacherUid)
+          .limit(1).get();
+        if (!tqSnap.empty) {
+          await tqSnap.docs[0].ref.update({ status: 'won' });
+        }
+      }
+    } catch(e) {
+      console.warn('상태 업데이트 실패 (계속 진행):', e);
+    }
+
+    // 선생님 프로필 페이지로 이동
+    location.href = `teacher.html?uid=${selectedTeacherUid}&from=selected&quoteId=${quoteId}`;
   }
 </script>
-
 </body>
 </html>

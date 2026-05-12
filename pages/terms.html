@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이용약관 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC;
+      --navy: #1A2B4A; --navy-light: #2C3E6B;
+      --gray-100: #F7F8FA; --gray-200: #EEEFF2;
+      --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
+      --white: #FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900); line-height: 1.8;
+    }
+
+    header {
+      background: var(--white); border-bottom: 1px solid var(--gray-200);
+      height: 64px; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 99;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--navy); text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .tab-links { display: flex; gap: 8px; }
+    .tab-link {
+      padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700;
+      text-decoration: none; transition: all 0.2s;
+      color: var(--gray-600); background: var(--gray-100);
+    }
+    .tab-link.active { background: var(--navy); color: var(--white); }
+    .tab-link:hover:not(.active) { background: var(--gray-200); }
+
+    .container { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    .doc-header {
+      background: var(--white); border-radius: 16px; padding: 32px;
+      margin-bottom: 24px; border-left: 4px solid var(--navy);
+    }
+    .doc-title   { font-size: 24px; font-weight: 900; color: var(--navy); margin-bottom: 6px; }
+    .doc-updated { font-size: 13px; color: var(--gray-400); }
+
+    .section {
+      background: var(--white); border-radius: 16px; padding: 28px;
+      margin-bottom: 12px;
+    }
+    h2 {
+      font-size: 16px; font-weight: 800; color: var(--navy);
+      margin-bottom: 14px; padding-bottom: 10px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    h3 { font-size: 14px; font-weight: 700; color: var(--gray-900); margin: 16px 0 8px; }
+    p  { font-size: 14px; color: var(--gray-600); margin-bottom: 10px; }
+    ol, ul { padding-left: 20px; margin-bottom: 10px; }
+    li { font-size: 14px; color: var(--gray-600); margin-bottom: 6px; }
+    strong { color: var(--gray-900); font-weight: 700; }
+
+    .highlight {
+      background: var(--gold-light); border-radius: 10px;
+      padding: 14px 16px; margin: 12px 0;
+      font-size: 13px; color: var(--navy); font-weight: 600; line-height: 1.7;
+    }
+
+    @media (max-width: 600px) {
+      .container { padding: 24px 16px 60px; }
+      .section { padding: 20px; }
+      .tab-link span { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+  </a>
+  <div class="tab-links">
+    <a href="terms.html" class="tab-link active">이용약관</a>
+    <a href="privacy.html" class="tab-link">개인정보처리방침</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="doc-header">
+    <div class="doc-title">서비스 이용약관</div>
+    <div class="doc-updated">시행일: 2025년 1월 1일 &nbsp;|&nbsp; 최종 수정: 2025년 1월 1일</div>
+  </div>
+
+  <div class="section">
+    <h2>제1조 (목적)</h2>
+    <p>이 약관은 골든 시니어스(이하 "회사")가 운영하는 방문 재활운동 중개 플랫폼 골든 시니어스(이하 "서비스")의 이용과 관련하여 회사와 이용자 간의 권리·의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.</p>
+  </div>
+
+  <div class="section">
+    <h2>제2조 (용어의 정의)</h2>
+    <ol>
+      <li><strong>"서비스"</strong>란 회사가 제공하는 방문 재활운동사 연결 및 중개 관련 모든 서비스를 의미합니다.</li>
+      <li><strong>"이용자"</strong>란 이 약관에 따라 회사가 제공하는 서비스를 받는 회원 및 비회원을 말합니다.</li>
+      <li><strong>"회원"</strong>이란 회사와 이용계약을 체결하고 아이디를 부여받은 자로서, 회사의 정보를 지속적으로 제공받으며 서비스를 계속적으로 이용할 수 있는 자를 말합니다.</li>
+      <li><strong>"고객 회원"</strong>이란 재활운동 서비스를 의뢰하는 목적으로 가입한 회원을 말합니다.</li>
+      <li><strong>"전문가 회원"</strong>이란 재활운동 서비스를 제공하는 목적으로 가입한 자격을 갖춘 재활운동사를 말합니다.</li>
+      <li><strong>"견적"</strong>이란 고객 회원의 요청에 대해 전문가 회원이 제안하는 서비스 내용 및 금액을 말합니다.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>제3조 (약관의 효력 및 변경)</h2>
+    <ol>
+      <li>이 약관은 서비스 화면에 게시하거나 기타 방법으로 이용자에게 공지함으로써 효력이 발생합니다.</li>
+      <li>회사는 합리적인 사유가 발생한 경우 관련 법령에 위배되지 않는 범위에서 이 약관을 변경할 수 있습니다.</li>
+      <li>약관이 변경되는 경우 회사는 변경 사항을 시행일 기준 7일 전부터 서비스 내 공지사항을 통해 공지합니다.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>제4조 (회원가입)</h2>
+    <ol>
+      <li>이용자는 회사가 정한 가입 양식에 따라 회원 정보를 기입한 후 이 약관에 동의한다는 의사표시를 함으로써 회원가입을 신청합니다.</li>
+      <li>회사는 다음 각 호에 해당하는 신청에 대하여는 승낙을 하지 않거나 사후에 이용계약을 해지할 수 있습니다.
+        <ul>
+          <li>실명이 아니거나 타인의 명의를 이용한 경우</li>
+          <li>허위 정보를 기재하거나 회사가 요구하는 내용을 기재하지 않은 경우</li>
+          <li>만 14세 미만인 경우</li>
+          <li>이전에 회원 자격을 상실한 적이 있는 경우</li>
+        </ul>
+      </li>
+      <li>전문가 회원의 경우 회사의 자격 심사를 통과한 경우에 한하여 서비스 이용이 가능합니다.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>제5조 (서비스의 제공)</h2>
+    <ol>
+      <li>회사는 다음과 같은 서비스를 제공합니다.
+        <ul>
+          <li>방문 재활운동사 검색 및 정보 제공</li>
+          <li>견적 요청 및 비교 서비스</li>
+          <li>전문가-고객 간 일정 조율 지원</li>
+          <li>기타 회사가 정하는 서비스</li>
+        </ul>
+      </li>
+      <li>회사는 서비스의 제공에 있어 고객과 전문가를 연결하는 중개 역할을 수행하며, 실제 재활운동 서비스는 전문가 회원이 제공합니다.</li>
+      <li>회사는 필요한 경우 서비스의 내용을 변경할 수 있으며, 변경 시 사전에 공지합니다.</li>
+    </ol>
+    <div class="highlight">
+      ⚠️ 회사는 고객과 전문가 간의 서비스 중개 플랫폼이며, 실제 재활운동 서비스의 품질 및 결과에 대한 직접적인 책임은 서비스를 제공하는 전문가에게 있습니다.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>제6조 (이용자의 의무)</h2>
+    <ol>
+      <li>이용자는 다음 행위를 하여서는 안 됩니다.
+        <ul>
+          <li>신청 또는 변경 시 허위 내용의 등록</li>
+          <li>타인의 정보 도용</li>
+          <li>회사가 게시한 정보의 무단 변경</li>
+          <li>회사가 정한 정보 이외의 정보(컴퓨터 프로그램 등) 송신 또는 게시</li>
+          <li>회사 및 기타 제3자의 저작권 등 지식재산권 침해</li>
+          <li>회사 및 기타 제3자의 명예를 손상시키거나 업무를 방해하는 행위</li>
+          <li>외설 또는 폭력적인 메시지, 화상, 음성 기타 공서양속에 반하는 정보를 서비스에 공개 또는 게시하는 행위</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>제7조 (회원 탈퇴 및 자격 상실)</h2>
+    <ol>
+      <li>회원은 언제든지 서비스 내 탈퇴 기능을 통해 탈퇴를 요청할 수 있으며, 회사는 즉시 처리합니다.</li>
+      <li>회원이 다음 각 호에 해당하는 경우 회사는 사전 통보 없이 회원 자격을 제한 및 정지시킬 수 있습니다.
+        <ul>
+          <li>가입 신청 시 허위 내용을 등록한 경우</li>
+          <li>다른 사람의 서비스 이용을 방해하거나 그 정보를 도용하는 경우</li>
+          <li>서비스를 이용하여 법령 또는 이 약관이 금지하거나 공서양속에 반하는 행위를 하는 경우</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>제8조 (면책조항)</h2>
+    <ol>
+      <li>회사는 천재지변 또는 이에 준하는 불가항력으로 인하여 서비스를 제공할 수 없는 경우에는 서비스 제공에 관한 책임이 면제됩니다.</li>
+      <li>회사는 이용자의 귀책사유로 인한 서비스 이용의 장애에 대하여는 책임을 지지 않습니다.</li>
+      <li>회사는 이용자가 서비스와 관련하여 게재한 정보, 자료, 사실의 신뢰도, 정확성 등의 내용에 관하여는 책임을 지지 않습니다.</li>
+      <li>회사는 전문가와 고객 간에 발생한 분쟁에 대해 개입할 의무가 없으며, 이로 인한 손해를 배상할 책임이 없습니다.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>제9조 (분쟁 해결)</h2>
+    <ol>
+      <li>회사는 이용자가 제기하는 정당한 의견이나 불만을 반영하고 그 피해를 보상 처리하기 위한 고객센터를 운영합니다.</li>
+      <li>회사와 이용자 간에 발생한 전자상거래 분쟁과 관련하여 이용자의 피해구제신청이 있는 경우에는 공정거래위원회 또는 시·도지사가 의뢰하는 분쟁조정기관의 조정에 따를 수 있습니다.</li>
+      <li>이 약관과 관련된 소송은 대한민국 법을 적용하며, 관할 법원은 민사소송법에 따른 법원으로 합니다.</li>
+    </ol>
+
+    <div class="highlight">
+      📞 고객센터: 카카오톡 채널 @골든시니어스<br>
+      📧 이메일 문의: contact@golden-seniors.co.kr
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

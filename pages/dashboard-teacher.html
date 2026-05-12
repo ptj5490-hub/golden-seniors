@@ -215,6 +215,8 @@
   </a>
   <div class="header-right">
     <span class="teacher-name" id="teacherName">선생님</span>
+    <a href="chat.html?from=teacher" style="padding:7px 14px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;font-size:13px;font-weight:600;color:var(--white);text-decoration:none;">💬 채팅</a>
+    <a href="profile-teacher.html" style="padding:7px 14px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;font-size:13px;font-weight:600;color:var(--white);text-decoration:none;">✏️ 프로필 편집</a>
     <button class="btn-logout" onclick="handleLogout()">로그아웃</button>
   </div>
 </header>
@@ -391,7 +393,7 @@
     currentUser = user;
     await loadTeacherData(user);
     await loadRequests();
-    await loadSentQuotes();
+    loadSentQuotes();
   });
 
   async function loadTeacherData(user) {
@@ -453,45 +455,74 @@
     }
   }
 
-  // ── 내가 제출한 견적 ──
-  async function loadSentQuotes() {
+  // ── 내가 제출한 견적 (실시간) ──
+  let unsubSentQuotes = null;
+  function loadSentQuotes() {
     if (!currentUser) return;
     const list = document.getElementById('sentList');
-    try {
-      const snap = await db.collection('teacher_quotes')
-        .where('teacherId', '==', currentUser.uid)
-        .orderBy('createdAt', 'desc')
-        .get();
+    if (unsubSentQuotes) unsubSentQuotes(); // 이전 구독 해제
 
-      snap.docs.forEach(d => sentQuoteIds.add(d.data().quoteId));
-      document.getElementById('statSent').textContent = snap.size;
-      document.getElementById('statWon').textContent  = snap.docs.filter(d => d.data().status === 'won').length;
+    unsubSentQuotes = db.collection('teacher_quotes')
+      .where('teacherId', '==', currentUser.uid)
+      .onSnapshot(snap => {
+        // JS에서 최신순 정렬
+        const sortedDocs = [...snap.docs].sort((a, b) => {
+          const ta = a.data().createdAt?.seconds || 0;
+          const tb = b.data().createdAt?.seconds || 0;
+          return tb - ta;
+        });
 
-      if (snap.empty) {
-        list.innerHTML = emptyHTML('✉️', '아직 제출한 견적이 없어요', '왼쪽 탭에서 고객 요청에 견적을 제출해보세요!');
-        return;
-      }
+        sentQuoteIds.clear();
+        sortedDocs.forEach(d => sentQuoteIds.add(d.data().quoteId));
 
-      list.innerHTML = snap.docs.map(d => {
-        const q = d.data();
-        const date = q.createdAt ? new Date(q.createdAt.seconds * 1000).toLocaleDateString('ko-KR') : '';
-        const won = q.status === 'won';
-        return `
-        <div class="request-card">
-          <div class="request-top">
-            <div>
-              <div class="request-title">${q.condition || '재활운동'} · ${q.region || ''}</div>
-              <div class="request-meta">${date} 제출 · 제안금액: ${q.price || '-'}</div>
+        const wonCount = snap.docs.filter(d => d.data().status === 'won').length;
+        document.getElementById('statSent').textContent = snap.size;
+        document.getElementById('statWon').textContent  = wonCount;
+
+        if (snap.empty) {
+          list.innerHTML = emptyHTML('✉️', '아직 제출한 견적이 없어요', '왼쪽 탭에서 고객 요청에 견적을 제출해보세요!');
+          return;
+        }
+
+        list.innerHTML = sortedDocs.map(d => {
+          const q    = d.data();
+          const date = q.createdAt ? new Date(q.createdAt.seconds * 1000).toLocaleDateString('ko-KR') : '';
+          const won  = q.status === 'won';
+          const chatBtn = won ? `
+            <button onclick="goToChat('${q.quoteId}','${(q.condition||'').replace(/'/g,'')}','${(q.region||'').replace(/'/g,'')}')"
+              style="margin-top:10px;padding:8px 18px;background:var(--navy);color:white;border:none;
+                     border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">
+              💬 고객과 채팅하기
+            </button>` : '';
+          return `
+          <div class="request-card" style="${won ? 'border:2px solid #2ECC71;' : ''}">
+            <div class="request-top">
+              <div>
+                <div class="request-title">${q.condition || '재활운동'} · ${q.region || ''}</div>
+                <div class="request-meta">${date} 제출 · 제안금액: ${q.price || '-'}</div>
+              </div>
+              <span class="badge ${won ? 'badge-sent' : 'badge-new'}">${won ? '🎉 매칭 성공!' : '⏳ 검토 중'}</span>
             </div>
-            <span class="badge ${won ? 'badge-sent' : 'badge-new'}">${won ? '✅ 매칭 성공' : '⏳ 검토 중'}</span>
-          </div>
-          <div style="font-size:13px;color:var(--gray-600);line-height:1.6;">${q.message || ''}</div>
-        </div>`;
-      }).join('');
+            <div style="font-size:13px;color:var(--gray-600);line-height:1.6;">${q.message || ''}</div>
+            ${won ? `<div style="font-size:12px;color:#2ECC71;font-weight:700;margin-top:8px;">✅ 고객이 선생님을 선택했어요!</div>` : ''}
+            ${chatBtn}
+          </div>`;
+        }).join('');
 
-    } catch(err) {
-      list.innerHTML = emptyHTML('✉️', '아직 제출한 견적이 없어요', '');
-    }
+        // 요청 탭도 갱신 (이미 제출 여부 UI 반영)
+        document.querySelectorAll('.btn-quote').forEach(btn => {
+          const qid = btn.getAttribute('data-quoteid');
+          if (qid && sentQuoteIds.has(qid)) {
+            btn.textContent = '✅ 제출 완료';
+            btn.classList.add('sent');
+            btn.disabled = true;
+          }
+        });
+
+      }, err => {
+        console.error('제출 견적 로드 오류:', err);
+        list.innerHTML = emptyHTML('✉️', '불러오기 실패', err.message);
+      });
   }
 
   function renderRequestCard(r) {
@@ -559,9 +590,10 @@
       const quoteData = quoteSnap.exists ? quoteSnap.data() : {};
 
       await db.collection('teacher_quotes').add({
-        quoteId:   selectedQuoteId,
-        teacherId: currentUser.uid,
-        teacherName: teacherData?.name || '',
+        quoteId:     selectedQuoteId,
+        teacherUid:  currentUser.uid,
+        teacherId:   currentUser.uid,   // 하위호환
+        teacherName: teacherData?.name || currentUser.displayName || '',
         price, message,
         schedule:  document.getElementById('modalSchedule').value.trim(),
         plan:      document.getElementById('modalPlan').value.trim(),
@@ -575,7 +607,7 @@
       closeModal();
       alert('✅ 견적이 제출됐어요! 고객이 확인하면 연락이 갈 거예요.');
       await loadRequests();
-      await loadSentQuotes();
+      loadSentQuotes();
     } catch(err) {
       alert('제출 중 오류가 발생했어요: ' + err.message);
     } finally {
@@ -648,6 +680,23 @@
         alert('탈퇴 처리 중 오류가 발생했어요: ' + err.message);
         btn.disabled = false; btn.textContent = '탈퇴하기';
       }
+    }
+  };
+
+  // ── 채팅으로 이동 (고객 UID 조회 후) ──
+  window.goToChat = async function(quoteId, condition, region) {
+    try {
+      const snap = await db.collection('quotes').doc(quoteId).get();
+      if (!snap.exists) { alert('견적 정보를 찾을 수 없어요.'); return; }
+      const q = snap.data();
+      const customerUid = q.userId;
+      // 고객 이름 조회
+      const userSnap = await db.collection('users').doc(customerUid).get();
+      const customerName = userSnap.exists ? userSnap.data().name : '고객';
+      const title = `${condition} · ${region}`.trim().replace(/^·\s*|·\s*$/, '');
+      location.href = `chat.html?chatId=${quoteId}&partnerUid=${customerUid}&partnerName=${encodeURIComponent(customerName)}&quoteTitle=${encodeURIComponent(title||'재활운동 서비스')}&from=teacher`;
+    } catch(e) {
+      alert('채팅 연결 중 오류가 발생했어요: ' + e.message);
     }
   };
 

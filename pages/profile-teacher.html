@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내 프로필 편집 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #D4891A;
+      --navy: #1A2B4A; --navy-light: #2C3E6B;
+      --green: #10B981; --green-light: #ECFDF5;
+      --red: #EF4444; --red-light: #FEF2F2;
+      --gray-100: #F7F8FA; --gray-200: #EEEFF2;
+      --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
+      --white: #FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900); min-height: 100vh;
+    }
+
+    /* ── 헤더 ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--navy); height: 64px;
+      display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--white); text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .btn-back {
+      display: flex; align-items: center; gap: 6px;
+      color: rgba(255,255,255,0.75); font-size: 14px; font-weight: 600;
+      text-decoration: none; padding: 8px 14px;
+      background: rgba(255,255,255,0.1); border-radius: 10px;
+    }
+    .btn-back:hover { background: rgba(255,255,255,0.2); }
+
+    /* ── 레이아웃 ── */
+    .container {
+      max-width: 800px; margin: 0 auto; padding: 32px 20px 80px;
+      display: grid; grid-template-columns: 1fr 280px; gap: 20px; align-items: start;
+    }
+
+    /* ── 섹션 카드 ── */
+    .section {
+      background: var(--white); border-radius: 20px; padding: 28px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 16px; font-weight: 800; color: var(--navy);
+      margin-bottom: 20px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--gray-100);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ── 아바타 선택 ── */
+    .avatar-row {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+    }
+    .avatar-preview {
+      width: 80px; height: 80px; border-radius: 18px;
+      background: linear-gradient(135deg, #FFE09A, #F5A623);
+      border: 3px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px; cursor: pointer; flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .avatar-preview:hover { transform: scale(1.05); }
+    .avatar-grid {
+      display: none; flex-wrap: wrap; gap: 8px;
+    }
+    .avatar-grid.open { display: flex; }
+    .avatar-opt {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--gray-100); border: 2px solid transparent;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; cursor: pointer; transition: all 0.15s;
+    }
+    .avatar-opt:hover, .avatar-opt.sel { border-color: var(--gold); background: var(--gold-light); }
+
+    /* ── 폼 요소 ── */
+    .field { margin-bottom: 18px; }
+    label.field-label {
+      display: block; font-size: 13px; font-weight: 700;
+      color: var(--navy); margin-bottom: 6px;
+    }
+    label.field-label .req { color: var(--red); margin-left: 2px; }
+    label.field-label .opt { color: var(--gray-400); font-weight: 400; margin-left: 4px; font-size: 12px; }
+    input[type=text], input[type=number], textarea, select {
+      width: 100%; padding: 12px 14px;
+      border: 1.5px solid var(--gray-200); border-radius: 12px;
+      font-size: 14px; color: var(--gray-900); outline: none;
+      font-family: inherit; transition: border-color 0.2s;
+      background: var(--white);
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--navy); }
+    textarea { resize: vertical; line-height: 1.7; }
+    .field-hint { font-size: 12px; color: var(--gray-400); margin-top: 5px; }
+
+    /* 2컬럼 */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* ── 전문 분야 칩 ── */
+    .spec-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .spec-chip {
+      padding: 8px 16px; border-radius: 20px;
+      background: var(--gray-100); color: var(--gray-600);
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      border: 2px solid transparent; transition: all 0.15s; user-select: none;
+    }
+    .spec-chip.on { background: var(--gold-light); color: var(--navy); border-color: var(--gold); }
+
+    /* ── 경력 입력 (동적) ── */
+    .career-entries { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+    .career-entry {
+      background: var(--gray-100); border-radius: 14px; padding: 14px 16px;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .career-entry-fields { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .career-entry input { background: var(--white); padding: 8px 12px; font-size: 13px; }
+    .career-entry-del {
+      width: 32px; height: 32px; border-radius: 8px; border: none;
+      background: var(--red-light); color: var(--red); font-size: 16px;
+      cursor: pointer; flex-shrink: 0; margin-top: 2px;
+    }
+    .btn-add-career {
+      width: 100%; padding: 10px; border: 2px dashed var(--gray-200);
+      background: none; border-radius: 12px; font-size: 13px;
+      color: var(--gray-400); font-weight: 600; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-add-career:hover { border-color: var(--navy); color: var(--navy); }
+
+    /* ── 프리뷰 카드 (오른쪽) ── */
+    .preview-sticky { position: sticky; top: 84px; }
+    .preview-card {
+      background: var(--white); border-radius: 20px; padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 16px;
+    }
+    .preview-title { font-size: 13px; font-weight: 700; color: var(--gray-400); margin-bottom: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .preview-avatar { width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, #FFE09A, #F5A623); border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 10px; }
+    .preview-name { font-size: 17px; font-weight: 900; color: var(--navy); margin-bottom: 4px; }
+    .preview-spec { font-size: 12px; color: var(--gray-600); margin-bottom: 10px; line-height: 1.5; }
+    .preview-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .preview-chip { padding: 4px 10px; background: var(--gray-100); border-radius: 20px; font-size: 11px; color: var(--gray-600); font-weight: 600; }
+    .preview-price { font-size: 20px; font-weight: 900; color: var(--navy); margin-bottom: 4px; }
+    .preview-region { font-size: 12px; color: var(--gray-400); }
+    .preview-divider { border: none; border-top: 1px solid var(--gray-200); margin: 12px 0; }
+    .btn-preview-link {
+      display: block; width: 100%; padding: 11px; text-align: center;
+      background: var(--gray-100); border-radius: 12px; font-size: 13px; font-weight: 700;
+      color: var(--navy); text-decoration: none; margin-bottom: 8px;
+    }
+    .btn-preview-link:hover { background: var(--gray-200); }
+
+    /* ── 저장 버튼 ── */
+    .save-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--white); border-top: 1px solid var(--gray-200);
+      padding: 14px 24px;
+      display: flex; gap: 10px; align-items: center; z-index: 90;
+    }
+    .save-status { flex: 1; font-size: 13px; color: var(--gray-400); }
+    .btn-save {
+      padding: 13px 32px; background: var(--gold); color: var(--white);
+      border: none; border-radius: 14px; font-size: 15px; font-weight: 800;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-save:hover { background: var(--gold-dark); }
+    .btn-save:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
+
+    /* ── 토스트 ── */
+    .toast {
+      position: fixed; bottom: 80px; left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: var(--navy); color: var(--white);
+      padding: 12px 24px; border-radius: 30px;
+      font-size: 14px; font-weight: 600; z-index: 999;
+      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 720px) {
+      .container { grid-template-columns: 1fr; padding-bottom: 120px; }
+      .preview-sticky { display: none; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="dashboard-teacher.html" class="btn-back">← 대시보드</a>
+  <a href="../index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+  </a>
+</header>
+
+<div class="container">
+
+  <!-- ── 왼쪽: 편집 폼 ── -->
+  <div class="left-col">
+
+    <!-- 1. 기본 정보 -->
+    <div class="section">
+      <div class="section-title">🧑 기본 정보</div>
+
+      <!-- 아바타 -->
+      <div class="field">
+        <label class="field-label">프로필 아이콘</label>
+        <div class="avatar-row">
+          <div class="avatar-preview" id="avatarPreview" onclick="toggleAvatarGrid()">👨‍⚕️</div>
+          <div>
+            <div style="font-size:13px;color:var(--gray-600);margin-bottom:6px">아이콘을 눌러 변경하세요</div>
+            <div class="avatar-grid" id="avatarGrid">
+              <!-- JS로 채움 -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label class="field-label">이름 <span class="req">*</span></label>
+          <input type="text" id="inputName" placeholder="홍길동">
+        </div>
+        <div class="field">
+          <label class="field-label">연락처</label>
+          <input type="text" id="inputPhone" placeholder="010-0000-0000">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">한 줄 소개 <span class="opt">(프로필 카드에 표시)</span></label>
+        <input type="text" id="inputTagline" placeholder="예: 관절·낙상예방 전문 · 경력 8년" maxlength="40">
+        <div class="field-hint">40자 이내</div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">상세 소개글 <span class="opt">(선생님을 직접 소개해보세요)</span></label>
+        <textarea id="inputBio" rows="5" placeholder="어르신들의 건강한 일상을 되찾아드리기 위해 10년간 방문 재활운동을 해왔습니다..."></textarea>
+      </div>
+    </div>
+
+    <!-- 2. 전문 분야 -->
+    <div class="section">
+      <div class="section-title">🎯 전문 분야</div>
+      <div class="field-hint" style="margin-bottom:12px">최대 5개 선택</div>
+      <div class="spec-grid" id="specGrid">
+        <!-- JS로 채움 -->
+      </div>
+    </div>
+
+    <!-- 3. 경력 사항 -->
+    <div class="section">
+      <div class="section-title">📋 경력 사항</div>
+      <div class="career-entries" id="careerEntries"></div>
+      <button class="btn-add-career" onclick="addCareer()">+ 경력 추가</button>
+    </div>
+
+    <!-- 4. 자격증 -->
+    <div class="section">
+      <div class="section-title">🎓 자격증 · 학력</div>
+      <div class="field">
+        <label class="field-label">보유 자격증 <span class="req">*</span></label>
+        <input type="text" id="inputCerts" placeholder="예: 물리치료사 국가면허, 노인스포츠지도사 2급">
+        <div class="field-hint">쉼표로 구분하여 입력</div>
+      </div>
+      <div class="field">
+        <label class="field-label">최종 학력</label>
+        <input type="text" id="inputEdu" placeholder="예: ○○대학교 물리치료학과 졸업">
+      </div>
+    </div>
+
+    <!-- 5. 서비스 정보 -->
+    <div class="section">
+      <div class="section-title">📍 서비스 정보</div>
+      <div class="grid-2">
+        <div class="field">
+          <label class="field-label">1회 방문 가격 (만원)</label>
+          <input type="number" id="inputPrice" placeholder="6" min="1" max="100">
+          <div class="field-hint">예: 6 → "6만원~" 으로 표시</div>
+        </div>
+        <div class="field">
+          <label class="field-label">1회 소요 시간</label>
+          <select id="inputDuration">
+            <option value="약 50분">약 50분</option>
+            <option value="약 60분">약 60분</option>
+            <option value="약 90분">약 90분</option>
+            <option value="약 120분">약 120분</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">활동 지역</label>
+        <input type="text" id="inputRegion" placeholder="예: 서울 강남·서초·송파">
+      </div>
+      <div class="field">
+        <label class="field-label">방문 가능 시간</label>
+        <input type="text" id="inputAvailTime" placeholder="예: 평일 09:00~18:00">
+      </div>
+      <div class="field">
+        <label class="field-label">최소 방문 횟수</label>
+        <select id="inputMinVisit">
+          <option value="주 1회부터">주 1회부터</option>
+          <option value="주 2회부터">주 2회부터</option>
+          <option value="협의 가능">협의 가능</option>
+        </select>
+      </div>
+    </div>
+
+  </div><!-- /left-col -->
+
+  <!-- ── 오른쪽: 프리뷰 ── -->
+  <div class="preview-sticky">
+    <div class="preview-card">
+      <div class="preview-title">📱 미리보기</div>
+      <div class="preview-avatar" id="pvAvatar">👨‍⚕️</div>
+      <div class="preview-name" id="pvName">이름</div>
+      <div class="preview-spec" id="pvSpec">전문 분야</div>
+      <div class="preview-chips" id="pvChips"></div>
+      <hr class="preview-divider">
+      <div class="preview-price" id="pvPrice">-만원~</div>
+      <div class="preview-region" id="pvRegion">📍 활동 지역</div>
+      <hr class="preview-divider">
+      <a id="pvLink" href="#" target="_blank" class="btn-preview-link">🔍 공개 프로필 보기</a>
+    </div>
+    <div class="preview-card" style="padding:18px">
+      <p style="font-size:12px;color:var(--gray-600);line-height:1.7">
+        💡 <strong>저장하면 즉시 반영</strong>돼요.<br>
+        관리자 승인 후 고객에게 프로필이 공개됩니다.
+      </p>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- 저장 바 -->
+<div class="save-bar">
+  <div class="save-status" id="saveStatus">마지막 저장: 없음</div>
+  <button class="btn-save" id="saveBtn" onclick="saveProfile()">저장하기</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
+    authDomain:        "golden-seniors.firebaseapp.com",
+    projectId:         "golden-seniors",
+    storageBucket:     "golden-seniors.firebasestorage.app",
+    messagingSenderId: "244026917780",
+    appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
+  });
+</script>
+
+<script>
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+const SPECS   = ['근골격계','뇌졸중','치매예방','낙상예방','심폐기능','파킨슨','수술 후 재활','보행훈련'];
+const AVATARS = ['👨‍⚕️','👩‍⚕️','🧑‍⚕️','👴','👩‍🦳','🏃','💪','🧘','🌟','🏅'];
+const MAX_SPEC = 5;
+
+let selectedSpecs  = [];
+let careerCount    = 0;
+let currentUid     = null;
+let selectedAvatar = '👨‍⚕️';
+
+/* ── 초기화 ── */
+auth.onAuthStateChanged(async (user) => {
+  if (!user) { location.href = 'login.html'; return; }
+  const snap = await db.collection('users').doc(user.uid).get();
+  if (!snap.exists || snap.data().role !== 'teacher') { location.href = '../index.html'; return; }
+  currentUid = user.uid;
+  buildAvatarGrid();
+  buildSpecGrid();
+  loadProfile(snap.data());
+  document.getElementById('pvLink').href = `teacher.html?uid=${user.uid}`;
+});
+
+/* ── 아바타 그리드 ── */
+function buildAvatarGrid() {
+  const grid = document.getElementById('avatarGrid');
+  grid.innerHTML = AVATARS.map(a =>
+    `<div class="avatar-opt" onclick="selectAvatar('${a}')">${a}</div>`
+  ).join('');
+}
+function toggleAvatarGrid() {
+  document.getElementById('avatarGrid').classList.toggle('open');
+}
+function selectAvatar(a) {
+  selectedAvatar = a;
+  document.getElementById('avatarPreview').textContent = a;
+  document.getElementById('pvAvatar').textContent = a;
+  document.getElementById('avatarGrid').querySelectorAll('.avatar-opt').forEach(el => {
+    el.classList.toggle('sel', el.textContent === a);
+  });
+  document.getElementById('avatarGrid').classList.remove('open');
+}
+
+/* ── 전문 분야 칩 ── */
+function buildSpecGrid() {
+  document.getElementById('specGrid').innerHTML = SPECS.map(s =>
+    `<div class="spec-chip" id="chip_${s}" onclick="toggleSpec('${s}')">${s}</div>`
+  ).join('');
+}
+function toggleSpec(s) {
+  if (selectedSpecs.includes(s)) {
+    selectedSpecs = selectedSpecs.filter(x => x !== s);
+    document.getElementById('chip_' + s).classList.remove('on');
+  } else {
+    if (selectedSpecs.length >= MAX_SPEC) { showToast(`최대 ${MAX_SPEC}개까지 선택할 수 있어요`); return; }
+    selectedSpecs.push(s);
+    document.getElementById('chip_' + s).classList.add('on');
+  }
+  updatePreview();
+}
+
+/* ── 경력 추가 ── */
+function addCareer(data = {}) {
+  careerCount++;
+  const id = 'career_' + careerCount;
+  const div = document.createElement('div');
+  div.className = 'career-entry';
+  div.id = id;
+  div.innerHTML = `
+    <div class="career-entry-fields">
+      <input type="text" placeholder="기간 (예: 2020 – 현재)" value="${esc(data.period || '')}">
+      <input type="text" placeholder="직책 · 기관명" value="${esc(data.title || '')}">
+      <input type="text" placeholder="상세 업무 (선택)" value="${esc(data.desc || '')}">
+    </div>
+    <button class="career-entry-del" onclick="document.getElementById('${id}').remove()">×</button>
+  `;
+  document.getElementById('careerEntries').appendChild(div);
+}
+
+/* ── 프로필 로드 ── */
+function loadProfile(d) {
+  selectAvatar(d.avatar || '👨‍⚕️');
+  document.getElementById('inputName').value     = d.name     || '';
+  document.getElementById('inputPhone').value    = d.phone    || '';
+  document.getElementById('inputTagline').value  = d.tagline  || '';
+  document.getElementById('inputBio').value      = d.bio      || '';
+  document.getElementById('inputCerts').value    = d.certifications || '';
+  document.getElementById('inputEdu').value      = d.education || '';
+  document.getElementById('inputPrice').value    = d.price     || '';
+  document.getElementById('inputRegion').value   = d.region    || '';
+  document.getElementById('inputAvailTime').value = d.availTime || '';
+
+  if (d.duration) document.getElementById('inputDuration').value  = d.duration;
+  if (d.minVisit) document.getElementById('inputMinVisit').value  = d.minVisit;
+
+  // 전문 분야
+  (d.specialties || []).forEach(s => {
+    if (SPECS.includes(s)) { selectedSpecs.push(s); document.getElementById('chip_' + s).classList.add('on'); }
+  });
+
+  // 경력
+  if (d.careerList && d.careerList.length > 0) {
+    d.careerList.forEach(c => addCareer(c));
+  } else {
+    addCareer(); // 빈 폼 1개
+  }
+
+  // 저장 시각
+  if (d.profileUpdatedAt) {
+    const dt = d.profileUpdatedAt.toDate ? d.profileUpdatedAt.toDate() : new Date(d.profileUpdatedAt);
+    document.getElementById('saveStatus').textContent = '마지막 저장: ' + fmtDateTime(dt);
+  }
+
+  updatePreview();
+  bindPreviewListeners();
+}
+
+/* ── 실시간 프리뷰 ── */
+function bindPreviewListeners() {
+  ['inputName','inputTagline','inputPrice','inputRegion'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updatePreview);
+  });
+}
+
+function updatePreview() {
+  const name    = document.getElementById('inputName').value    || '이름';
+  const tagline = document.getElementById('inputTagline').value || '전문 분야';
+  const price   = document.getElementById('inputPrice').value;
+  const region  = document.getElementById('inputRegion').value  || '활동 지역 미입력';
+
+  document.getElementById('pvName').textContent   = name + ' 선생님';
+  document.getElementById('pvSpec').textContent   = tagline;
+  document.getElementById('pvPrice').textContent  = price ? price + '만원~' : '가격 미입력';
+  document.getElementById('pvRegion').textContent = '📍 ' + region;
+  document.getElementById('pvChips').innerHTML    = selectedSpecs.map(s =>
+    `<span class="preview-chip">${s}</span>`
+  ).join('');
+}
+
+/* ── 경력 데이터 수집 ── */
+function collectCareers() {
+  const entries = document.querySelectorAll('.career-entry');
+  const result = [];
+  entries.forEach(el => {
+    const inputs = el.querySelectorAll('input');
+    const period = inputs[0].value.trim();
+    const title  = inputs[1].value.trim();
+    const desc   = inputs[2].value.trim();
+    if (period || title) result.push({ period, title, desc });
+  });
+  return result;
+}
+
+/* ── 저장 ── */
+async function saveProfile() {
+  const name = document.getElementById('inputName').value.trim();
+  if (!name) { showToast('이름을 입력해주세요'); return; }
+
+  const saveBtn = document.getElementById('saveBtn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = '저장 중...';
+
+  const data = {
+    name,
+    avatar:        selectedAvatar,
+    phone:         document.getElementById('inputPhone').value.trim(),
+    tagline:       document.getElementById('inputTagline').value.trim(),
+    bio:           document.getElementById('inputBio').value.trim(),
+    specialties:   selectedSpecs,
+    careerList:    collectCareers(),
+    certifications: document.getElementById('inputCerts').value.trim(),
+    education:     document.getElementById('inputEdu').value.trim(),
+    price:         Number(document.getElementById('inputPrice').value) || null,
+    region:        document.getElementById('inputRegion').value.trim(),
+    availTime:     document.getElementById('inputAvailTime').value.trim(),
+    duration:      document.getElementById('inputDuration').value,
+    minVisit:      document.getElementById('inputMinVisit').value,
+    profileUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
+
+  try {
+    await db.collection('users').doc(currentUid).update(data);
+    const now = new Date();
+    document.getElementById('saveStatus').textContent = '마지막 저장: ' + fmtDateTime(now);
+    showToast('✅ 프로필이 저장되었습니다!');
+  } catch(e) {
+    showToast('❌ 저장 중 오류가 발생했습니다.');
+    console.error(e);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = '저장하기';
+  }
+}
+
+/* ── 유틸 ── */
+function esc(str) {
+  return String(str || '').replace(/"/g, '&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function fmtDateTime(d) {
+  return d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0')
+    + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>

@@ -7,21 +7,21 @@
   <style>
     :root {
       --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #C17D0E;
-      --navy: #1A3B6E; --navy-light: #2A5298; --white: #FFFFFF;
-      --gray-100: #F8F9FA; --gray-200: #E9ECEF; --gray-400: #9CA3AF;
-      --gray-600: #6B7280; --gray-900: #1F2937;
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+      --navy: #1A2B4A; --navy-light: #2C3E6B; --white: #FFFFFF;
+      --gray-100: #F7F8FA; --gray-200: #EEEFF2; --gray-400: #9CA3AF;
+      --gray-600: #4B5563; --gray-900: #111827;
+      --green: #10B981; --green-light: #ECFDF5;
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { overflow-x: hidden; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--gray-100); color: var(--gray-900);
       padding-top: 64px;
     }
 
-    /* ===== 헤더 ===== */
+    /* ── 헤더 ── */
     header {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       background: var(--white); box-shadow: 0 1px 8px rgba(0,0,0,0.08);
@@ -32,57 +32,82 @@
       background: var(--gray-100); border: none; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       font-size: 18px; text-decoration: none; color: var(--navy);
-      transition: background 0.2s;
     }
     .back-btn:hover { background: var(--gray-200); }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--navy); text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
     .share-btn {
       margin-left: auto; display: flex; align-items: center; gap: 6px;
       background: var(--gray-100); border: none; border-radius: 10px;
       padding: 8px 14px; font-size: 13px; font-weight: 700;
-      color: var(--navy); cursor: pointer; transition: background 0.2s;
+      color: var(--navy); cursor: pointer;
     }
     .share-btn:hover { background: var(--gray-200); }
-    .share-toast {
-      position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
-      background: var(--navy); color: var(--white);
-      padding: 12px 24px; border-radius: 100px;
-      font-size: 14px; font-weight: 700;
-      opacity: 0; transition: opacity 0.3s; z-index: 9999; white-space: nowrap;
-      pointer-events: none;
-    }
-    .share-toast.show { opacity: 1; }
 
-    /* 선택 완료 배너 */
+    /* ── 선택 완료 배너 ── */
     .selected-banner {
-      display: none;
-      position: fixed; top: 64px; left: 0; right: 0; z-index: 90;
-      background: linear-gradient(90deg, #27AE60, #2ECC71);
+      display: none; position: fixed; top: 64px; left: 0; right: 0; z-index: 90;
+      background: linear-gradient(90deg, #059669, var(--green));
       color: var(--white); padding: 14px 20px;
       text-align: center; font-size: 14px; font-weight: 800;
-      gap: 8px; align-items: center; justify-content: center;
     }
-    .selected-banner.show { display: flex; }
-    .logo {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 18px; font-weight: 900; color: var(--navy);
-      text-decoration: none;
-    }
-    .logo-icon {
-      width: 36px; height: 36px; background: var(--gold);
-      border-radius: 10px; display: flex; align-items: center;
-      justify-content: center; font-size: 18px;
-    }
+    .selected-banner.show { display: block; }
 
-    /* ===== 레이아웃 ===== */
-    main { padding-top: 0; }
+    /* ── 결제 잠금 오버레이 ── */
+    .pay-lock-wrap { position: relative; }
+    .pay-lock-blur {
+      filter: blur(6px); pointer-events: none; user-select: none;
+      opacity: 0.5;
+    }
+    .pay-lock-overlay {
+      position: absolute; inset: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.6); border-radius: 20px;
+    }
+    .pay-lock-box {
+      background: var(--white); border-radius: 20px; padding: 28px 32px;
+      text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+      max-width: 320px; width: 90%;
+    }
+    .pay-lock-icon { font-size: 36px; margin-bottom: 12px; }
+    .pay-lock-title { font-size: 18px; font-weight: 900; color: var(--navy); margin-bottom: 8px; }
+    .pay-lock-sub { font-size: 13px; color: var(--gray-600); line-height: 1.7; margin-bottom: 20px; }
+    .pay-lock-btn {
+      display: block; width: 100%; padding: 15px;
+      background: var(--gold); color: var(--white); border: none;
+      border-radius: 14px; font-size: 16px; font-weight: 900;
+      cursor: pointer; text-decoration: none; text-align: center;
+      transition: background 0.2s;
+    }
+    .pay-lock-btn:hover { background: var(--gold-dark); }
+
+    /* ── 로딩 / 에러 ── */
+    #loadingState {
+      text-align: center; padding: 80px 20px;
+      font-size: 16px; color: var(--gray-400);
+    }
+    #errorState {
+      display: none; text-align: center; padding: 80px 20px;
+    }
+    #errorState .err-icon { font-size: 48px; margin-bottom: 12px; }
+    #errorState p { font-size: 16px; color: var(--gray-600); }
+
+    /* ── 레이아웃 ── */
+    #mainContent { display: none; }
     .page-inner {
-      max-width: 780px; margin: 0 auto;
+      max-width: 800px; margin: 0 auto;
       padding: 32px 20px 120px;
-      display: grid; grid-template-columns: 1fr 320px; gap: 24px;
+      display: grid; grid-template-columns: 1fr 300px; gap: 24px;
       align-items: start;
     }
 
-    /* ===== 왼쪽 콘텐츠 ===== */
+    /* ── 카드 ── */
     .card {
       background: var(--white); border-radius: 20px;
       padding: 28px; box-shadow: var(--shadow-md); margin-bottom: 16px;
@@ -93,10 +118,8 @@
       border-bottom: 2px solid var(--gray-100);
     }
 
-    /* 프로필 헤더 */
-    .profile-header {
-      display: flex; gap: 20px; align-items: flex-start; margin-bottom: 24px;
-    }
+    /* ── 프로필 헤더 ── */
+    .profile-header { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 24px; }
     .profile-avatar {
       width: 90px; height: 90px; border-radius: 20px; flex-shrink: 0;
       background: linear-gradient(135deg, #FFE09A, #F5A623);
@@ -105,55 +128,43 @@
     }
     .profile-info { flex: 1; }
     .profile-name { font-size: 24px; font-weight: 900; color: var(--navy); margin-bottom: 6px; }
-    .profile-spec { font-size: 14px; color: var(--gray-600); margin-bottom: 12px; }
+    .profile-spec { font-size: 14px; color: var(--gray-600); margin-bottom: 12px; line-height: 1.6; }
     .profile-badges { display: flex; gap: 8px; flex-wrap: wrap; }
-    .badge {
-      font-size: 12px; font-weight: 700; padding: 4px 12px;
-      border-radius: 100px;
-    }
+    .badge { font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 100px; }
     .badge-gold  { background: var(--gold-light); color: var(--gold-dark); }
     .badge-navy  { background: #EEF2FF; color: var(--navy); }
-    .badge-green { background: #EAF8EF; color: #27AE60; }
+    .badge-green { background: var(--green-light); color: var(--green); }
 
-    /* 통계 4개 */
-    .stats-row {
-      display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 12px; margin-bottom: 0;
-    }
-    .stat-box {
-      background: var(--gray-100); border-radius: 14px;
-      padding: 16px 12px; text-align: center;
-    }
-    .stat-box .num {
-      font-size: 22px; font-weight: 900; color: var(--navy); display: block;
-    }
+    /* ── 통계 ── */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .stat-box { background: var(--gray-100); border-radius: 14px; padding: 16px 12px; text-align: center; }
+    .stat-box .num { font-size: 22px; font-weight: 900; color: var(--navy); display: block; }
     .stat-box .lbl { font-size: 12px; color: var(--gray-600); margin-top: 2px; }
     .star-num { color: var(--gold); }
 
-    /* 전문 분야 태그 */
+    /* ── 소개글 ── */
+    .bio-text { font-size: 14px; color: var(--gray-600); line-height: 1.8; }
+
+    /* ── 전문 분야 태그 ── */
     .spec-tags { display: flex; gap: 10px; flex-wrap: wrap; }
     .spec-tag {
-      display: flex; align-items: center; gap: 8px;
       background: var(--gray-100); border-radius: 12px;
       padding: 10px 14px; font-size: 13px; color: var(--navy); font-weight: 600;
     }
 
-    /* 경력 타임라인 */
-    .career-list { display: flex; flex-direction: column; gap: 0; }
+    /* ── 경력 타임라인 ── */
+    .career-list { display: flex; flex-direction: column; }
     .career-item {
       display: flex; gap: 16px; padding: 16px 0;
       border-bottom: 1px solid var(--gray-100); align-items: flex-start;
     }
     .career-item:last-child { border-bottom: none; }
-    .career-dot {
-      width: 12px; height: 12px; border-radius: 50%;
-      background: var(--gold); margin-top: 5px; flex-shrink: 0;
-    }
+    .career-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--gold); margin-top: 5px; flex-shrink: 0; }
     .career-year { font-size: 13px; color: var(--gray-400); width: 80px; flex-shrink: 0; }
     .career-text strong { display: block; font-size: 14px; font-weight: 800; color: var(--navy); margin-bottom: 2px; }
-    .career-text span { font-size: 13px; color: var(--gray-600); }
+    .career-text span   { font-size: 13px; color: var(--gray-600); }
 
-    /* 자격증 */
+    /* ── 자격증 ── */
     .cert-list { display: flex; flex-direction: column; gap: 12px; }
     .cert-item {
       display: flex; align-items: center; gap: 14px;
@@ -161,50 +172,41 @@
     }
     .cert-icon { font-size: 24px; flex-shrink: 0; }
     .cert-text strong { display: block; font-size: 14px; font-weight: 800; color: var(--navy); }
-    .cert-text span { font-size: 12px; color: var(--gray-600); }
+    .cert-text span   { font-size: 12px; color: var(--gray-600); }
 
-    /* 후기 */
-    .review-list { display: flex; flex-direction: column; gap: 16px; }
-    .review-item {
-      padding: 18px; background: var(--gray-100); border-radius: 16px;
+    /* ── 후기 ── */
+    .review-summary {
+      display: flex; align-items: center; gap: 20px; margin-bottom: 20px;
+      padding: 16px; background: var(--gold-light); border-radius: 14px;
     }
-    .review-top {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
-    }
+    .review-big-score { font-size: 40px; font-weight: 900; color: var(--gold-dark); }
+    .review-bars { flex: 1; }
+    .review-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 12px; color: var(--gray-600); }
+    .bar-track { flex: 1; height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden; }
+    .bar-fill  { height: 100%; background: var(--gold); border-radius: 3px; }
+    .review-list { display: flex; flex-direction: column; gap: 14px; }
+    .review-item { padding: 18px; background: var(--gray-100); border-radius: 16px; }
+    .review-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .review-stars { color: var(--gold); font-size: 14px; font-weight: 800; }
-    .review-date { font-size: 12px; color: var(--gray-400); }
-    .review-text { font-size: 14px; color: var(--gray-900); line-height: 1.7; }
+    .review-date  { font-size: 12px; color: var(--gray-400); }
+    .review-text  { font-size: 14px; color: var(--gray-900); line-height: 1.7; }
     .review-author { font-size: 12px; color: var(--gray-400); margin-top: 8px; }
-    .more-reviews {
-      text-align: center; padding: 14px; font-size: 14px;
-      color: var(--navy); font-weight: 700; cursor: pointer;
-      border: 1px solid var(--gray-200); border-radius: 12px;
-      background: var(--white); transition: background 0.2s;
-    }
-    .more-reviews:hover { background: var(--gray-100); }
+    .empty-review { text-align: center; padding: 30px; font-size: 14px; color: var(--gray-400); }
 
-    /* ===== 오른쪽 사이드바 (고정) ===== */
+    /* ── 사이드바 ── */
     .sidebar { position: sticky; top: 84px; }
-    .sidebar-card {
-      background: var(--white); border-radius: 20px;
-      padding: 24px; box-shadow: var(--shadow-md); margin-bottom: 16px;
-    }
+    .sidebar-card { background: var(--white); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-md); margin-bottom: 16px; }
     .price-label { font-size: 13px; color: var(--gray-600); margin-bottom: 6px; }
-    .price-num {
-      font-size: 28px; font-weight: 900; color: var(--navy); margin-bottom: 4px;
-    }
-    .price-note { font-size: 12px; color: var(--gray-400); margin-bottom: 20px; }
-    .availability {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 13px; color: #27AE60; font-weight: 700; margin-bottom: 20px;
-    }
-    .availability span { width: 8px; height: 8px; border-radius: 50%; background: #27AE60; display: block; }
+    .price-num   { font-size: 28px; font-weight: 900; color: var(--navy); margin-bottom: 4px; }
+    .price-note  { font-size: 12px; color: var(--gray-400); margin-bottom: 16px; }
+    .availability { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--green); font-weight: 700; margin-bottom: 20px; }
+    .availability .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
     .btn-request {
       display: block; width: 100%; padding: 16px;
       background: var(--gold); color: var(--white);
       border: none; border-radius: 14px; font-size: 16px; font-weight: 800;
-      cursor: pointer; text-decoration: none; text-align: center;
-      transition: background 0.2s; margin-bottom: 10px;
+      cursor: pointer; text-decoration: none; text-align: center; margin-bottom: 10px;
+      transition: background 0.2s;
     }
     .btn-request:hover { background: var(--gold-dark); }
     .btn-chat {
@@ -214,35 +216,53 @@
       border: none; border-radius: 14px; font-size: 14px; font-weight: 800;
       cursor: pointer; text-decoration: none; transition: opacity 0.2s;
     }
-    .btn-chat:hover { opacity: 0.88; }
-    .sidebar-info { display: flex; flex-direction: column; gap: 10px; }
-    .info-row {
-      display: flex; justify-content: space-between;
-      font-size: 13px; padding: 8px 0; border-bottom: 1px solid var(--gray-100);
-    }
+    .btn-chat:hover { opacity: 0.85; }
+    .info-list { display: flex; flex-direction: column; gap: 0; }
+    .info-row { display: flex; justify-content: space-between; font-size: 13px; padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
     .info-row:last-child { border-bottom: none; }
-    .info-row span:first-child { color: var(--gray-600); }
-    .info-row span:last-child  { font-weight: 700; color: var(--navy); }
+    .info-row .lbl { color: var(--gray-600); }
+    .info-row .val { font-weight: 700; color: var(--navy); }
 
-    /* 모바일 */
+    /* ── 승인 대기 오버레이 ── */
+    .pending-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); z-index: 500;
+      align-items: center; justify-content: center;
+    }
+    .pending-overlay.show { display: flex; }
+    .pending-box {
+      background: var(--white); border-radius: 20px;
+      padding: 36px; max-width: 380px; width: 90%; text-align: center;
+    }
+    .pending-box .pi { font-size: 48px; margin-bottom: 12px; }
+    .pending-box h3 { font-size: 18px; font-weight: 900; color: var(--navy); margin-bottom: 8px; }
+    .pending-box p  { font-size: 14px; color: var(--gray-600); line-height: 1.7; }
+
+    /* ── 모바일 ── */
     @media (max-width: 700px) {
       .page-inner { grid-template-columns: 1fr; }
       .sidebar { position: static; }
       .stats-row { grid-template-columns: repeat(2, 1fr); }
       .profile-avatar { width: 72px; height: 72px; font-size: 34px; }
-      .profile-name { font-size: 20px; }
+      .profile-name   { font-size: 20px; }
     }
-
-    /* 모바일 하단 고정 버튼 */
     .mobile-cta {
       display: none; position: fixed; bottom: 0; left: 0; right: 0;
       background: var(--white); border-top: 1px solid var(--gray-200);
-      padding: 16px 20px; gap: 10px;
+      padding: 14px 20px; gap: 10px;
     }
-    @media (max-width: 700px) {
-      .mobile-cta { display: flex; }
-      .mobile-cta .btn-request { margin-bottom: 0; }
+    @media (max-width: 700px) { .mobile-cta { display: flex; } }
+
+    /* 토스트 */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--navy); color: var(--white);
+      padding: 12px 24px; border-radius: 30px;
+      font-size: 14px; font-weight: 600; z-index: 9999;
+      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
     }
+    .toast.show { transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
@@ -255,267 +275,454 @@
   </a>
   <button class="share-btn" onclick="shareProfile()">🔗 공유하기</button>
 </header>
-<div class="share-toast" id="shareToast">📋 링크가 복사됐어요!</div>
+
 <div class="selected-banner" id="selectedBanner">
   ✅ 이 선생님을 선택하셨어요! 아래에서 일정을 조율해보세요.
 </div>
 
-<main>
+<!-- 로딩 -->
+<div id="loadingState">
+  <div style="font-size:36px;margin-bottom:12px">⏳</div>
+  프로필을 불러오는 중...
+</div>
+
+<!-- 에러 -->
+<div id="errorState">
+  <div class="err-icon">😥</div>
+  <p>선생님 프로필을 찾을 수 없습니다.</p>
+  <p style="font-size:13px;color:#9CA3AF;margin-top:8px;">선생님이 아직 프로필을 완성하지 않았거나<br>잠시 후 다시 이용 가능할 수 있어요.</p>
+  <a href="javascript:history.back()" style="display:inline-block;margin-top:16px;color:var(--navy);font-weight:700">← 견적 목록으로</a>
+</div>
+
+<!-- 메인 -->
+<div id="mainContent">
   <div class="page-inner">
 
-    <!-- ===== 왼쪽 콘텐츠 ===== -->
+    <!-- ── 왼쪽 ── -->
     <div class="left-col">
 
-      <!-- 프로필 헤더 -->
+      <!-- 프로필 헤더 카드 -->
       <div class="card">
         <div class="profile-header">
-          <div class="profile-avatar">👨‍⚕️</div>
+          <div class="profile-avatar" id="profileAvatar">👨‍⚕️</div>
           <div class="profile-info">
-            <div class="profile-name">박성민 선생님</div>
-            <div class="profile-spec">관절·수술 후 재활 · 보행 훈련 전문</div>
-            <div class="profile-badges">
-              <span class="badge badge-gold">🥇 이달의 베스트</span>
-              <span class="badge badge-navy">물리치료사</span>
-              <span class="badge badge-green">✓ 신원 인증</span>
-            </div>
+            <div class="profile-name" id="profileName">-</div>
+            <div class="profile-spec" id="profileSpec">-</div>
+            <div class="profile-badges" id="profileBadges"></div>
           </div>
         </div>
         <div class="stats-row">
           <div class="stat-box">
-            <span class="num star-num">★ 4.99</span>
+            <span class="num star-num" id="statRating">★ -</span>
             <div class="lbl">평점</div>
           </div>
           <div class="stat-box">
-            <span class="num">214회</span>
+            <span class="num" id="statVisits">-</span>
             <div class="lbl">누적 방문</div>
           </div>
           <div class="stat-box">
-            <span class="num">97%</span>
+            <span class="num" id="statRebook">-</span>
             <div class="lbl">재예약률</div>
           </div>
           <div class="stat-box">
-            <span class="num">11년</span>
+            <span class="num" id="statCareerYears">-</span>
             <div class="lbl">경력</div>
           </div>
         </div>
       </div>
 
+      <!-- 소개글 -->
+      <div class="card" id="bioCard" style="display:none">
+        <div class="card-title">💬 선생님 소개</div>
+        <div class="bio-text" id="bioText"></div>
+      </div>
+
       <!-- 전문 분야 -->
-      <div class="card">
+      <div class="card" id="specCard" style="display:none">
         <div class="card-title">🎯 전문 분야</div>
-        <div class="spec-tags">
-          <div class="spec-tag">🦵 관절·수술 후 재활</div>
-          <div class="spec-tag">🚶 보행 훈련</div>
-          <div class="spec-tag">🧠 뇌졸중 재활</div>
-          <div class="spec-tag">⚖️ 균형 감각 훈련</div>
-          <div class="spec-tag">💪 근력 강화</div>
-          <div class="spec-tag">🏠 낙상 예방</div>
-        </div>
+        <div class="spec-tags" id="specTags"></div>
       </div>
 
-      <!-- 경력 -->
-      <div class="card">
-        <div class="card-title">📋 경력 사항</div>
-        <div class="career-list">
-          <div class="career-item">
-            <div class="career-dot"></div>
-            <div class="career-year">2022 – 현재</div>
-            <div class="career-text">
-              <strong>골든 시니어스 소속 재활운동사</strong>
-              <span>시니어 방문 재활운동 전담 · 누적 214회 방문</span>
-            </div>
-          </div>
-          <div class="career-item">
-            <div class="career-dot"></div>
-            <div class="career-year">2018 – 2022</div>
-            <div class="career-text">
-              <strong>서울 ○○병원 물리치료사</strong>
-              <span>정형외과·신경계 재활치료 담당</span>
-            </div>
-          </div>
-          <div class="career-item">
-            <div class="career-dot"></div>
-            <div class="career-year">2015 – 2018</div>
-            <div class="career-text">
-              <strong>○○재활의학과 물리치료사</strong>
-              <span>수술 후 재활 · 노인 보행 훈련 전문</span>
-            </div>
-          </div>
-          <div class="career-item">
-            <div class="career-dot"></div>
-            <div class="career-year">2013</div>
-            <div class="career-text">
-              <strong>○○대학교 물리치료학과 졸업</strong>
-              <span>물리치료사 국가면허 취득</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- 결제 잠금 영역 (경력 + 후기) -->
+      <div class="pay-lock-wrap" id="payLockWrap">
 
-      <!-- 자격증 -->
-      <div class="card">
-        <div class="card-title">🎓 자격증 · 인증</div>
-        <div class="cert-list">
-          <div class="cert-item">
-            <div class="cert-icon">📜</div>
-            <div class="cert-text">
-              <strong>물리치료사 국가면허</strong>
-              <span>보건복지부 · 골든 시니어스 검증 완료</span>
-            </div>
-          </div>
-          <div class="cert-item">
-            <div class="cert-icon">🏅</div>
-            <div class="cert-text">
-              <strong>노인스포츠지도사 2급</strong>
-              <span>문화체육관광부 공인</span>
-            </div>
-          </div>
-          <div class="cert-item">
-            <div class="cert-icon">🛡️</div>
-            <div class="cert-text">
-              <strong>배상책임보험 가입 완료</strong>
-              <span>활동 중 사고 발생 시 보험 적용</span>
-            </div>
-          </div>
+        <!-- 경력 -->
+        <div class="card" id="careerCard" style="display:none">
+          <div class="card-title">📋 경력 사항</div>
+          <div class="career-list" id="careerList"></div>
         </div>
-      </div>
 
-      <!-- 이용 후기 -->
-      <div class="card">
-        <div class="card-title">💬 이용 후기 <span style="font-size:13px;color:var(--gray-400);font-weight:400">(127개)</span></div>
-        <div class="review-list">
-          <div class="review-item">
-            <div class="review-top">
-              <div class="review-stars">★★★★★ 5.0</div>
-              <div class="review-date">2025.03.28</div>
-            </div>
-            <div class="review-text">어머니 무릎 수술 후 재활을 도와주셨는데 정말 친절하시고 전문적이세요. 매 회차 운동 내용을 카카오톡으로 보내주셔서 멀리서도 안심이 됐어요. 덕분에 어머니 보행이 많이 좋아지셨습니다!</div>
-            <div class="review-author">보호자 김○○님 · 주 2회 · 8회 진행</div>
-          </div>
-          <div class="review-item">
-            <div class="review-top">
-              <div class="review-stars">★★★★★ 5.0</div>
-              <div class="review-date">2025.03.14</div>
-            </div>
-            <div class="review-text">아버지가 뇌졸중 후유증으로 보행이 불안정하셨는데, 3개월 꾸준히 받으시니 혼자 산책하실 정도로 회복하셨어요. 선생님이 어르신 눈높이에 맞게 운동을 조절해주셔서 좋았습니다.</div>
-            <div class="review-author">보호자 이○○님 · 주 3회 · 12회 진행</div>
-          </div>
-          <div class="review-item">
-            <div class="review-top">
-              <div class="review-stars">★★★★★ 4.9</div>
-              <div class="review-date">2025.02.22</div>
-            </div>
-            <div class="review-text">처음엔 낯설어하시던 어머니가 이제는 선생님 오시는 날을 기다리세요 😊 운동 외에도 어르신 기분 상태나 식욕도 체크해주셔서 가족 입장에서 정말 든든합니다.</div>
-            <div class="review-author">보호자 박○○님 · 주 2회 · 20회 진행</div>
+        <!-- 자격증 -->
+        <div class="card" id="certCard">
+          <div class="card-title">🎓 자격증 · 인증</div>
+          <div class="cert-list" id="certList"></div>
+        </div>
+
+        <!-- 후기 -->
+        <div class="card">
+          <div class="card-title">⭐ 이용 후기 <span id="reviewCountLabel" style="font-size:13px;color:var(--gray-400);font-weight:400"></span></div>
+          <div id="reviewContent"></div>
+        </div>
+
+        <!-- 잠금 오버레이 (JS로 제어) -->
+        <div class="pay-lock-overlay" id="payLockOverlay" style="display:none;">
+          <div class="pay-lock-box">
+            <div class="pay-lock-icon">🔒</div>
+            <div class="pay-lock-title">결제 후 전체 프로필 공개</div>
+            <div class="pay-lock-sub">경력 · 자격증 · 이용 후기는<br>결제 완료 후 확인할 수 있어요.</div>
+            <a id="payLockBtn" href="#" class="pay-lock-btn">💳 결제하고 전체 보기</a>
           </div>
         </div>
-        <div class="more-reviews" onclick="alert('로그인 후 전체 후기를 확인하세요.')">
-          후기 전체 보기 (127개) →
-        </div>
+
       </div>
 
     </div><!-- /left-col -->
 
-    <!-- ===== 오른쪽 사이드바 ===== -->
+    <!-- ── 오른쪽 사이드바 ── -->
     <div class="sidebar">
       <div class="sidebar-card">
         <div class="price-label">1회 방문 기준</div>
-        <div class="price-num">6만원~</div>
+        <div class="price-num" id="sidePrice">-</div>
         <div class="price-note">방문 지역·시간에 따라 조정 가능</div>
         <div class="availability">
-          <span></span> 현재 신규 고객 수락 가능
+          <div class="dot"></div>
+          현재 신규 고객 수락 가능
         </div>
-        <a href="quotes.html" class="btn-request">📋 이 선생님께 견적 요청</a>
+        <a id="ctaBtn" href="#" class="btn-request">📋 이 선생님께 견적 요청</a>
         <a href="http://pf.kakao.com/_Pwxoln" target="_blank" class="btn-chat">
           💬 카카오로 문의하기
         </a>
       </div>
-
       <div class="sidebar-card">
-        <div class="sidebar-info">
-          <div class="info-row">
-            <span>활동 지역</span>
-            <span>서울 강남·서초·송파</span>
-          </div>
-          <div class="info-row">
-            <span>방문 가능 시간</span>
-            <span>평일 09:00~18:00</span>
-          </div>
-          <div class="info-row">
-            <span>1회 소요 시간</span>
-            <span>약 50분</span>
-          </div>
-          <div class="info-row">
-            <span>최소 방문 횟수</span>
-            <span>주 1회부터</span>
-          </div>
-          <div class="info-row">
-            <span>신원 인증</span>
-            <span>✅ 완료</span>
-          </div>
-          <div class="info-row">
-            <span>보험 가입</span>
-            <span>✅ 완료</span>
-          </div>
-        </div>
+        <div class="info-list" id="infoList"></div>
       </div>
-    </div><!-- /sidebar -->
+    </div>
 
-  </div><!-- /page-inner -->
-</main>
-
-<!-- 모바일 하단 고정 버튼 -->
-<div class="mobile-cta">
-  <a href="quotes.html" class="btn-request" style="flex:1">📋 견적 요청</a>
-  <button onclick="shareProfile()" style="width:52px;height:52px;border-radius:14px;background:var(--gray-100);border:none;font-size:20px;cursor:pointer;flex-shrink:0;">🔗</button>
-  <a href="http://pf.kakao.com/_Pwxoln" target="_blank" class="btn-chat" style="width:56px;border-radius:14px;">💬</a>
+  </div>
 </div>
 
+<!-- 승인 대기 안내 -->
+<div class="pending-overlay" id="pendingOverlay">
+  <div class="pending-box">
+    <div class="pi">⏳</div>
+    <h3>현재 심사 중인 선생님입니다</h3>
+    <p>골든 시니어스가 자격을 확인하고 있어요.<br>승인 후에 서비스를 시작합니다.</p>
+  </div>
+</div>
+
+<!-- 모바일 하단 버튼 -->
+<div class="mobile-cta">
+  <a id="mobileCta" href="#" class="btn-request" style="flex:1">📋 견적 요청</a>
+  <button onclick="shareProfile()" style="width:52px;height:52px;border-radius:14px;background:var(--gray-100);border:none;font-size:20px;cursor:pointer;flex-shrink:0;">🔗</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
-  // 견적 선택 후 진입 시 배너 + 버튼 변경
-  (function() {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('from') === 'selected') {
-      // 선택 완료 배너 표시 (fixed — 헤더 바로 아래)
-      const banner = document.getElementById('selectedBanner');
-      banner.classList.add('show');
-      // 배너 높이만큼 main 콘텐츠 밀어내기
-      setTimeout(() => {
-        document.querySelector('main').style.paddingTop = banner.offsetHeight + 'px';
-      }, 50);
-
-      // 사이드바 버튼 → 일정 조율 버튼으로 교체
-      const reqBtn = document.querySelector('.btn-request');
-      if (reqBtn) {
-        reqBtn.textContent = '📅 일정 조율 시작하기';
-        reqBtn.href = `schedule-request.html?teacherName=${encodeURIComponent('박성민 선생님')}&spec=${encodeURIComponent('근골격계 재활 · 낙상예방 전문')}`;
-      }
-
-      // 모바일 하단 CTA도 교체
-      const mobileCta = document.querySelector('.mobile-cta .btn-request');
-      if (mobileCta) {
-        mobileCta.textContent = '📅 일정 조율 시작하기';
-        mobileCta.href = 'complete.html?selected=true';
-      }
-    }
-  })();
-
-  function shareProfile() {
-    const url  = window.location.href;
-    const text = '박성민 선생님 프로필 | 골든 시니어스 방문재활운동';
-    if (navigator.share) {
-      navigator.share({ title: text, url: url }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(url).then(() => {
-        const toast = document.getElementById('shareToast');
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2500);
-      }).catch(() => {
-        prompt('아래 링크를 복사하세요:', url);
-      });
-    }
-  }
+  firebase.initializeApp({
+    apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
+    authDomain:        "golden-seniors.firebaseapp.com",
+    projectId:         "golden-seniors",
+    storageBucket:     "golden-seniors.firebasestorage.app",
+    messagingSenderId: "244026917780",
+    appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
+  });
 </script>
 
+<script>
+const db   = firebase.firestore();
+const auth = firebase.auth();
+
+const params       = new URLSearchParams(window.location.search);
+const teacherUid   = params.get('uid');
+const fromSelected = params.get('from') === 'selected';
+const quoteId      = params.get('quoteId') || '';
+
+/* ── 진입 즉시 로드 ── */
+(async function init() {
+  if (!teacherUid) { showError(); return; }
+
+  // auth 상태 확인 대기
+  await new Promise(resolve => {
+    const unsub = auth.onAuthStateChanged(u => { unsub(); resolve(u); });
+  });
+
+  try {
+    // 1. 선생님 정보
+    const snap = await db.collection('users').doc(teacherUid).get();
+    if (!snap.exists) { showError(); return; }
+    if (snap.data().role && snap.data().role !== 'teacher') { showError(); return; }
+    const data = snap.data();
+
+    // 2. 로그인한 고객의 매칭/결제 상태 확인
+    let matchedQuoteId = quoteId || '';
+    let isPaid = false;
+
+    const user = auth.currentUser;
+    if (user && (!data.role || data.role === 'teacher')) {
+      // 이 선생님과 매칭된 견적 찾기
+      try {
+        const qSnap = await db.collection('quotes')
+          .where('userId', '==', user.uid)
+          .where('matchedTeacherUid', '==', teacherUid)
+          .limit(1).get();
+        if (!qSnap.empty) {
+          const qData = qSnap.docs[0].data();
+          matchedQuoteId = matchedQuoteId || qSnap.docs[0].id;
+          isPaid = qData.paymentStatus === 'paid';
+        }
+      } catch(e) { console.warn('매칭 상태 확인 실패:', e); }
+    }
+
+    await renderProfile(data, matchedQuoteId, isPaid);
+
+    // 승인 대기 중인 경우 오버레이
+    if (data.status === 'pending') {
+      document.getElementById('pendingOverlay').classList.add('show');
+    }
+  } catch (e) {
+    console.error('프로필 로드 오류:', e);
+    showError();
+  }
+})();
+
+function showError() {
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('errorState').style.display = 'block';
+}
+
+/* ── 프로필 렌더 ── */
+async function renderProfile(d, matchedQuoteId, isPaid) {
+  document.title = (d.name || '선생님') + ' 프로필 | 골든 시니어스';
+
+  // 아바타
+  document.getElementById('profileAvatar').textContent = d.avatar || '👨‍⚕️';
+
+  // 이름 · 전문분야
+  document.getElementById('profileName').textContent = (d.name || '-') + ' 선생님';
+  const specs = (d.specialties || []).join(' · ');
+  document.getElementById('profileSpec').textContent = specs || '전문 분야 준비 중';
+
+  // 뱃지
+  const badgeEl = document.getElementById('profileBadges');
+  const certs   = (d.certifications || '').split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+  if (certs.length > 0) badgeEl.innerHTML += `<span class="badge badge-navy">${esc(certs[0])}</span>`;
+  badgeEl.innerHTML += `<span class="badge badge-green">✓ 골든 시니어스 인증</span>`;
+
+  // 통계 (샘플 — 추후 리뷰 집계로 대체 가능)
+  document.getElementById('statRating').textContent   = '★ ' + (d.rating   || '신규');
+  document.getElementById('statVisits').textContent   = d.visitCount   ? d.visitCount + '회' : '신규';
+  document.getElementById('statRebook').textContent   = d.rebookRate   ? d.rebookRate + '%'  : '-';
+  document.getElementById('statCareerYears').textContent = d.careerYears ? d.careerYears + '년' : '-';
+
+  // 소개글
+  if (d.bio) {
+    document.getElementById('bioText').textContent = d.bio;
+    document.getElementById('bioCard').style.display = 'block';
+  }
+
+  // 전문 분야 태그
+  if ((d.specialties || []).length > 0) {
+    const specEmojis = { '근골격계': '🦵', '뇌졸중': '🧠', '치매예방': '💡', '낙상예방': '🏠', '심폐기능': '❤️', '파킨슨': '🤝', '수술 후 재활': '🩹', '보행훈련': '🚶' };
+    document.getElementById('specTags').innerHTML = (d.specialties).map(s =>
+      `<div class="spec-tag">${specEmojis[s] || '🎯'} ${esc(s)}</div>`
+    ).join('');
+    document.getElementById('specCard').style.display = 'block';
+  }
+
+  // 경력
+  if (d.careerList && d.careerList.length > 0) {
+    document.getElementById('careerList').innerHTML = d.careerList.map(c => `
+      <div class="career-item">
+        <div class="career-dot"></div>
+        <div class="career-year">${esc(c.period || '')}</div>
+        <div class="career-text">
+          <strong>${esc(c.title || '')}</strong>
+          <span>${esc(c.desc  || '')}</span>
+        </div>
+      </div>
+    `).join('');
+    document.getElementById('careerCard').style.display = 'block';
+  } else if (d.career) {
+    // 구버전 텍스트 경력 처리
+    document.getElementById('careerList').innerHTML = `
+      <div class="career-item">
+        <div class="career-dot"></div>
+        <div class="career-year"></div>
+        <div class="career-text"><span>${esc(d.career)}</span></div>
+      </div>`;
+    document.getElementById('careerCard').style.display = 'block';
+  }
+
+  // 자격증
+  const certList = document.getElementById('certList');
+  const certItems = (d.certifications || '').split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+  if (certItems.length > 0) {
+    certList.innerHTML = certItems.map(c => `
+      <div class="cert-item">
+        <div class="cert-icon">📜</div>
+        <div class="cert-text">
+          <strong>${esc(c)}</strong>
+          <span>골든 시니어스 검증 완료</span>
+        </div>
+      </div>
+    `).join('');
+  }
+  certList.innerHTML += `
+    <div class="cert-item">
+      <div class="cert-icon">🛡️</div>
+      <div class="cert-text">
+        <strong>배상책임보험 가입 완료</strong>
+        <span>활동 중 사고 발생 시 보험 적용</span>
+      </div>
+    </div>`;
+
+  // 후기 (Firestore reviews 서브컬렉션 — 아직 없으면 신규 안내)
+  loadReviews(teacherUid);
+
+  // 사이드바
+  const price = d.price ? d.price + '만원~' : '문의';
+  document.getElementById('sidePrice').textContent = price;
+
+  const infoRows = [
+    ['활동 지역',       d.region      || '-'],
+    ['방문 가능 시간',  d.availTime   || '평일 09:00~18:00'],
+    ['1회 소요 시간',   d.duration    || '약 50분'],
+    ['최소 방문 횟수',  d.minVisit    || '주 1회부터'],
+    ['신원 인증',       '✅ 완료'],
+    ['보험 가입',       '✅ 완료'],
+  ];
+  document.getElementById('infoList').innerHTML = infoRows.map(([l, v]) =>
+    `<div class="info-row"><span class="lbl">${l}</span><span class="val">${esc(v)}</span></div>`
+  ).join('');
+
+  // CTA 버튼
+  const ctaBtn    = document.getElementById('ctaBtn');
+  const mobileCta = document.getElementById('mobileCta');
+  const teacherNameEnc = encodeURIComponent((d.name || '') + ' 선생님');
+  const serviceEnc     = encodeURIComponent((d.specialties||[]).join(' · ') || '방문 재활운동 서비스');
+  const payHref  = `payment.html?quoteId=${matchedQuoteId}&teacherUid=${teacherUid}&teacherName=${teacherNameEnc}&serviceName=${serviceEnc}`;
+  const chatHref = `chat.html?chatId=${matchedQuoteId}&partnerUid=${teacherUid}&partnerName=${teacherNameEnc}&quoteTitle=${serviceEnc}&from=mypage`;
+
+  if (matchedQuoteId) {
+    // ── 이 선생님과 매칭된 고객 ──
+    document.getElementById('selectedBanner').classList.add('show');
+
+    if (isPaid) {
+      // 결제 완료 → 전체 공개 + 채팅 버튼
+      ctaBtn.textContent = '💬 선생님과 채팅하기';
+      ctaBtn.href = chatHref;
+      mobileCta.textContent = '💬 채팅하기';
+      mobileCta.href = chatHref;
+    } else {
+      // 결제 전 → 하단 콘텐츠 잠금
+      const lockWrap    = document.getElementById('payLockWrap');
+      const lockOverlay = document.getElementById('payLockOverlay');
+      const lockBtn     = document.getElementById('payLockBtn');
+      lockWrap.style.position = 'relative';
+      lockWrap.querySelectorAll('.card').forEach(c => c.classList.add('pay-lock-blur'));
+      lockOverlay.style.display = 'flex';
+      if (lockBtn) lockBtn.href = payHref;
+
+      ctaBtn.textContent = '💳 결제하기';
+      ctaBtn.href = payHref;
+      ctaBtn.style.background = '#F5A623';
+      mobileCta.textContent = '💳 결제하기';
+      mobileCta.href = payHref;
+
+      // 채팅 버튼 추가
+      const ctaWrap   = ctaBtn.parentElement;
+      const chatBtnEl = document.createElement('a');
+      chatBtnEl.href  = chatHref;
+      chatBtnEl.style.cssText = 'display:block;width:100%;padding:14px;background:#1A2B4A;color:white;border-radius:14px;font-size:16px;font-weight:800;text-align:center;text-decoration:none;margin-top:10px;';
+      chatBtnEl.textContent = '💬 선생님과 채팅하기';
+      ctaWrap.appendChild(chatBtnEl);
+    }
+  } else {
+    // ── 일반 방문 (매칭 없음) ──
+    ctaBtn.href    = `../index.html#quote`;
+    mobileCta.href = `../index.html#quote`;
+  }
+
+  // 화면 전환
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('mainContent').style.display  = 'block';
+}
+
+/* ── 후기 로드 ── */
+async function loadReviews(uid) {
+  try {
+    const snap = await db.collection('reviews').where('teacherUid', '==', uid).orderBy('createdAt', 'desc').limit(5).get();
+    const reviews = snap.docs.map(d => d.data());
+    const reviewContent = document.getElementById('reviewContent');
+    document.getElementById('reviewCountLabel').textContent = reviews.length > 0 ? `(${reviews.length}개)` : '';
+
+    if (reviews.length === 0) {
+      reviewContent.innerHTML = `<div class="empty-review">⭐ 아직 후기가 없어요.<br>첫 고객이 되어보세요!</div>`;
+      return;
+    }
+
+    // 평점 요약
+    const avg = (reviews.reduce((s, r) => s + (r.rating || 5), 0) / reviews.length).toFixed(1);
+    const dist = [5,4,3,2,1].map(s => reviews.filter(r => Math.round(r.rating) === s).length);
+    reviewContent.innerHTML = `
+      <div class="review-summary">
+        <div class="review-big-score">★ ${avg}</div>
+        <div class="review-bars">
+          ${[5,4,3,2,1].map((s,i) => `
+            <div class="review-bar-row">
+              <span>${s}점</span>
+              <div class="bar-track"><div class="bar-fill" style="width:${reviews.length ? (dist[i]/reviews.length*100) : 0}%"></div></div>
+              <span>${dist[i]}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="review-list">
+        ${reviews.map(r => `
+          <div class="review-item">
+            <div class="review-top">
+              <div class="review-stars">${'★'.repeat(Math.round(r.rating || 5))} ${(r.rating || 5).toFixed(1)}</div>
+              <div class="review-date">${fmtDate(r.createdAt)}</div>
+            </div>
+            <div class="review-text">${esc(r.content || '')}</div>
+            <div class="review-author">${esc(r.authorName || '고객')}님 · ${esc(r.visitInfo || '')}</div>
+          </div>
+        `).join('')}
+      </div>`;
+  } catch(e) {
+    document.getElementById('reviewContent').innerHTML = `<div class="empty-review">후기를 불러올 수 없습니다.</div>`;
+  }
+}
+
+/* ── 공유 ── */
+function shareProfile() {
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({ title: document.title, url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(url).then(() => showToast('📋 링크가 복사됐어요!')).catch(() => prompt('링크를 복사하세요:', url));
+  }
+}
+
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDate(ts) {
+  if (!ts) return '';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
 </body>
 </html>

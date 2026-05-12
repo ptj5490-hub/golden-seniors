@@ -407,19 +407,43 @@
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
       margin-top: 56px;
     }
+    @media (max-width: 1100px) {
+      .reviews-grid { grid-template-columns: repeat(2, 1fr); }
+    }
     .review-card {
       background: var(--gray-100); border-radius: var(--radius);
-      padding: 28px; transition: transform 0.2s;
+      overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     }
-    .review-card:hover { transform: translateY(-3px); }
-    .review-stars { color: var(--gold); font-size: 18px; margin-bottom: 14px; }
-    .review-text { font-size: 15px; color: var(--gray-900); line-height: 1.7; margin-bottom: 20px; font-style: italic; }
-    .review-text::before { content: '"'; font-size: 24px; color: var(--gold); font-style: normal; }
+    .review-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .review-photo {
+      width: 100%; height: 200px; object-fit: cover;
+      display: block;
+    }
+    .review-photo-placeholder {
+      width: 100%; height: 200px; background: linear-gradient(135deg, #FFF8EC, #FFF3DC);
+      display: flex; align-items: center; justify-content: center; font-size: 48px;
+    }
+    .review-body { padding: 22px 24px 24px; }
+    .review-tag {
+      display: inline-block; background: var(--gold-light); color: var(--gold-dark);
+      border-radius: 6px; padding: 3px 10px; font-size: 11px; font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .review-stars { color: var(--gold); font-size: 16px; margin-bottom: 10px; }
+    .review-text {
+      font-size: 14px; color: var(--gray-900); line-height: 1.8;
+      margin-bottom: 18px; position: relative; padding-left: 18px;
+    }
+    .review-text::before {
+      content: '"'; font-size: 32px; color: var(--gold);
+      position: absolute; left: 0; top: -6px; line-height: 1;
+    }
     .review-author { display: flex; align-items: center; gap: 12px; }
     .review-avatar {
-      width: 42px; height: 42px; border-radius: 50%;
+      width: 40px; height: 40px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 20px; font-weight: 700;
+      font-size: 18px; font-weight: 700; flex-shrink: 0;
     }
     .review-name { font-size: 14px; font-weight: 700; color: var(--navy); }
     .review-info { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
@@ -1702,8 +1726,13 @@
 
     <!-- 월 배너 -->
     <div class="best-month-banner">
-      <span>📅</span> 2025년 4월 베스트 선생님
+      <span>📅</span> <span id="bestMonthLabel"></span> 베스트 선생님
     </div>
+    <script>
+      const _now = new Date();
+      document.getElementById('bestMonthLabel').textContent =
+        `${_now.getFullYear()}년 ${_now.getMonth()+1}월`;
+    </script>
 
     <!-- 선발 기준 -->
     <div class="best-criteria">
@@ -1725,7 +1754,7 @@
     <div class="best-layout">
 
       <!-- 🥇 1등 카드 -->
-      <a href="pages/teacher.html" style="text-decoration:none;color:inherit;" class="best-card best-card-1st">
+      <a href="#calc" style="text-decoration:none;color:inherit;" class="best-card best-card-1st">
         <div class="best-photo">
           👨‍⚕️
           <div class="best-rank">🥇</div>
@@ -1750,7 +1779,7 @@
       <div class="best-right">
 
         <!-- 🥈 2등 카드 -->
-        <a href="pages/teacher.html" style="text-decoration:none;color:inherit;" class="best-card best-card-2nd">
+        <a href="#calc" style="text-decoration:none;color:inherit;" class="best-card best-card-2nd">
           <div class="best-photo">
             👨‍⚕️
             <div class="best-rank">🥈</div>
@@ -1768,7 +1797,7 @@
         </a>
 
         <!-- 🥉 3등 카드 -->
-        <a href="pages/teacher.html" style="text-decoration:none;color:inherit;" class="best-card best-card-3rd">
+        <a href="#calc" style="text-decoration:none;color:inherit;" class="best-card best-card-3rd">
           <div class="best-photo">
             👩‍⚕️
             <div class="best-rank">🥉</div>
@@ -1795,7 +1824,6 @@
         <strong>골든 시니어스</strong>의 모든 선생님은 자격증·면접·실기 테스트를 통과했습니다.
       </div>
       <a href="pages/teachers.html" class="best-join" style="background:var(--gold);color:var(--white);">전체 선생님 보기 →</a>
-      <a href="#calc" class="best-join">재활운동사로 등록하기 →</a>
     </div>
 
   </div>
@@ -1807,39 +1835,117 @@
     <div class="section-label">이용 후기</div>
     <h2 class="section-title">직접 경험한 분들의<br>진짜 이야기</h2>
     <div class="reviews-grid">
+
+      <!-- 후기 1: 인공관절 수술 후 재활 -->
       <div class="review-card">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">뇌졸중 후 거동이 불편하셨던 아버지가 3개월 만에 혼자 화장실을 다니실 수 있게 됐어요. 담당 선생님이 정말 친절하고 전문적이에요.</p>
-        <div class="review-author">
-          <div class="review-avatar" style="background:#FFF3DC; color:#D4891A;">김</div>
-          <div>
-            <div class="review-name">김○○님 (자녀)</div>
-            <div class="review-info">서울 강남구 · 3개월 이용</div>
+        <img src="images/reviews/review-1.jpg" alt="방문 재활 운동 후기" class="review-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="review-photo-placeholder" style="display:none;">🏃</div>
+        <div class="review-body">
+          <div class="review-tag">인공관절 수술 후 재활</div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">친정엄마가 인공관절 수술 후 허리·골반·어깨 통증으로 고생하셨어요. 겨울이라 외출 자체가 부담이었는데 선생님이 직접 방문해 주시고, 요가매트·도구도 다 챙겨오셨어요. 수업 후 동영상과 숙제까지 내주시니 딸인 제가 봐도 정말 안심이 돼요.</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background:#FFF3DC; color:#D4891A;">이</div>
+            <div>
+              <div class="review-name">이○○님 (자녀)</div>
+              <div class="review-info">친정엄마 인공관절 수술 후 재활 · 진행 중</div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- 후기 2: 허리디스크 6개월 -->
       <div class="review-card">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">무릎 수술 후 병원 재활이 끝났는데도 집에서 관리가 필요했어요. 골든 시니어스 덕분에 계속 체계적으로 관리받을 수 있었습니다.</p>
-        <div class="review-author">
-          <div class="review-avatar" style="background:#E8F8F0; color:#1A7A4A;">이</div>
-          <div>
-            <div class="review-name">이○○님 (75세)</div>
-            <div class="review-info">경기 성남시 · 6개월 이용</div>
+        <img src="images/reviews/review-2.jpg" alt="허리디스크 재활 후기" class="review-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="review-photo-placeholder" style="display:none;">💪</div>
+        <div class="review-body">
+          <div class="review-tag">허리디스크 재활 · 6개월 코스</div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">아버지가 허리디스크로 양말·신발 신는 것도 혼자 못 하셨어요. 3개월 꾸준히 하시니 무거운 물건도 들 수 있게 되셨고, 일상생활을 완전히 혼자 하세요. 지인들에게도 소개했습니다.</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background:#E8F8F0; color:#1A7A4A;">김</div>
+            <div>
+              <div class="review-name">김○○님 (자녀)</div>
+              <div class="review-info">아버지 허리디스크 재활 · 6개월 이용</div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- 후기 3: 만성 허리통증 → 등산 -->
       <div class="review-card">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">앱으로 매주 리포트를 보내줘서 부산에 있는 저도 서울 어머니 건강을 챙길 수 있어요. 이런 서비스가 있다니 정말 감사합니다.</p>
-        <div class="review-author">
-          <div class="review-avatar" style="background:#EEF2FF; color:#3730A3;">박</div>
-          <div>
-            <div class="review-name">박○○님 (자녀)</div>
-            <div class="review-info">원거리 가족 · 4개월 이용</div>
+        <img src="images/reviews/review-3.jpg" alt="만성통증 회복 후기" class="review-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="review-photo-placeholder" style="display:none;">🌸</div>
+        <div class="review-body">
+          <div class="review-tag">만성 허리통증 회복 · 3개월</div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">엄마가 허리디스크로 조금만 걸어도 통증이 심하셨어요. 헬스장은 부담스러워 방문 재활을 신청했는데, 체험 1~2번 만에 통증이 훅 줄었어요. 지금은 등산도 자유롭게 다니세요!</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background:#EEF2FF; color:#3730A3;">박</div>
+            <div>
+              <div class="review-name">박○○님 (자녀)</div>
+              <div class="review-info">어머니 만성 허리통증 · 3개월 이용</div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- 후기 4: 발목통증 -->
+      <div class="review-card">
+        <img src="images/reviews/review-4.jpg" alt="발목통증 재활 후기" class="review-photo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="review-photo-placeholder" style="display:none;">🦶</div>
+        <div class="review-body">
+          <div class="review-tag">발목통증 재활</div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">엄마가 발목통증으로 오래 고생하셨는데, 병원 가도 해결이 안 됐어요. 선생님 만나고 나서 서서히 좋아지셨어요. 이동이 힘드신데 직접 방문해 주시니 너무 편하고 좋았어요. 완전 강추해요!</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background:#FFF0F0; color:#C0392B;">최</div>
+            <div>
+              <div class="review-name">최○○님 (자녀)</div>
+              <div class="review-info">어머니 발목통증 재활 · 진행 중</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 후기 5: 어깨/허리 만성통증 -->
+      <div class="review-card">
+        <div class="review-photo-placeholder">🏋️</div>
+        <div class="review-body">
+          <div class="review-tag">어깨·허리 만성통증 · 2개월</div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">어머니 허리·어깨 통증이 몇 년째 지속됐어요. 선생님이 세세한 상담과 개인 플랜을 짜주셨고, 2달째 운동 중인데 통증이 많이 사라졌어요. 운동 중 통증 생기면 바로 교정해 주셔서 정말 만족해요.</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background:#F0FFF4; color:#276749;">정</div>
+            <div>
+              <div class="review-name">정○○님 (자녀)</div>
+              <div class="review-info">어머니 어깨·허리 통증 · 2개월 이용</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 후기 6: 겨울 외출 부담 → 방문 재활 -->
+      <div class="review-card">
+        <div class="review-photo-placeholder">❄️</div>
+        <div class="review-body">
+          <div class="review-tag">수술 후 재활 · 방문 서비스</div>
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">어머니 허리·어깨 통증 물건 들어 올리는 일 많이 하셔서 몇 년째 달고 사셨어요. 선생님께서 체계적인 플랜 짜주시고, 통증 생기면 바로 교정해 주셔서 2달 만에 일상생활 불편함이 많이 개선됐어요.</p>
+          <div class="review-author">
+            <div class="review-avatar" style="background:#FFF8EC; color:#B7791F;">한</div>
+            <div>
+              <div class="review-name">한○○님 (자녀)</div>
+              <div class="review-info">친정엄마 수술 후 재활 · 진행 중</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -2079,8 +2185,8 @@
       <h4>고객센터</h4>
       <a href="#faq">자주 묻는 질문</a>
 
-      <a href="#">이용약관</a>
-      <a href="#">개인정보처리방침</a>
+      <a href="pages/terms.html">이용약관</a>
+      <a href="pages/privacy.html">개인정보처리방침</a>
     </div>
   </div>
   <div class="footer-bottom">

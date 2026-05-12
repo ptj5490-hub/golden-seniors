@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>후기 작성 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #D4891A;
+      --navy: #1A2B4A; --navy-light: #2C3E6B;
+      --green: #10B981; --green-light: #ECFDF5;
+      --gray-100: #F7F8FA; --gray-200: #EEEFF2;
+      --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
+      --white: #FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--white); border-bottom: 1px solid var(--gray-200);
+      height: 64px; display: flex; align-items: center; padding: 0 24px;
+      position: sticky; top: 0; z-index: 99;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--navy); text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+
+    .container { max-width: 520px; margin: 0 auto; padding: 32px 20px 80px; }
+
+    /* ── 선생님 정보 카드 ── */
+    .teacher-card {
+      background: var(--white); border-radius: 20px; padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin-bottom: 16px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .t-avatar {
+      width: 60px; height: 60px; border-radius: 16px; flex-shrink: 0;
+      background: linear-gradient(135deg, #FFE09A, #F5A623);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; border: 2px solid var(--gold);
+    }
+    .t-name { font-size: 17px; font-weight: 900; color: var(--navy); margin-bottom: 4px; }
+    .t-spec { font-size: 13px; color: var(--gray-600); }
+
+    /* ── 별점 ── */
+    .review-form {
+      background: var(--white); border-radius: 20px; padding: 28px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 15px; font-weight: 800; color: var(--navy);
+      margin-bottom: 18px;
+    }
+
+    .star-row {
+      display: flex; gap: 8px; justify-content: center;
+      margin-bottom: 10px;
+    }
+    .star {
+      font-size: 44px; cursor: pointer; transition: transform 0.15s, color 0.15s;
+      color: #D1D5DB;
+      user-select: none;
+    }
+    .star.on { color: #F5A623; transform: scale(1.08); }
+    .star:hover { color: #F5A623; transform: scale(1.15); }
+    .rating-label {
+      text-align: center; font-size: 15px; font-weight: 700;
+      color: var(--gold-dark); margin-bottom: 20px; min-height: 22px;
+    }
+
+    /* ── 태그 선택 ── */
+    .tag-section { margin-bottom: 20px; }
+    .tag-label { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+    .tag-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag-chip {
+      padding: 7px 14px; border-radius: 20px;
+      background: var(--gray-100); border: 2px solid transparent;
+      font-size: 13px; font-weight: 600; color: var(--gray-600);
+      cursor: pointer; transition: all 0.15s; user-select: none;
+    }
+    .tag-chip.on {
+      background: var(--gold-light); color: var(--navy); border-color: var(--gold);
+    }
+
+    /* ── 텍스트 후기 ── */
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block; font-size: 13px; font-weight: 700;
+      color: var(--navy); margin-bottom: 8px;
+    }
+    .field label .opt { color: var(--gray-400); font-weight: 400; margin-left: 4px; }
+    textarea, input[type=text] {
+      width: 100%; padding: 14px 16px;
+      border: 1.5px solid var(--gray-200); border-radius: 14px;
+      font-size: 14px; font-family: inherit; outline: none;
+      color: var(--gray-900); transition: border-color 0.2s;
+      resize: none; line-height: 1.7;
+    }
+    textarea:focus, input:focus { border-color: var(--navy); }
+    .char-count { text-align: right; font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+
+    /* ── 제출 버튼 ── */
+    .btn-submit {
+      width: 100%; padding: 16px; background: var(--gold); color: var(--white);
+      border: none; border-radius: 16px; font-size: 16px; font-weight: 800;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-submit:hover { background: var(--gold-dark); }
+    .btn-submit:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
+
+    /* ── 완료 화면 ── */
+    #doneScreen {
+      display: none; text-align: center;
+      background: var(--white); border-radius: 24px; padding: 48px 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    #doneScreen .done-icon { font-size: 64px; margin-bottom: 16px; }
+    #doneScreen h2 { font-size: 22px; font-weight: 900; color: var(--navy); margin-bottom: 10px; }
+    #doneScreen p  { font-size: 15px; color: var(--gray-600); line-height: 1.7; margin-bottom: 28px; }
+    .btn-home {
+      display: inline-block; padding: 14px 32px;
+      background: var(--navy); color: var(--white);
+      border-radius: 14px; font-size: 15px; font-weight: 800; text-decoration: none;
+    }
+
+    /* ── 이미 작성한 후기 ── */
+    #alreadyScreen {
+      display: none; text-align: center;
+      background: var(--white); border-radius: 24px; padding: 48px 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    #alreadyScreen .icon { font-size: 48px; margin-bottom: 14px; }
+    #alreadyScreen h2 { font-size: 20px; font-weight: 900; color: var(--navy); margin-bottom: 8px; }
+    #alreadyScreen p  { font-size: 14px; color: var(--gray-600); }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+  </a>
+</header>
+
+<div class="container">
+
+  <!-- 선생님 카드 -->
+  <div class="teacher-card">
+    <div class="t-avatar" id="tAvatar">👨‍⚕️</div>
+    <div>
+      <div class="t-name" id="tName">선생님</div>
+      <div class="t-spec" id="tSpec">재활운동 서비스</div>
+    </div>
+  </div>
+
+  <!-- 이미 작성 안내 -->
+  <div id="alreadyScreen">
+    <div class="icon">✅</div>
+    <h2>이미 후기를 작성하셨어요</h2>
+    <p>소중한 후기 감사해요!<br>후기는 선생님 프로필에 게시됩니다.</p>
+  </div>
+
+  <!-- 후기 작성 폼 -->
+  <div id="formScreen">
+    <div class="review-form">
+      <div class="section-title">⭐ 이번 서비스는 어떠셨나요?</div>
+
+      <!-- 별점 -->
+      <div class="star-row" id="starRow">
+        <div class="star" data-val="1" onclick="setRating(1)">★</div>
+        <div class="star" data-val="2" onclick="setRating(2)">★</div>
+        <div class="star" data-val="3" onclick="setRating(3)">★</div>
+        <div class="star" data-val="4" onclick="setRating(4)">★</div>
+        <div class="star" data-val="5" onclick="setRating(5)">★</div>
+      </div>
+      <div class="rating-label" id="ratingLabel">별점을 선택해주세요</div>
+
+      <!-- 태그 -->
+      <div class="tag-section">
+        <div class="tag-label">어떤 점이 좋으셨나요? <span style="color:var(--gray-400);font-weight:400">(선택)</span></div>
+        <div class="tag-grid" id="tagGrid">
+          <div class="tag-chip" onclick="toggleTag(this)">친절해요</div>
+          <div class="tag-chip" onclick="toggleTag(this)">전문적이에요</div>
+          <div class="tag-chip" onclick="toggleTag(this)">시간 약속을 잘 지켜요</div>
+          <div class="tag-chip" onclick="toggleTag(this)">설명을 잘 해줘요</div>
+          <div class="tag-chip" onclick="toggleTag(this)">어르신이 좋아해요</div>
+          <div class="tag-chip" onclick="toggleTag(this)">효과가 눈에 보여요</div>
+          <div class="tag-chip" onclick="toggleTag(this)">재예약 의사 있어요</div>
+          <div class="tag-chip" onclick="toggleTag(this)">가격이 합리적이에요</div>
+        </div>
+      </div>
+
+      <!-- 텍스트 -->
+      <div class="field">
+        <label>후기 내용 <span class="opt">(선택 · 최소 10자)</span></label>
+        <textarea id="reviewText" rows="5" maxlength="500"
+          placeholder="선생님과의 서비스 경험을 자유롭게 작성해주세요. 다른 보호자분들께 큰 도움이 됩니다 😊"
+          oninput="updateCharCount()"></textarea>
+        <div class="char-count"><span id="charCount">0</span>/500</div>
+      </div>
+
+      <!-- 방문 정보 -->
+      <div class="field">
+        <label>방문 횟수 <span class="opt">(선택)</span></label>
+        <input type="text" id="visitInfo" placeholder="예: 주 2회 · 총 8회 진행">
+      </div>
+
+      <button class="btn-submit" id="submitBtn" onclick="submitReview()" disabled>
+        후기 등록하기
+      </button>
+    </div>
+  </div>
+
+  <!-- 완료 화면 -->
+  <div id="doneScreen">
+    <div class="done-icon">🎉</div>
+    <h2>후기가 등록됐어요!</h2>
+    <p>소중한 후기 감사해요.<br>선생님 프로필에 게시되어<br>다른 보호자분들께 도움이 됩니다.</p>
+    <a href="mypage.html" class="btn-home">마이페이지로 돌아가기</a>
+  </div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
+    authDomain:        "golden-seniors.firebaseapp.com",
+    projectId:         "golden-seniors",
+    storageBucket:     "golden-seniors.firebasestorage.app",
+    messagingSenderId: "244026917780",
+    appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
+  });
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
+
+  const params      = new URLSearchParams(window.location.search);
+  const teacherUid  = params.get('teacherUid')  || '';
+  const teacherName = params.get('teacherName') || '선생님';
+  const quoteId     = params.get('quoteId')     || '';
+
+  let rating       = 0;
+  let selectedTags = [];
+  let currentUser  = null;
+
+  const LABELS = ['', '별로였어요 😞', '아쉬워요 😐', '괜찮았어요 🙂', '좋았어요 😊', '최고예요! 🌟'];
+
+  /* ── 초기화 ── */
+  document.getElementById('tName').textContent = teacherName;
+
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) { location.href = 'login.html'; return; }
+    currentUser = user;
+
+    // 선생님 정보 로드
+    if (teacherUid) {
+      const tSnap = await db.collection('users').doc(teacherUid).get();
+      if (tSnap.exists) {
+        const d = tSnap.data();
+        document.getElementById('tAvatar').textContent = d.avatar || '👨‍⚕️';
+        document.getElementById('tSpec').textContent   = (d.specialties || []).join(' · ') || '재활운동 전문';
+      }
+    }
+
+    // 중복 후기 확인
+    if (quoteId) {
+      const existing = await db.collection('reviews')
+        .where('quoteId', '==', quoteId)
+        .where('authorUid', '==', user.uid)
+        .get();
+      if (!existing.empty) {
+        document.getElementById('formScreen').style.display  = 'none';
+        document.getElementById('alreadyScreen').style.display = 'block';
+        return;
+      }
+    }
+  });
+
+  /* ── 별점 ── */
+  function setRating(val) {
+    rating = val;
+    document.querySelectorAll('.star').forEach((s, i) => {
+      s.classList.toggle('on', i < val);
+    });
+    document.getElementById('ratingLabel').textContent = LABELS[val];
+    checkSubmit();
+  }
+
+  /* ── 태그 ── */
+  function toggleTag(el) {
+    el.classList.toggle('on');
+    const tag = el.textContent;
+    if (el.classList.contains('on')) {
+      selectedTags.push(tag);
+    } else {
+      selectedTags = selectedTags.filter(t => t !== tag);
+    }
+  }
+
+  /* ── 글자수 ── */
+  function updateCharCount() {
+    const len = document.getElementById('reviewText').value.length;
+    document.getElementById('charCount').textContent = len;
+    checkSubmit();
+  }
+
+  function checkSubmit() {
+    const text = document.getElementById('reviewText').value.trim();
+    const ok   = rating > 0 && (text.length === 0 || text.length >= 10);
+    document.getElementById('submitBtn').disabled = !ok || rating === 0;
+  }
+
+  /* ── 제출 ── */
+  async function submitReview() {
+    if (!currentUser || rating === 0) return;
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '등록 중...';
+
+    try {
+      // 작성자 이름 가져오기 (마스킹)
+      const userSnap = await db.collection('users').doc(currentUser.uid).get();
+      const fullName = userSnap.exists ? (userSnap.data().name || '보호자') : '보호자';
+      const maskedName = fullName.length > 1
+        ? fullName[0] + '○'.repeat(fullName.length - 1)
+        : fullName;
+
+      await db.collection('reviews').add({
+        teacherUid,
+        teacherName,
+        quoteId,
+        rating,
+        tags:       selectedTags,
+        content:    document.getElementById('reviewText').value.trim(),
+        visitInfo:  document.getElementById('visitInfo').value.trim(),
+        authorUid:  currentUser.uid,
+        authorName: '보호자 ' + maskedName + '님',
+        createdAt:  firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // 완료 화면 표시
+      document.getElementById('formScreen').style.display = 'none';
+      document.getElementById('doneScreen').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch(e) {
+      alert('후기 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
+      btn.disabled = false;
+      btn.textContent = '후기 등록하기';
+    }
+  }
+</script>
+</body>
+</html>

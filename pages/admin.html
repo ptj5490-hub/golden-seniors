@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>관리자 | 골든 시니어스</title>
+  <style>
+    :root {
+      --gold: #F5A623; --gold-light: #FFF8EC;
+      --navy: #1A2B4A; --navy-light: #2C3E6B;
+      --green: #10B981; --green-light: #ECFDF5;
+      --red: #EF4444; --red-light: #FEF2F2;
+      --yellow: #F59E0B; --yellow-light: #FFFBEB;
+      --purple: #8B5CF6; --purple-light: #F5F3FF;
+      --gray-100: #F7F8FA; --gray-200: #EEEFF2;
+      --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
+      --white: #FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-100); color: var(--gray-900); min-height: 100vh;
+    }
+
+    /* ── 접근 차단 화면 ── */
+    #accessDenied {
+      display: none; position: fixed; inset: 0; background: var(--navy);
+      align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 16px;
+    }
+    #accessDenied.show { display: flex; }
+    #accessDenied .icon { font-size: 56px; }
+    #accessDenied h2 { color: var(--white); font-size: 22px; }
+    #accessDenied p  { color: rgba(255,255,255,0.6); font-size: 14px; }
+    #accessDenied a  {
+      margin-top: 8px; padding: 12px 28px; background: var(--gold);
+      border-radius: 12px; color: var(--navy); font-weight: 800;
+      text-decoration: none; font-size: 15px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--navy); height: 64px;
+      display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 900; color: var(--white); text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .admin-badge {
+      background: var(--red); color: var(--white);
+      font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; letter-spacing: 0.5px;
+    }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .admin-name { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 600; }
+    .btn-logout {
+      padding: 7px 14px; background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+      font-size: 13px; font-weight: 600; color: var(--white); cursor: pointer;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.2); }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px 80px; }
+
+    /* ── 통계 ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+    .stat-card {
+      background: var(--white); border-radius: 16px; padding: 22px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; align-items: center; gap: 16px;
+    }
+    .stat-emoji { font-size: 32px; }
+    .stat-num  { font-size: 26px; font-weight: 900; color: var(--navy); line-height: 1; }
+    .stat-label { font-size: 12px; color: var(--gray-400); margin-top: 3px; }
+
+    /* ── 탭 ── */
+    .tabs {
+      display: flex; gap: 4px; background: var(--gray-200);
+      border-radius: 14px; padding: 4px; margin-bottom: 20px;
+    }
+    .tab {
+      flex: 1; padding: 10px; text-align: center;
+      font-size: 14px; font-weight: 700; color: var(--gray-400);
+      border-radius: 11px; cursor: pointer; transition: all 0.2s;
+    }
+    .tab.active { background: var(--white); color: var(--navy); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .tab-badge {
+      display: inline-block; background: var(--red); color: var(--white);
+      font-size: 10px; font-weight: 800; border-radius: 10px;
+      padding: 1px 6px; margin-left: 4px; vertical-align: middle;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── 패널 공통 ── */
+    .panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .panel-title { font-size: 16px; font-weight: 800; color: var(--navy); }
+    .panel-count { font-size: 13px; color: var(--gray-400); }
+
+    /* ── 검색/필터 ── */
+    .search-bar {
+      display: flex; gap: 8px; margin-bottom: 14px;
+    }
+    .search-bar input {
+      flex: 1; padding: 10px 14px; border: 1.5px solid var(--gray-200);
+      border-radius: 10px; font-size: 14px; outline: none;
+    }
+    .search-bar input:focus { border-color: var(--navy); }
+    .filter-btn {
+      padding: 10px 16px; border-radius: 10px; border: 1.5px solid var(--gray-200);
+      background: var(--white); font-size: 13px; font-weight: 600;
+      color: var(--gray-600); cursor: pointer; transition: all 0.2s;
+    }
+    .filter-btn.on { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+    /* ── 카드 목록 ── */
+    .card-list { display: flex; flex-direction: column; gap: 10px; }
+    .empty-msg {
+      text-align: center; padding: 48px 0;
+      font-size: 14px; color: var(--gray-400);
+    }
+    .empty-msg .empty-icon { font-size: 36px; display: block; margin-bottom: 8px; }
+
+    /* ── 전문가 심사 카드 ── */
+    .teacher-card {
+      background: var(--white); border-radius: 16px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: flex; align-items: flex-start; gap: 16px;
+    }
+    .teacher-avatar {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: var(--navy-light); display: flex; align-items: center;
+      justify-content: center; font-size: 22px; flex-shrink: 0;
+    }
+    .teacher-info { flex: 1; min-width: 0; }
+    .teacher-name-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .teacher-name { font-size: 15px; font-weight: 800; color: var(--navy); }
+    .status-badge {
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+    }
+    .status-badge.pending  { background: var(--yellow-light); color: var(--yellow); }
+    .status-badge.approved { background: var(--green-light);  color: var(--green); }
+    .status-badge.rejected { background: var(--red-light);    color: var(--red); }
+    .teacher-meta { font-size: 13px; color: var(--gray-400); margin-bottom: 6px; }
+    .teacher-specs { display: flex; flex-wrap: wrap; gap: 6px; }
+    .spec-chip {
+      padding: 3px 10px; background: var(--gray-100);
+      border-radius: 20px; font-size: 12px; color: var(--gray-600); font-weight: 600;
+    }
+    .teacher-actions { display: flex; gap: 8px; flex-shrink: 0; align-self: center; }
+    .btn-approve {
+      padding: 8px 18px; background: var(--green); color: var(--white);
+      border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .btn-approve:hover { background: #059669; }
+    .btn-reject {
+      padding: 8px 18px; background: var(--red-light); color: var(--red);
+      border: 1.5px solid #FECACA; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .btn-reject:hover { background: var(--red); color: var(--white); }
+    .btn-detail {
+      padding: 8px 14px; background: var(--gray-100); color: var(--gray-600);
+      border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .btn-detail:hover { background: var(--gray-200); }
+
+    /* ── 전문가 상세 모달 ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--white); border-radius: 20px; width: 90%; max-width: 520px;
+      max-height: 85vh; overflow-y: auto; padding: 28px;
+    }
+    .modal-title { font-size: 18px; font-weight: 900; color: var(--navy); margin-bottom: 20px; }
+    .modal-row {
+      display: flex; gap: 8px; margin-bottom: 10px; font-size: 14px;
+    }
+    .modal-row .label { color: var(--gray-400); font-weight: 600; min-width: 90px; flex-shrink: 0; }
+    .modal-row .value { color: var(--gray-900); font-weight: 600; }
+    .modal-divider { border: none; border-top: 1px solid var(--gray-200); margin: 16px 0; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .modal-actions .btn-approve { flex: 1; padding: 13px; font-size: 14px; border-radius: 12px; }
+    .modal-actions .btn-reject  { flex: 1; padding: 13px; font-size: 14px; border-radius: 12px; }
+    .modal-close {
+      width: 100%; padding: 12px; margin-top: 10px;
+      background: var(--gray-100); border: none; border-radius: 12px;
+      font-size: 14px; font-weight: 600; color: var(--gray-600); cursor: pointer;
+    }
+    /* ── 거절 사유 입력 ── */
+    .reject-reason {
+      display: none; width: 100%; margin-top: 10px;
+      padding: 10px 14px; border: 1.5px solid #FECACA; border-radius: 10px;
+      font-size: 14px; resize: none; font-family: inherit; outline: none;
+    }
+    .reject-reason.show { display: block; }
+
+    /* ── 회원 테이블 ── */
+    .member-table-wrap { overflow-x: auto; border-radius: 16px; }
+    .member-table {
+      width: 100%; border-collapse: collapse; background: var(--white);
+      border-radius: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      font-size: 13px;
+    }
+    .member-table th {
+      background: var(--navy); color: var(--white);
+      padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 700;
+    }
+    .member-table td { padding: 12px 14px; border-bottom: 1px solid var(--gray-200); color: var(--gray-600); }
+    .member-table tr:last-child td { border-bottom: none; }
+    .member-table tr:hover td { background: var(--gray-100); }
+    .role-chip {
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+    }
+    .role-chip.customer { background: var(--gold-light); color: var(--gold); }
+    .role-chip.teacher  { background: var(--purple-light); color: var(--purple); }
+    .role-chip.admin    { background: var(--red-light); color: var(--red); }
+    .btn-ban {
+      padding: 4px 10px; background: var(--red-light); color: var(--red);
+      border: none; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;
+    }
+
+    /* ── 견적 테이블 ── */
+    .quote-card {
+      background: var(--white); border-radius: 16px; padding: 18px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 10px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .quote-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .quote-dot.open    { background: var(--green); }
+    .quote-dot.matched { background: var(--gold); }
+    .quote-dot.closed  { background: var(--gray-400); }
+    .quote-info { flex: 1; }
+    .quote-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+    .quote-meta  { font-size: 12px; color: var(--gray-400); }
+    .quote-status {
+      font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 8px; flex-shrink: 0;
+    }
+    .quote-status.open    { background: var(--green-light); color: var(--green); }
+    .quote-status.matched { background: var(--gold-light); color: var(--gold); }
+    .quote-status.closed  { background: var(--gray-200); color: var(--gray-400); }
+
+    /* ── 토스트 ── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--navy); color: var(--white); padding: 12px 24px;
+      border-radius: 30px; font-size: 14px; font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 9999;
+      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── 로딩 ── */
+    .loading { text-align: center; padding: 40px; color: var(--gray-400); font-size: 14px; }
+
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .teacher-actions { flex-direction: column; }
+      .tabs { overflow-x: auto; }
+    }
+    @media (max-width: 480px) {
+      .teacher-card { flex-direction: column; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 접근 차단 -->
+<div id="accessDenied">
+  <div class="icon">🔒</div>
+  <h2>접근 권한이 없습니다</h2>
+  <p>관리자 계정으로 로그인해 주세요.</p>
+  <a href="login.html">로그인 페이지로</a>
+</div>
+
+<!-- 헤더 -->
+<header>
+  <a href="../index.html" class="logo">
+    <div class="logo-icon">🏃</div>
+    골든 시니어스
+    <span class="admin-badge">ADMIN</span>
+  </a>
+  <div class="header-right">
+    <span class="admin-name" id="adminName">관리자</span>
+    <button class="btn-logout" onclick="logout()">로그아웃</button>
+  </div>
+</header>
+
+<!-- 본문 -->
+<div class="container" id="mainContent" style="display:none">
+
+  <!-- 통계 -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-emoji">👥</div>
+      <div>
+        <div class="stat-num" id="statTotalUsers">-</div>
+        <div class="stat-label">전체 회원</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-emoji">⏳</div>
+      <div>
+        <div class="stat-num" id="statPending">-</div>
+        <div class="stat-label">심사 대기 전문가</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-emoji">📋</div>
+      <div>
+        <div class="stat-num" id="statQuotes">-</div>
+        <div class="stat-label">전체 견적 요청</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-emoji">✅</div>
+      <div>
+        <div class="stat-num" id="statApproved">-</div>
+        <div class="stat-label">승인된 전문가</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 탭 -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('teachers')">
+      전문가 심사
+      <span class="tab-badge" id="pendingBadge" style="display:none">0</span>
+    </div>
+    <div class="tab" onclick="switchTab('members')">전체 회원</div>
+    <div class="tab" onclick="switchTab('quotes')">견적 현황</div>
+  </div>
+
+  <!-- ── 탭: 전문가 심사 ── -->
+  <div class="tab-panel active" id="panel-teachers">
+    <div class="panel-header">
+      <div class="panel-title">전문가 가입 심사</div>
+      <div class="panel-count" id="teacherCount"></div>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="teacherSearch" placeholder="이름 또는 이메일 검색..." oninput="filterTeachers()">
+      <button class="filter-btn on" id="filterPending" onclick="setTeacherFilter('pending')">대기</button>
+      <button class="filter-btn" id="filterApproved" onclick="setTeacherFilter('approved')">승인</button>
+      <button class="filter-btn" id="filterRejected" onclick="setTeacherFilter('rejected')">거절</button>
+      <button class="filter-btn" id="filterAll" onclick="setTeacherFilter('all')">전체</button>
+    </div>
+    <div class="card-list" id="teacherList">
+      <div class="loading">불러오는 중...</div>
+    </div>
+  </div>
+
+  <!-- ── 탭: 전체 회원 ── -->
+  <div class="tab-panel" id="panel-members">
+    <div class="panel-header">
+      <div class="panel-title">전체 회원 목록</div>
+      <div class="panel-count" id="memberCount"></div>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="memberSearch" placeholder="이름 또는 이메일 검색..." oninput="filterMembers()">
+      <button class="filter-btn on" id="memberFilterAll"   onclick="setMemberFilter('all')">전체</button>
+      <button class="filter-btn" id="memberFilterCustomer" onclick="setMemberFilter('customer')">고객</button>
+      <button class="filter-btn" id="memberFilterTeacher"  onclick="setMemberFilter('teacher')">전문가</button>
+    </div>
+    <div class="member-table-wrap">
+      <table class="member-table" id="memberTable">
+        <thead>
+          <tr>
+            <th>이름</th>
+            <th>이메일</th>
+            <th>연락처</th>
+            <th>구분</th>
+            <th>가입일</th>
+            <th>관리</th>
+          </tr>
+        </thead>
+        <tbody id="memberTbody">
+          <tr><td colspan="6" class="loading">불러오는 중...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── 탭: 견적 현황 ── -->
+  <div class="tab-panel" id="panel-quotes">
+    <div class="panel-header">
+      <div class="panel-title">견적 요청 현황</div>
+      <div class="panel-count" id="quoteCount"></div>
+    </div>
+    <div class="search-bar">
+      <button class="filter-btn on" id="qFilterAll"     onclick="setQuoteFilter('all')">전체</button>
+      <button class="filter-btn" id="qFilterOpen"    onclick="setQuoteFilter('open')">진행중</button>
+      <button class="filter-btn" id="qFilterMatched" onclick="setQuoteFilter('matched')">매칭됨</button>
+      <button class="filter-btn" id="qFilterClosed"  onclick="setQuoteFilter('closed')">종료</button>
+    </div>
+    <div id="quoteList">
+      <div class="loading">불러오는 중...</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 전문가 상세 모달 -->
+<div class="modal-overlay" id="teacherModal">
+  <div class="modal">
+    <div class="modal-title">전문가 상세 정보</div>
+    <div id="modalContent"></div>
+    <div class="modal-actions" id="modalActions"></div>
+    <button class="modal-close" onclick="closeModal()">닫기</button>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
+    authDomain:        "golden-seniors.firebaseapp.com",
+    projectId:         "golden-seniors",
+    storageBucket:     "golden-seniors.firebasestorage.app",
+    messagingSenderId: "244026917780",
+    appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
+  });
+</script>
+
+<script>
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+let allTeachers = [];
+let allMembers  = [];
+let allQuotes   = [];
+let teacherFilter = 'pending';
+let memberFilter  = 'all';
+let quoteFilter   = 'all';
+
+/* ── 인증 확인 ── */
+auth.onAuthStateChanged(async (user) => {
+  if (!user) { showDenied(); return; }
+  const snap = await db.collection('users').doc(user.uid).get();
+  if (!snap.exists || snap.data().role !== 'admin') { showDenied(); return; }
+  document.getElementById('adminName').textContent = snap.data().name + ' 님';
+  document.getElementById('mainContent').style.display = 'block';
+  loadAll();
+});
+
+function showDenied() {
+  document.getElementById('accessDenied').classList.add('show');
+}
+
+function logout() {
+  auth.signOut().then(() => location.href = 'login.html');
+}
+
+/* ── 전체 데이터 로드 ── */
+async function loadAll() {
+  await Promise.all([loadTeachers(), loadMembers(), loadQuotes()]);
+  updateStats();
+}
+
+/* ── 전문가 로드 ── */
+async function loadTeachers() {
+  const snap = await db.collection('users').where('role', '==', 'teacher').orderBy('createdAt', 'desc').get();
+  allTeachers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderTeachers();
+}
+
+/* ── 회원 로드 ── */
+async function loadMembers() {
+  const snap = await db.collection('users').orderBy('createdAt', 'desc').get();
+  allMembers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderMembers();
+}
+
+/* ── 견적 로드 ── */
+async function loadQuotes() {
+  const snap = await db.collection('quotes').orderBy('createdAt', 'desc').get();
+  allQuotes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderQuotes();
+}
+
+/* ── 통계 업데이트 ── */
+function updateStats() {
+  const pending  = allTeachers.filter(t => t.status === 'pending').length;
+  const approved = allTeachers.filter(t => t.status === 'approved').length;
+  document.getElementById('statTotalUsers').textContent = allMembers.length;
+  document.getElementById('statPending').textContent    = pending;
+  document.getElementById('statQuotes').textContent     = allQuotes.length;
+  document.getElementById('statApproved').textContent   = approved;
+  const badge = document.getElementById('pendingBadge');
+  if (pending > 0) { badge.textContent = pending; badge.style.display = 'inline-block'; }
+}
+
+/* ── 탭 전환 ── */
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const tabs = ['teachers', 'members', 'quotes'];
+  document.querySelectorAll('.tab')[tabs.indexOf(tab)].classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+
+/* ═══════════════════════════════
+   전문가 심사
+═══════════════════════════════ */
+function setTeacherFilter(f) {
+  teacherFilter = f;
+  ['pending','approved','rejected','all'].forEach(k => {
+    document.getElementById('filter' + k.charAt(0).toUpperCase() + k.slice(1)).classList.toggle('on', k === f);
+  });
+  renderTeachers();
+}
+
+function filterTeachers() { renderTeachers(); }
+
+function renderTeachers() {
+  const q   = document.getElementById('teacherSearch').value.trim().toLowerCase();
+  const list = allTeachers.filter(t => {
+    const statusOk = teacherFilter === 'all' || t.status === teacherFilter;
+    const searchOk = !q || t.name?.toLowerCase().includes(q) || t.email?.toLowerCase().includes(q);
+    return statusOk && searchOk;
+  });
+  document.getElementById('teacherCount').textContent = list.length + '명';
+  const el = document.getElementById('teacherList');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-msg"><span class="empty-icon">🔍</span>해당하는 전문가가 없습니다.</div>`;
+    return;
+  }
+  el.innerHTML = list.map(t => `
+    <div class="teacher-card">
+      <div class="teacher-avatar">👨‍⚕️</div>
+      <div class="teacher-info">
+        <div class="teacher-name-row">
+          <span class="teacher-name">${esc(t.name || '(이름없음)')}</span>
+          <span class="status-badge ${t.status || 'pending'}">${statusLabel(t.status)}</span>
+        </div>
+        <div class="teacher-meta">${esc(t.email || '')} · ${esc(t.phone || '')} · 가입 ${fmtDate(t.createdAt)}</div>
+        <div class="teacher-specs">${(t.specialties || []).map(s => `<span class="spec-chip">${esc(s)}</span>`).join('')}</div>
+      </div>
+      <div class="teacher-actions">
+        <button class="btn-detail" onclick="openDetail('${t.id}')">상세보기</button>
+        ${t.status === 'pending' ? `
+          <button class="btn-approve" onclick="approveTeacher('${t.id}')">승인</button>
+          <button class="btn-reject"  onclick="rejectTeacher('${t.id}')">거절</button>
+        ` : t.status === 'approved' ? `
+          <button class="btn-reject" onclick="rejectTeacher('${t.id}')">승인 취소</button>
+        ` : `
+          <button class="btn-approve" onclick="approveTeacher('${t.id}')">재승인</button>
+        `}
+      </div>
+    </div>
+  `).join('');
+}
+
+function statusLabel(s) {
+  return { pending: '심사 대기', approved: '승인됨', rejected: '거절됨' }[s] || '심사 대기';
+}
+
+/* ── 승인 ── */
+async function approveTeacher(uid) {
+  if (!confirm('이 전문가를 승인하시겠습니까?')) return;
+  await db.collection('users').doc(uid).update({ status: 'approved', approvedAt: firebase.firestore.FieldValue.serverTimestamp() });
+  showToast('✅ 전문가가 승인되었습니다.');
+  await loadTeachers();
+  updateStats();
+}
+
+/* ── 거절 ── */
+async function rejectTeacher(uid) {
+  const reason = prompt('거절 사유를 입력해주세요 (선택사항):') || '';
+  if (reason === null) return; // 취소
+  await db.collection('users').doc(uid).update({
+    status: 'rejected',
+    rejectReason: reason,
+    rejectedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  showToast('❌ 전문가 가입이 거절되었습니다.');
+  await loadTeachers();
+  updateStats();
+}
+
+/* ── 상세 모달 ── */
+function openDetail(uid) {
+  const t = allTeachers.find(x => x.id === uid);
+  if (!t) return;
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-row"><span class="label">이름</span><span class="value">${esc(t.name || '-')}</span></div>
+    <div class="modal-row"><span class="label">이메일</span><span class="value">${esc(t.email || '-')}</span></div>
+    <div class="modal-row"><span class="label">연락처</span><span class="value">${esc(t.phone || '-')}</span></div>
+    <div class="modal-row"><span class="label">상태</span><span class="value"><span class="status-badge ${t.status || 'pending'}">${statusLabel(t.status)}</span></span></div>
+    <hr class="modal-divider">
+    <div class="modal-row"><span class="label">전문 분야</span><span class="value">${(t.specialties || []).join(', ') || '-'}</span></div>
+    <div class="modal-row"><span class="label">경력</span><span class="value">${esc(t.career || '-')}</span></div>
+    <div class="modal-row"><span class="label">자격증</span><span class="value">${esc(t.certifications || '-')}</span></div>
+    <div class="modal-row"><span class="label">소개글</span><span class="value">${esc(t.bio || '-')}</span></div>
+    <div class="modal-row"><span class="label">가입일</span><span class="value">${fmtDate(t.createdAt)}</span></div>
+    ${t.rejectReason ? `<div class="modal-row"><span class="label">거절 사유</span><span class="value" style="color:var(--red)">${esc(t.rejectReason)}</span></div>` : ''}
+  `;
+  const actions = document.getElementById('modalActions');
+  if (t.status === 'pending') {
+    actions.innerHTML = `
+      <button class="btn-approve" onclick="approveTeacher('${uid}');closeModal()">승인</button>
+      <button class="btn-reject"  onclick="rejectTeacher('${uid}');closeModal()">거절</button>
+    `;
+  } else if (t.status === 'approved') {
+    actions.innerHTML = `<button class="btn-reject" style="flex:1;padding:13px;font-size:14px;border-radius:12px" onclick="rejectTeacher('${uid}');closeModal()">승인 취소</button>`;
+  } else {
+    actions.innerHTML = `<button class="btn-approve" style="flex:1;padding:13px;font-size:14px;border-radius:12px" onclick="approveTeacher('${uid}');closeModal()">재승인</button>`;
+  }
+  document.getElementById('teacherModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('teacherModal').classList.remove('show');
+}
+document.getElementById('teacherModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+/* ═══════════════════════════════
+   전체 회원
+═══════════════════════════════ */
+function setMemberFilter(f) {
+  memberFilter = f;
+  ['all','customer','teacher'].forEach(k => {
+    document.getElementById('memberFilter' + k.charAt(0).toUpperCase() + k.slice(1)).classList.toggle('on', k === f);
+  });
+  renderMembers();
+}
+
+function filterMembers() { renderMembers(); }
+
+function renderMembers() {
+  const q = document.getElementById('memberSearch').value.trim().toLowerCase();
+  const list = allMembers.filter(m => {
+    const roleOk   = memberFilter === 'all' || m.role === memberFilter;
+    const searchOk = !q || m.name?.toLowerCase().includes(q) || m.email?.toLowerCase().includes(q);
+    return roleOk && searchOk;
+  });
+  document.getElementById('memberCount').textContent = list.length + '명';
+  const tbody = document.getElementById('memberTbody');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="6" class="loading">해당하는 회원이 없습니다.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(m => `
+    <tr>
+      <td><strong>${esc(m.name || '-')}</strong></td>
+      <td>${esc(m.email || '-')}</td>
+      <td>${esc(m.phone || '-')}</td>
+      <td><span class="role-chip ${m.role || 'customer'}">${roleLabel(m.role)}</span></td>
+      <td>${fmtDate(m.createdAt)}</td>
+      <td><button class="btn-ban" onclick="banMember('${m.id}', '${esc(m.name || '')}')">강제탈퇴</button></td>
+    </tr>
+  `).join('');
+}
+
+function roleLabel(r) {
+  return { customer: '고객', teacher: '전문가', admin: '관리자' }[r] || '고객';
+}
+
+async function banMember(uid, name) {
+  if (!confirm(`${name} 회원을 강제 탈퇴시키겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) return;
+  await db.collection('users').doc(uid).delete();
+  showToast('회원이 강제 탈퇴 처리되었습니다.');
+  await loadMembers();
+  updateStats();
+}
+
+/* ═══════════════════════════════
+   견적 현황
+═══════════════════════════════ */
+function setQuoteFilter(f) {
+  quoteFilter = f;
+  ['all','open','matched','closed'].forEach(k => {
+    document.getElementById('qFilter' + k.charAt(0).toUpperCase() + k.slice(1)).classList.toggle('on', k === f);
+  });
+  renderQuotes();
+}
+
+function renderQuotes() {
+  const list = allQuotes.filter(q => quoteFilter === 'all' || q.status === quoteFilter);
+  document.getElementById('quoteCount').textContent = list.length + '건';
+  const el = document.getElementById('quoteList');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-msg"><span class="empty-icon">📋</span>해당하는 견적이 없습니다.</div>`;
+    return;
+  }
+  el.innerHTML = list.map(q => `
+    <div class="quote-card">
+      <div class="quote-dot ${q.status || 'open'}"></div>
+      <div class="quote-info">
+        <div class="quote-title">${esc(q.condition || '질환 미입력')} · ${esc(q.region || '-')}</div>
+        <div class="quote-meta">예산 ${esc(q.budget || '-')} · ${esc(q.freq || '-')} · 작성일 ${fmtDate(q.createdAt)}</div>
+      </div>
+      <span class="quote-status ${q.status || 'open'}">${quoteStatusLabel(q.status)}</span>
+    </div>
+  `).join('');
+}
+
+function quoteStatusLabel(s) {
+  return { open: '진행중', matched: '매칭됨', closed: '종료', expired: '만료' }[s] || '진행중';
+}
+
+/* ── 유틸 ── */
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDate(ts) {
+  if (!ts) return '-';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>

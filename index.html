@@ -24,10 +24,10 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
     body {
       font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      color: var(--gray-900);
+      color: var(--gray-900); overflow-x: hidden;
       background: var(--white);
     }
     html, body { overflow-x: hidden; max-width: 100%; }
@@ -933,11 +933,16 @@
     /* ======= RESPONSIVE — 태블릿 (900px) ======= */
     @media (max-width: 900px) {
       section { padding: 64px 20px; }
+      body { overflow-x: hidden; }
 
       /* 헤더 */
-      header { padding: 0 20px; }
+      header { padding: 0 16px; }
       .desktop-cta { display: none; }
       .hamburger { display: flex; }
+      /* 모바일 로그인 상태: 이름 숨기고 아이콘만 */
+      .header-user-name { display: none; }
+      .header-user .header-mypage-btn { font-size: 12px; padding: 6px 10px; }
+      .header-logout { font-size: 12px; padding: 6px 10px; }
       nav {
         display: none; position: fixed; top: 70px; left: 0; right: 0;
         background: var(--white); flex-direction: column;
@@ -1003,6 +1008,9 @@
     @media (max-width: 500px) {
       section { padding: 52px 16px; }
       .container { padding: 0; }
+      /* 헤더 로그인 상태 더 압축 */
+      .header-mypage-btn { display: none; }
+      .header-logout { font-size: 11px; padding: 5px 8px; }
 
       /* 통계 — 2x2 유지하되 글자 줄임 */
       .stat-num { font-size: 36px !important; }
@@ -1070,7 +1078,7 @@
   <!-- 로그인 상태 -->
   <div id="headerUser" class="header-user">
     <span class="header-user-name" id="headerUserName">👋 안녕하세요</span>
-    <a href="pages/mypage.html" class="header-login" id="headerMypage" style="text-decoration:none;">마이페이지</a>
+    <a href="pages/mypage.html" class="header-login header-mypage-btn" id="headerMypage" style="text-decoration:none;">마이페이지</a>
     <button class="header-logout" onclick="handleLogout()">로그아웃</button>
   </div>
   <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="메뉴">

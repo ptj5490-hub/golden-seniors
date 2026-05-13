@@ -197,16 +197,54 @@
           paymentStatus: 'paid',
           paidAt: firebase.firestore.FieldValue.serverTimestamp(),
         };
-        // 결제 완료 시 matched 상태로 전환 → 마이페이지 채팅 버튼 활성화
         if (paymentDoc.teacherUid) {
-          quoteUpdate.status           = 'matched';
+          quoteUpdate.status            = 'matched';
           quoteUpdate.matchedTeacherUid  = paymentDoc.teacherUid;
           quoteUpdate.matchedTeacherName = paymentDoc.teacherName || '선생님';
           quoteUpdate.matchedAt          = firebase.firestore.FieldValue.serverTimestamp();
         }
         db.collection('quotes').doc(paymentDoc.quoteId)
-          .update(quoteUpdate)
-          .catch(() => {});
+          .update(quoteUpdate).catch(() => {});
+      }
+
+      // ── 4. chats 문서 생성 (채팅 목록 활성화) ──
+      if (paymentDoc?.quoteId && paymentDoc?.teacherUid) {
+        const chatRef = db.collection('chats').doc(paymentDoc.quoteId);
+        const chatSnap = await chatRef.get();
+        if (!chatSnap.exists) {
+          const customerName = user.displayName || '고객';
+          const teacherName  = paymentDoc.teacherName || '선생님';
+          await chatRef.set({
+            participants:     [user.uid, paymentDoc.teacherUid],
+            participantNames: {
+              [user.uid]:            customerName,
+              [paymentDoc.teacherUid]: teacherName,
+            },
+            quoteTitle:    paymentDoc.serviceName || '방문 재활운동 서비스',
+            lastMessage:   '결제가 완료됐어요! 선생님과 일정을 조율해보세요 😊',
+            lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
+            unread:        { [user.uid]: 0, [paymentDoc.teacherUid]: 1 },
+            createdAt:     firebase.firestore.FieldValue.serverTimestamp(),
+          });
+          // 첫 안내 메시지 자동 생성
+          await chatRef.collection('messages').add({
+            senderId:   'system',
+            senderName: '골든 시니어스',
+            text:       `결제가 완료됐어요! 🎉\n${teacherName} 선생님과 방문 일정을 채팅으로 조율해보세요.`,
+            createdAt:  firebase.firestore.FieldValue.serverTimestamp(),
+          });
+        }
+      }
+
+      // ── 5. teacher_quotes 상태 → won 업데이트 (선생님 대시보드 반영) ──
+      if (paymentDoc?.quoteId && paymentDoc?.teacherUid) {
+        db.collection('teacher_quotes')
+          .where('quoteId',    '==', paymentDoc.quoteId)
+          .where('teacherUid', '==', paymentDoc.teacherUid)
+          .limit(1).get()
+          .then(snap => {
+            if (!snap.empty) snap.docs[0].ref.update({ status: 'won' }).catch(() => {});
+          }).catch(() => {});
       }
 
     } catch(e) {

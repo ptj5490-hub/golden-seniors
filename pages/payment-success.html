@@ -191,10 +191,21 @@
         document.getElementById('btnChat').href = chatHref;
       }
 
-      // ── 3. quote 상태를 'paid'로 업데이트 ──
+      // ── 3. quote 상태 업데이트 (paid + matched) ──
       if (paymentDoc?.quoteId) {
+        const quoteUpdate = {
+          paymentStatus: 'paid',
+          paidAt: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        // 결제 완료 시 matched 상태로 전환 → 마이페이지 채팅 버튼 활성화
+        if (paymentDoc.teacherUid) {
+          quoteUpdate.status           = 'matched';
+          quoteUpdate.matchedTeacherUid  = paymentDoc.teacherUid;
+          quoteUpdate.matchedTeacherName = paymentDoc.teacherName || '선생님';
+          quoteUpdate.matchedAt          = firebase.firestore.FieldValue.serverTimestamp();
+        }
         db.collection('quotes').doc(paymentDoc.quoteId)
-          .update({ paymentStatus: 'paid', paidAt: firebase.firestore.FieldValue.serverTimestamp() })
+          .update(quoteUpdate)
           .catch(() => {});
       }
 

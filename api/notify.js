@@ -52,6 +52,8 @@ const TEMPLATES = {
       '#{금액}': price,
       '#{링크}': link,
     }),
+    sms: ({ customerName, teacherName, price, link }) =>
+      `[골든 시니어스] ${customerName}님, ${teacherName} 선생님의 견적이 도착했어요!\n제안 금액: ${price}원\n확인: ${link}`,
   },
   // 선생님 → 새 견적 요청
   quote_requested: {
@@ -62,6 +64,8 @@ const TEMPLATES = {
       '#{증상}': condition,
       '#{링크}': link,
     }),
+    sms: ({ teacherName, region, condition, link }) =>
+      `[골든 시니어스] ${teacherName} 선생님, 새 견적 요청이 들어왔어요!\n지역: ${region} / 증상: ${condition}\n확인: ${link}`,
   },
   // 고객 → 결제/매칭 완료
   payment_done_customer: {
@@ -71,6 +75,8 @@ const TEMPLATES = {
       '#{선생님명}': teacherName,
       '#{링크}': link,
     }),
+    sms: ({ customerName, teacherName, link }) =>
+      `[골든 시니어스] ${customerName}님, 결제 완료! ${teacherName} 선생님과 매칭됐어요.\n채팅: ${link}`,
   },
   // 선생님 → 결제 완료
   payment_done_teacher: {
@@ -81,6 +87,8 @@ const TEMPLATES = {
       '#{금액}': price,
       '#{링크}': link,
     }),
+    sms: ({ teacherName, customerName, price, link }) =>
+      `[골든 시니어스] ${teacherName} 선생님, ${customerName}님 결제 완료! 금액: ${price}원\n채팅: ${link}`,
   },
   // 채팅 새 메시지
   new_message: {
@@ -90,6 +98,8 @@ const TEMPLATES = {
       '#{발신자명}': senderName,
       '#{링크}': link,
     }),
+    sms: ({ receiverName, senderName, link }) =>
+      `[골든 시니어스] ${receiverName}님, ${senderName}님이 메시지를 보냈어요.\n확인: ${link}`,
   },
 };
 
@@ -125,16 +135,19 @@ export default async function handler(req, res) {
   }
 
   const variables = template.build(params);
+  const smsText  = template.sms ? template.sms(params) : '';
 
   try {
     const result = await sendSolapi({
       message: {
         to:   phone,
         from: process.env.SOLAPI_SENDER,
+        text: smsText,
         kakaoOptions: {
-          pfId:       process.env.KAKAO_CHANNEL_ID,
-          templateId: template.templateId,
+          pfId:        process.env.KAKAO_CHANNEL_ID,
+          templateId:  template.templateId,
           variables,
+          disableSms:  false,
         },
       },
     });

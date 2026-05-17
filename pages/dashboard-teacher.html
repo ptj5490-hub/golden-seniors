@@ -370,6 +370,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="../js/notify.js"></script>
 <script>
   firebase.initializeApp({
     apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
@@ -613,6 +614,24 @@
       sentQuoteIds.add(selectedQuoteId);
       closeModal();
       alert('✅ 견적이 제출됐어요! 고객이 확인하면 연락이 갈 거예요.');
+
+      // 고객에게 카카오 알림톡 발송
+      if (quoteData.userId) {
+        try {
+          const customerSnap = await db.collection('users').doc(quoteData.userId).get();
+          if (customerSnap.exists) {
+            const customer = customerSnap.data();
+            notifyQuoteArrived(
+              customer.phone,
+              customer.name || '고객',
+              teacherData?.name || '선생님',
+              price,
+              selectedQuoteId
+            );
+          }
+        } catch(e) { console.warn('알림 발송 실패:', e); }
+      }
+
       await loadRequests();
       loadSentQuotes();
     } catch(err) {

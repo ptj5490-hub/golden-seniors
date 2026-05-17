@@ -237,6 +237,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="../js/notify.js"></script>
 <script>
   firebase.initializeApp({
     apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
@@ -495,10 +496,11 @@
         createdAt:  firebase.firestore.FieldValue.serverTimestamp(),
       });
 
-      // 2. 채팅방 메타데이터 업데이트 (실패해도 OK)
+      // 2. 채팅방 메타데이터 업데이트 + 상대방 알림
       chatRef.get().then(snap => {
         if (!snap.exists) return;
-        const partnerUid = snap.data().participants.find(u => u !== me.uid);
+        const data       = snap.data();
+        const partnerUid = data.participants.find(u => u !== me.uid);
         const preview = text.length > 40 ? text.slice(0,40) + '…' : text;
         const update = {
           lastMessage:   preview,
@@ -506,6 +508,16 @@
         };
         if (partnerUid) update[`unread.${partnerUid}`] = firebase.firestore.FieldValue.increment(1);
         chatRef.update(update).catch(() => {});
+
+        // 상대방 카카오 알림톡
+        if (partnerUid) {
+          db.collection('users').doc(partnerUid).get().then(uSnap => {
+            if (!uSnap.exists) return;
+            const partner = uSnap.data();
+            const partnerName = data.participantNames?.[partnerUid] || partner.name || '상대방';
+            notifyNewMessage(partner.phone || '', partnerName, me.name || '상대방', activeChatId);
+          }).catch(() => {});
+        }
       }).catch(() => {});
 
     } catch(e) {

@@ -144,6 +144,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="../js/notify.js"></script>
 <script>
   firebase.initializeApp({
     apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
@@ -246,6 +247,27 @@
             if (!snap.empty) snap.docs[0].ref.update({ status: 'won' }).catch(() => {});
           }).catch(() => {});
       }
+
+      // ── 6. 카카오 알림톡 발송 ──
+      try {
+        const customerName = user.displayName || paymentDoc?.customerName || '고객';
+        const teacherName  = paymentDoc?.teacherName || '선생님';
+        const price        = paymentDoc?.amount || 0;
+        const quoteId      = paymentDoc?.quoteId || '';
+
+        // 고객에게: 결제/매칭 완료 알림
+        notifyPaymentDoneCustomer(user.phoneNumber || '', customerName, teacherName, quoteId);
+
+        // 선생님에게: 결제 완료 알림
+        if (paymentDoc?.teacherUid) {
+          db.collection('users').doc(paymentDoc.teacherUid).get().then(snap => {
+            if (snap.exists) {
+              const teacher = snap.data();
+              notifyPaymentDoneTeacher(teacher.phone || '', teacherName, customerName, price, quoteId);
+            }
+          }).catch(() => {});
+        }
+      } catch(e) { console.warn('알림 발송 실패:', e); }
 
     } catch(e) {
       console.error('결제 완료 처리 오류:', e);

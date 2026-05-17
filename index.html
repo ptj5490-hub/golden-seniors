@@ -2377,6 +2377,15 @@
       };
       const docRef = await _db.collection('quotes').add(quoteData);
 
+      // 승인된 선생님 전체에게 새 견적 요청 알림톡 발송
+      _db.collection('users').where('role', '==', 'teacher').where('approved', '==', true).get()
+        .then(snap => {
+          snap.forEach(doc => {
+            const t = doc.data();
+            if (t.phone) notifyQuoteRequested(t.phone, t.name || '선생님', regionStr, condition, docRef.id);
+          });
+        }).catch(() => {});
+
       // complete.html 이동 (quoteId 포함)
       const params = new URLSearchParams({ condition, region: regionStr, budget, freq, ageGroup, mobility, caregiver, quoteId: docRef.id });
       window.location.href = 'pages/complete.html?' + params.toString();
@@ -2436,6 +2445,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/notify.js"></script>
 <script>
   if (!firebase.apps.length) {
     firebase.initializeApp({

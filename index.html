@@ -122,7 +122,6 @@
       width: 38px; height: 38px; border-radius: 10px;
       background: var(--teal);
       display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
     }
     .logo-text {
       font-size: 17px; font-weight: 900; color: var(--teal);
@@ -275,8 +274,9 @@
       width: 44px; height: 44px; border-radius: 12px;
       background: var(--teal-light);
       display: flex; align-items: center; justify-content: center;
-      font-size: 22px; flex-shrink: 0;
+      flex-shrink: 0;
     }
+    .hero-expert-avatar svg { width: 24px; height: 24px; display: block; }
     .hero-expert-name { font-size: 14px; font-weight: 700; color: var(--gray-900); }
     .hero-expert-info { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
     .hero-expert-price {
@@ -338,8 +338,9 @@
       width: 56px; height: 56px; border-radius: 14px;
       background: var(--teal-light);
       display: flex; align-items: center; justify-content: center;
-      font-size: 26px; margin-bottom: 20px;
+      margin-bottom: 20px;
     }
+    .why-icon svg { width: 28px; height: 28px; display: block; }
     .why-title { font-size: 18px; font-weight: 800; color: var(--gray-900); margin-bottom: 10px; }
     .why-desc { font-size: 15px; color: var(--gray-600); line-height: 1.7; }
 
@@ -498,8 +499,9 @@
       width: 36px; height: 36px; border-radius: 10px;
       background: rgba(255,255,255,0.15);
       display: flex; align-items: center; justify-content: center;
-      font-size: 16px; flex-shrink: 0;
+      flex-shrink: 0;
     }
+    .form-guide-icon svg { width: 18px; height: 18px; display: block; }
     .form-guide-step h4 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
     .form-guide-step p  { font-size: 13px; opacity: 0.75; line-height: 1.5; }
 
@@ -523,8 +525,9 @@
       width: 38px; height: 38px; border-radius: 10px;
       background: var(--teal-light);
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px; flex-shrink: 0;
+      flex-shrink: 0;
     }
+    .bid-avatar svg { width: 20px; height: 20px; display: block; }
     .bid-name  { font-size: 13px; font-weight: 700; color: var(--gray-900); }
     .bid-spec  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
     .bid-price {
@@ -558,8 +561,9 @@
       width: 56px; height: 56px; border-radius: 14px;
       background: linear-gradient(135deg, var(--teal-light), var(--gold-light));
       display: flex; align-items: center; justify-content: center;
-      font-size: 28px; flex-shrink: 0;
+      flex-shrink: 0;
     }
+    .expert-avatar svg { width: 30px; height: 30px; display: block; }
     .expert-name  { font-size: 17px; font-weight: 800; color: var(--gray-900); }
     .expert-title { font-size: 13px; color: var(--gray-400); margin-top: 2px; }
     .expert-rating {
@@ -834,7 +838,9 @@
 <header class="header">
   <div class="header-inner">
     <a href="#" class="logo">
-      <div class="logo-mark">🏃</div>
+      <div class="logo-mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
       <span class="logo-text">골든 시니어스</span>
     </a>
 
@@ -901,36 +907,46 @@
     </div>
 
     <div class="hero-card">
-      <div class="hero-card-title">🔔 지금 내 주변 견적 보기</div>
+      <div class="hero-card-title" style="display:flex;align-items:center;gap:8px;">
+        <span style="display:inline-flex;width:20px;height:20px;flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>
+        지금 내 주변 견적 보기
+      </div>
       <div class="hero-expert-list">
         <div class="hero-expert-item">
-          <div class="hero-expert-avatar">👨‍⚕️</div>
+          <div class="hero-expert-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
           <div>
             <div class="hero-expert-name">김재훈 물리치료사</div>
-            <div class="hero-expert-info">⭐ 4.98 · 경력 8년 · 방문 127회</div>
+            <div class="hero-expert-info">★ 4.98 · 경력 8년 · 방문 127회</div>
           </div>
           <div class="hero-expert-price" style="filter:blur(5px)">55,000원</div>
         </div>
         <div class="hero-expert-item">
-          <div class="hero-expert-avatar">👩‍⚕️</div>
+          <div class="hero-expert-avatar" style="background:var(--gold-light)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold-dark)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
           <div>
             <div class="hero-expert-name">이수진 운동처방사</div>
-            <div class="hero-expert-info">⭐ 4.97 · 경력 5년 · 방문 98회</div>
+            <div class="hero-expert-info">★ 4.97 · 경력 5년 · 방문 98회</div>
           </div>
           <div class="hero-expert-price" style="filter:blur(5px)">48,000원</div>
         </div>
         <div class="hero-expert-item">
-          <div class="hero-expert-avatar">👨‍⚕️</div>
+          <div class="hero-expert-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
           <div>
             <div class="hero-expert-name">박성민 물리치료사</div>
-            <div class="hero-expert-info">⭐ 4.99 · 경력 11년 · 방문 214회</div>
+            <div class="hero-expert-info">★ 4.99 · 경력 11년 · 방문 214회</div>
           </div>
           <div class="hero-expert-price" style="filter:blur(5px)">62,000원</div>
         </div>
       </div>
       <a href="#calc" class="hero-card-cta">내 조건으로 견적 받기 →</a>
-      <div style="text-align:center;font-size:12px;color:var(--gray-400);margin-top:10px;">
-        🔒 신청 후 견적 금액이 공개됩니다
+      <div style="text-align:center;font-size:12px;color:var(--gray-400);margin-top:10px;display:flex;align-items:center;justify-content:center;gap:5px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        신청 후 견적 금액이 공개됩니다
       </div>
     </div>
   </div>
@@ -970,32 +986,44 @@
     </div>
     <div class="why-grid">
       <div class="why-card">
-        <div class="why-icon">🎓</div>
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+        </div>
         <div class="why-title">자격증 보유 전문가만</div>
         <div class="why-desc">물리치료사·운동처방사 국가자격증 보유자만 등록 가능합니다. 서류 확인 후 승인이 완료된 전문가와 연결됩니다.</div>
       </div>
       <div class="why-card">
-        <div class="why-icon">💰</div>
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7" stroke-width="2.8"/></svg>
+        </div>
         <div class="why-title">역경매로 합리적인 가격</div>
         <div class="why-desc">고정 가격이 없습니다. 여러 전문가가 직접 견적을 제안하고 비교해서 선택하기 때문에 항상 합리적인 가격을 찾을 수 있습니다.</div>
       </div>
       <div class="why-card">
-        <div class="why-icon">🏠</div>
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
         <div class="why-title">병원 방문 없이 집에서</div>
         <div class="why-desc">거동이 불편한 어르신도 집에서 전문적인 재활운동을 받을 수 있습니다. 익숙한 환경에서 더 효과적인 회복이 가능합니다.</div>
       </div>
       <div class="why-card">
-        <div class="why-icon">⭐</div>
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
         <div class="why-title">실제 후기 기반 선택</div>
         <div class="why-desc">모든 후기는 실제 서비스 이용 고객이 작성합니다. 평점과 상세 후기를 보고 내게 맞는 전문가를 직접 선택하세요.</div>
       </div>
       <div class="why-card">
-        <div class="why-icon">🔒</div>
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        </div>
         <div class="why-title">안전한 결제 및 보장</div>
         <div class="why-desc">토스페이먼츠 안전결제 시스템을 사용합니다. 서비스가 기대와 다를 경우 환불 처리를 도와드립니다.</div>
       </div>
       <div class="why-card">
-        <div class="why-icon">💬</div>
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
         <div class="why-title">매칭 후 채팅으로 소통</div>
         <div class="why-desc">결제 완료 후 전담 채팅방이 열립니다. 선생님과 직접 소통해 방문 일정, 특이사항을 편리하게 조율하세요.</div>
       </div>
@@ -1207,8 +1235,9 @@
                 <option>기타</option>
               </select>
             </div>
-            <div style="background:var(--teal-light);border-radius:var(--radius-sm);padding:14px 16px;font-size:13px;color:var(--teal-mid);line-height:1.7;margin-bottom:4px;">
-              🔒 입력하신 정보는 전문가 매칭 목적으로만 사용되며 제3자에게 제공되지 않습니다.
+            <div style="background:var(--teal-light);border-radius:var(--radius-sm);padding:14px 16px;font-size:13px;color:var(--teal-mid);line-height:1.7;margin-bottom:4px;display:flex;align-items:flex-start;gap:8px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              입력하신 정보는 전문가 매칭 목적으로만 사용되며 제3자에게 제공되지 않습니다.
             </div>
             <div class="a-btn-row">
               <button class="a-btn-prev" onclick="aNext(2)">← 이전</button>
@@ -1237,28 +1266,36 @@
         <div class="form-guide-card">
           <div class="form-guide-title">역경매 방식이란?</div>
           <div class="form-guide-step">
-            <div class="form-guide-icon">📋</div>
+            <div class="form-guide-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+            </div>
             <div>
               <h4>① 케어 조건 등록</h4>
               <p>질환, 지역, 예산 등을 입력하면 요청이 등록됩니다</p>
             </div>
           </div>
           <div class="form-guide-step">
-            <div class="form-guide-icon">🔔</div>
+            <div class="form-guide-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
             <div>
               <h4>② 전문가에게 알림 발송</h4>
               <p>조건에 맞는 주변 전문가들에게 실시간 알림이 전송됩니다</p>
             </div>
           </div>
           <div class="form-guide-step">
-            <div class="form-guide-icon">💰</div>
+            <div class="form-guide-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
             <div>
               <h4>③ 견적 도착 & 비교</h4>
               <p>전문가들이 프로필과 견적가를 제안합니다 (평균 3~5개)</p>
             </div>
           </div>
           <div class="form-guide-step">
-            <div class="form-guide-icon">🤝</div>
+            <div class="form-guide-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
             <div>
               <h4>④ 원하는 전문가 선택</h4>
               <p>경력, 후기, 가격을 비교 후 마음에 드는 분을 선택하세요</p>
@@ -1269,30 +1306,39 @@
         <div class="bid-preview-card">
           <div class="bid-preview-label">견적 도착 예시</div>
           <div class="bid-item">
-            <div class="bid-avatar">👨‍⚕️</div>
+            <div class="bid-avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
             <div>
               <div class="bid-name">김재훈 · 물리치료사 · 8년</div>
-              <div class="bid-spec">⭐ 4.98 · 방문 127회</div>
+              <div class="bid-spec">★ 4.98 · 방문 127회</div>
             </div>
             <div class="bid-price">55,000원</div>
           </div>
           <div class="bid-item">
-            <div class="bid-avatar">👩‍⚕️</div>
+            <div class="bid-avatar" style="background:var(--gold-light)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold-dark)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
             <div>
               <div class="bid-name">이수진 · 운동처방사 · 5년</div>
-              <div class="bid-spec">⭐ 4.97 · 방문 98회</div>
+              <div class="bid-spec">★ 4.97 · 방문 98회</div>
             </div>
             <div class="bid-price">48,000원</div>
           </div>
           <div class="bid-item">
-            <div class="bid-avatar">👨‍⚕️</div>
+            <div class="bid-avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
             <div>
               <div class="bid-name">박성민 · 물리치료사 · 11년</div>
-              <div class="bid-spec">⭐ 4.99 · 방문 214회</div>
+              <div class="bid-spec">★ 4.99 · 방문 214회</div>
             </div>
             <div class="bid-price">62,000원</div>
           </div>
-          <div class="bid-lock">🔒 신청 후 견적 금액이 공개됩니다</div>
+          <div class="bid-lock" style="display:flex;align-items:center;justify-content:center;gap:5px;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            신청 후 견적 금액이 공개됩니다
+          </div>
         </div>
       </div>
     </div>
@@ -1311,7 +1357,9 @@
       <!-- 예시 카드 (Firebase 로드 전) -->
       <a href="pages/teachers.html" class="expert-card">
         <div class="expert-top">
-          <div class="expert-avatar">👨‍⚕️</div>
+          <div class="expert-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
           <div>
             <div class="expert-name">김재훈 선생님</div>
             <div class="expert-title">물리치료사 · 경력 8년</div>
@@ -1330,7 +1378,9 @@
       </a>
       <a href="pages/teachers.html" class="expert-card">
         <div class="expert-top">
-          <div class="expert-avatar">👩‍⚕️</div>
+          <div class="expert-avatar" style="background:linear-gradient(135deg,var(--gold-light),#FFF8E8)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold-dark)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
           <div>
             <div class="expert-name">이수진 선생님</div>
             <div class="expert-title">운동처방사 · 경력 5년</div>
@@ -1349,7 +1399,9 @@
       </a>
       <a href="pages/teachers.html" class="expert-card">
         <div class="expert-top">
-          <div class="expert-avatar">👨‍⚕️</div>
+          <div class="expert-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
           <div>
             <div class="expert-name">박성민 선생님</div>
             <div class="expert-title">물리치료사 · 경력 11년</div>

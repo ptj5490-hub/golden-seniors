@@ -104,7 +104,7 @@ const TEMPLATES = {
 };
 
 // ── 메인 핸들러 ──
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', 'https://golden-seniors.vercel.app');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');

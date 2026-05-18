@@ -186,9 +186,9 @@
     .hamburger.open span:nth-child(2) { opacity: 0; }
     .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-    /* 모바일 nav */
+    /* 모바일 nav — 기본은 숨김, 모바일에서 open 클래스로만 노출 */
     .main-nav {
-      display: flex; align-items: center; gap: 32px;
+      display: none;
     }
 
     /* ════════════════════════════════
@@ -707,50 +707,124 @@
     .footer-info { line-height: 1.9; }
 
     /* ════════════════════════════════
-       RESPONSIVE
+       RESPONSIVE — 태블릿 (900px)
     ════════════════════════════════ */
     @media (max-width: 900px) {
-      .header-nav { display: none; }
-      .hamburger  { display: flex; }
+      .header-nav  { display: none; }
+      .hamburger   { display: flex; }
 
+      /* 모바일 드롭다운 메뉴 */
       .main-nav {
-        display: none; flex-direction: column; align-items: flex-start;
+        display: none;
+        flex-direction: column;
+        align-items: flex-start;
         position: absolute; top: 68px; left: 0; right: 0;
-        background: var(--white); border-bottom: 1px solid var(--gray-200);
-        padding: 16px 24px; gap: 4px;
+        background: var(--white);
+        border-bottom: 1px solid var(--gray-200);
+        padding: 12px 20px 16px;
+        gap: 0;
         box-shadow: var(--shadow-md);
+        z-index: 300;
       }
       .main-nav.open { display: flex; }
       .main-nav a {
-        font-size: 16px; font-weight: 500; color: var(--gray-800);
-        text-decoration: none; padding: 10px 0;
+        font-size: 15px; font-weight: 500; color: var(--gray-800);
+        text-decoration: none; padding: 12px 0;
         border-bottom: 1px solid var(--gray-100); width: 100%;
+        white-space: nowrap;
       }
       .main-nav a:last-child { border-bottom: none; }
+      .main-nav .header-cta {
+        margin-top: 10px; text-align: center;
+        border-radius: var(--radius-sm); padding: 12px 20px;
+        background: var(--gold); color: var(--white);
+        font-weight: 700; width: 100%; display: block;
+      }
 
-      .hero-inner { grid-template-columns: 1fr; }
-      .hero-card  { display: none; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      /* 헤더 액션 버튼 크기 줄이기 */
+      .header-cta  { font-size: 13px; padding: 8px 14px; }
+      .header-login { font-size: 13px; padding: 8px 10px; }
+
+      /* 히어로 */
+      .hero-inner  { grid-template-columns: 1fr; gap: 0; }
+      .hero-card   { display: none; }
+      .hero-title  { font-size: clamp(28px, 6vw, 40px); }
+
+      /* 통계 */
+      .stats-grid  { grid-template-columns: repeat(2, 1fr); }
       .stat-item:nth-child(2) { border-right: none; }
-      .why-grid   { grid-template-columns: 1fr; gap: 16px; }
-      .how-steps  { grid-template-columns: repeat(2, 1fr); }
+      .stat-item:nth-child(3) { border-top: 1px solid rgba(13,74,56,0.12); }
+      .stat-item:nth-child(4) { border-top: 1px solid rgba(13,74,56,0.12); border-right: none; }
+
+      /* why */
+      .why-grid    { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+      /* how */
+      .how-steps   { grid-template-columns: repeat(2, 1fr); }
       .how-steps::before { display: none; }
-      .form-wrap  { grid-template-columns: 1fr; }
-      .form-guide { display: none; }
-      .experts-grid { grid-template-columns: 1fr; }
+
+      /* 폼 */
+      .form-wrap   { grid-template-columns: 1fr; }
+      .form-guide  { display: none; }
+      .a-row       { grid-template-columns: 1fr; }
+
+      /* 전문가 */
+      .experts-grid { grid-template-columns: repeat(2, 1fr); }
+
+      /* 후기 */
       .reviews-grid { grid-template-columns: 1fr; }
-      .footer-inner { grid-template-columns: 1fr; gap: 28px; }
+
+      /* 푸터 */
+      .footer-inner  { grid-template-columns: 1fr 1fr; gap: 28px; }
       .footer-bottom { flex-direction: column; text-align: center; }
-      .a-row { grid-template-columns: 1fr; }
     }
 
+    /* ════════════════════════════════
+       RESPONSIVE — 모바일 (600px)
+    ════════════════════════════════ */
     @media (max-width: 600px) {
-      .section  { padding: 60px 0; }
-      .hero     { padding: 56px 0 52px; }
-      .how-steps { grid-template-columns: 1fr; }
-      .final-cta-btns { flex-direction: column; align-items: center; }
-      .hero-trust { gap: 14px; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .section     { padding: 60px 0; }
+      .hero        { padding: 52px 0 48px; }
+      .container   { padding: 0 16px; }
+
+      /* 헤더 로고 텍스트 숨기기 */
+      .logo-text   { font-size: 15px; }
+
+      /* 히어로 */
+      .hero-title  { font-size: clamp(26px, 7vw, 36px); }
+      .hero-desc   { font-size: 15px; }
+      .hero-buttons { flex-direction: column; gap: 10px; }
+      .hero-buttons .btn-primary,
+      .hero-buttons .btn-outline { width: 100%; text-align: center; justify-content: center; }
+      .hero-trust  { gap: 10px; }
+      .hero-trust-item { font-size: 12px; }
+
+      /* why */
+      .why-grid    { grid-template-columns: 1fr; gap: 14px; }
+      .why-card    { padding: 24px 20px; }
+
+      /* how */
+      .how-steps   { grid-template-columns: 1fr; gap: 16px; }
+      .how-step-num { width: 56px; height: 56px; font-size: 18px; }
+
+      /* 통계 */
+      .stats-grid  { grid-template-columns: repeat(2, 1fr); }
+
+      /* 전문가 */
+      .experts-grid { grid-template-columns: 1fr; }
+
+      /* 폼 카드 */
+      .a-card      { padding: 20px 16px; }
+      .a-steps     { gap: 0; }
+      .a-step-label { display: none; }
+
+      /* CTA */
+      .final-cta-btns { flex-direction: column; align-items: stretch; gap: 10px; }
+      .final-cta-btns a { text-align: center; justify-content: center; }
+
+      /* 푸터 */
+      .footer-inner { grid-template-columns: 1fr; gap: 20px; }
+      .footer       { padding: 40px 0 24px; }
     }
   </style>
 </head>

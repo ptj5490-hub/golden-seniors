@@ -266,17 +266,20 @@
       <button class="btn-add-career" onclick="addCareer()">+ 경력 추가</button>
     </div>
 
-    <!-- 4. 자격증 -->
+    <!-- 4. 자격증 · 학력 -->
     <div class="section">
       <div class="section-title">🎓 자격증 · 학력</div>
+
       <div class="field">
         <label class="field-label">보유 자격증 <span class="req">*</span></label>
-        <input type="text" id="inputCerts" placeholder="예: 물리치료사 국가면허, 노인스포츠지도사 2급">
-        <div class="field-hint">쉼표로 구분하여 입력</div>
+        <div class="career-entries" id="certEntries"></div>
+        <button class="btn-add-career" onclick="addCert()">+ 자격증 추가</button>
       </div>
-      <div class="field">
-        <label class="field-label">최종 학력</label>
-        <input type="text" id="inputEdu" placeholder="예: ○○대학교 물리치료학과 졸업">
+
+      <div class="field" style="margin-top:16px;">
+        <label class="field-label">학력</label>
+        <div class="career-entries" id="eduEntries"></div>
+        <button class="btn-add-career" onclick="addEdu()">+ 학력 추가</button>
       </div>
     </div>
 
@@ -447,6 +450,42 @@ function addCareer(data = {}) {
   document.getElementById('careerEntries').appendChild(div);
 }
 
+/* ── 자격증 추가 ── */
+let certCount = 0;
+function addCert(data = {}) {
+  certCount++;
+  const id = 'cert_' + certCount;
+  const div = document.createElement('div');
+  div.className = 'career-entry';
+  div.id = id;
+  div.innerHTML = `
+    <div class="career-entry-fields">
+      <input type="text" placeholder="자격증명 (예: 물리치료사)" value="${esc(data.name || '')}">
+      <input type="text" placeholder="발급기관 · 취득연도 (예: 보건복지부 · 2018)" value="${esc(data.detail || '')}">
+    </div>
+    <button class="career-entry-del" onclick="document.getElementById('${id}').remove()">×</button>
+  `;
+  document.getElementById('certEntries').appendChild(div);
+}
+
+/* ── 학력 추가 ── */
+let eduCount = 0;
+function addEdu(data = {}) {
+  eduCount++;
+  const id = 'edu_' + eduCount;
+  const div = document.createElement('div');
+  div.className = 'career-entry';
+  div.id = id;
+  div.innerHTML = `
+    <div class="career-entry-fields">
+      <input type="text" placeholder="학교명 (예: 한국체육대학교)" value="${esc(data.school || '')}">
+      <input type="text" placeholder="학과 · 졸업연도 (예: 스포츠재활학과 · 2016)" value="${esc(data.detail || '')}">
+    </div>
+    <button class="career-entry-del" onclick="document.getElementById('${id}').remove()">×</button>
+  `;
+  document.getElementById('eduEntries').appendChild(div);
+}
+
 /* ── 프로필 로드 ── */
 function loadProfile(d) {
   selectAvatar(d.avatar || '👨‍⚕️');
@@ -454,8 +493,13 @@ function loadProfile(d) {
   document.getElementById('inputPhone').value    = d.phone    || '';
   document.getElementById('inputTagline').value  = d.tagline  || '';
   document.getElementById('inputBio').value      = d.bio      || '';
-  document.getElementById('inputCerts').value    = d.certifications || '';
-  document.getElementById('inputEdu').value      = d.education || '';
+  // 자격증
+  const certList = Array.isArray(d.certifications) ? d.certifications : [];
+  if (certList.length) certList.forEach(c => addCert(c)); else addCert();
+
+  // 학력
+  const eduList = Array.isArray(d.education) ? d.education : [];
+  if (eduList.length) eduList.forEach(e => addEdu(e)); else addEdu();
   document.getElementById('inputPrice').value    = d.price     || '';
   document.getElementById('inputRegion').value   = d.region    || '';
   document.getElementById('inputAvailTime').value = d.availTime || '';
@@ -538,8 +582,14 @@ async function saveProfile() {
     bio:           document.getElementById('inputBio').value.trim(),
     specialties:   selectedSpecs,
     careerList:    collectCareers(),
-    certifications: document.getElementById('inputCerts').value.trim(),
-    education:     document.getElementById('inputEdu').value.trim(),
+    certifications: [...document.querySelectorAll('#certEntries .career-entry')].map(el => {
+      const inputs = el.querySelectorAll('input');
+      return { name: inputs[0].value.trim(), detail: inputs[1].value.trim() };
+    }).filter(c => c.name),
+    education: [...document.querySelectorAll('#eduEntries .career-entry')].map(el => {
+      const inputs = el.querySelectorAll('input');
+      return { school: inputs[0].value.trim(), detail: inputs[1].value.trim() };
+    }).filter(e => e.school),
     price:         Number(document.getElementById('inputPrice').value) || null,
     region:        document.getElementById('inputRegion').value.trim(),
     availTime:     document.getElementById('inputAvailTime').value.trim(),

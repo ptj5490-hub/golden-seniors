@@ -174,16 +174,44 @@
       background: var(--white); border-radius: 16px; padding: 24px;
       box-shadow: var(--shadow-sm); margin-bottom: 12px;
     }
+    .profile-section + .profile-section { margin-top: 0; }
     .section-title { font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 16px; }
+    .section-subtitle { font-size: 13px; color: var(--gray-400); margin-bottom: 14px; margin-top: -10px; }
     .info-row { margin-bottom: 14px; }
     .info-label { font-size: 12px; font-weight: 700; color: var(--gray-400); margin-bottom: 5px; }
     .info-input {
       width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-200);
       border-radius: 10px; font-size: 15px; outline: none; font-family: inherit;
-      background: var(--gray-100); transition: border-color 0.2s;
+      background: var(--gray-100); transition: border-color 0.2s; box-sizing: border-box;
     }
     .info-input:focus { border-color: var(--navy); background: var(--white); }
     .info-textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
+    /* 전문 분야 칩 */
+    .specialty-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .spec-chip {
+      padding: 7px 14px; border: 1.5px solid var(--gray-200); border-radius: 20px;
+      font-size: 13px; font-weight: 600; color: var(--gray-600); cursor: pointer;
+      background: var(--gray-100); transition: all 0.15s; user-select: none;
+    }
+    .spec-chip.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+    /* 동적 리스트 */
+    .dyn-item {
+      display: flex; gap: 8px; align-items: flex-start; margin-bottom: 10px;
+    }
+    .dyn-item .dyn-fields { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .dyn-item .dyn-fields .row2 { display: flex; gap: 6px; }
+    .dyn-item .dyn-fields .row2 input { flex: 1; }
+    .btn-dyn-del {
+      width: 34px; height: 34px; min-width: 34px; border-radius: 8px; border: 1.5px solid #FCA5A5;
+      background: #FEF2F2; color: #E74C3C; font-size: 16px; cursor: pointer; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; margin-top: 1px;
+    }
+    .btn-dyn-add {
+      width: 100%; padding: 10px; border: 1.5px dashed var(--gray-200); border-radius: 10px;
+      background: var(--gray-100); color: var(--gray-400); font-size: 13px; font-weight: 700;
+      cursor: pointer; margin-top: 4px;
+    }
+    .btn-dyn-add:hover { border-color: var(--navy); color: var(--navy); background: #EEF2FF; }
 
     /* ─── 빈 상태 / 로딩 ─── */
     .empty-state {
@@ -275,24 +303,70 @@
 
   <!-- 내 프로필 탭 -->
   <div class="tab-panel" id="panelProfile">
+
+    <!-- ① 기본 정보 -->
     <div class="profile-section">
-      <div class="section-title">프로필 수정</div>
+      <div class="section-title">기본 정보</div>
       <div class="info-row">
         <div class="info-label">이름</div>
-        <input class="info-input" id="editName" type="text">
+        <input class="info-input" id="editName" type="text" placeholder="실명을 입력해주세요">
       </div>
       <div class="info-row">
         <div class="info-label">전화번호</div>
-        <input class="info-input" id="editPhone" type="tel">
-      </div>
-      <div class="info-row">
-        <div class="info-label">자기소개</div>
-        <textarea class="info-input info-textarea" id="editIntro"></textarea>
+        <input class="info-input" id="editPhone" type="tel" placeholder="010-0000-0000">
       </div>
       <div class="info-row">
         <div class="info-label">활동 지역</div>
-        <input class="info-input" id="editArea" type="text">
+        <input class="info-input" id="editArea" type="text" placeholder="예) 서울시 강동구, 송파구">
       </div>
+      <div class="info-row">
+        <div class="info-label">자기소개</div>
+        <textarea class="info-input info-textarea" id="editIntro" placeholder="고객에게 보여질 자기소개를 작성해주세요."></textarea>
+      </div>
+    </div>
+
+    <!-- ② 전문 분야 -->
+    <div class="profile-section">
+      <div class="section-title">전문 분야</div>
+      <div class="section-subtitle">해당하는 분야를 모두 선택해주세요</div>
+      <div class="specialty-grid" id="specialtyGrid">
+        <div class="spec-chip" onclick="toggleSpec(this)" data-val="근골격계 통증">근골격계 통증</div>
+        <div class="spec-chip" onclick="toggleSpec(this)" data-val="뇌졸중 재활">뇌졸중 재활</div>
+        <div class="spec-chip" onclick="toggleSpec(this)" data-val="파킨슨 재활">파킨슨 재활</div>
+        <div class="spec-chip" onclick="toggleSpec(this)" data-val="척추 재활">척추 재활</div>
+        <div class="spec-chip" onclick="toggleSpec(this)" data-val="관절 재활">관절 재활</div>
+        <div class="spec-chip" onclick="toggleSpec(this)" data-val="치매 예방 운동">치매 예방 운동</div>
+        <div class="spec-chip" onclick="toggleSpec(this)" data-val="낙상 예방">낙상 예방</div>
+        <div class="spec-chip" onclick="toggleSpec(this)" data-val="심폐 기능 강화">심폐 기능 강화</div>
+        <div class="spec-chip" onclick="toggleSpec(this)" data-val="균형·보행 훈련">균형·보행 훈련</div>
+        <div class="spec-chip" onclick="toggleSpec(this)" data-val="수술 후 재활">수술 후 재활</div>
+      </div>
+    </div>
+
+    <!-- ③ 자격증 -->
+    <div class="profile-section">
+      <div class="section-title">자격증</div>
+      <div class="section-subtitle">보유하신 자격증을 모두 입력해주세요</div>
+      <div id="certList"></div>
+      <button class="btn-dyn-add" onclick="addCert()">+ 자격증 추가</button>
+    </div>
+
+    <!-- ④ 학력 -->
+    <div class="profile-section">
+      <div class="section-title">학력</div>
+      <div id="eduList"></div>
+      <button class="btn-dyn-add" onclick="addEdu()">+ 학력 추가</button>
+    </div>
+
+    <!-- ⑤ 경력 -->
+    <div class="profile-section">
+      <div class="section-title">경력</div>
+      <div id="careerList"></div>
+      <button class="btn-dyn-add" onclick="addCareer()">+ 경력 추가</button>
+    </div>
+
+    <!-- 저장 버튼 -->
+    <div class="profile-section">
       <button class="btn-quote" style="width:100%;padding:14px;font-size:15px;" onclick="saveProfile()">
         저장하기
       </button>
@@ -310,6 +384,7 @@
         </button>
       </div>
     </div>
+
   </div>
 
 </div>
@@ -420,7 +495,76 @@
     document.getElementById('editPhone').value = (teacherData.phone || '').replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
     document.getElementById('editIntro').value = teacherData.intro || '';
     document.getElementById('editArea').value  = teacherData.area  || '';
+
+    // 전문 분야
+    const specs = teacherData.specialties || [];
+    document.querySelectorAll('#specialtyGrid .spec-chip').forEach(chip => {
+      if (specs.includes(chip.dataset.val)) chip.classList.add('on');
+    });
+
+    // 자격증
+    (teacherData.certifications || []).forEach(c => addCert(c));
+    if (!(teacherData.certifications || []).length) addCert();
+
+    // 학력
+    (teacherData.education || []).forEach(e => addEdu(e));
+    if (!(teacherData.education || []).length) addEdu();
+
+    // 경력
+    (teacherData.careers || []).forEach(c => addCareer(c));
+    if (!(teacherData.careers || []).length) addCareer();
   }
+
+  // ── 전문 분야 토글 ──
+  window.toggleSpec = function(chip) { chip.classList.toggle('on'); };
+
+  // ── 자격증 동적 리스트 ──
+  window.addCert = function(data = {}) {
+    const div = document.createElement('div');
+    div.className = 'dyn-item';
+    div.innerHTML = `
+      <div class="dyn-fields">
+        <input class="info-input cert-name" type="text" placeholder="자격증명 (예: 물리치료사)" value="${data.name||''}">
+        <div class="row2">
+          <input class="info-input cert-org" type="text" placeholder="발급기관 (예: 보건복지부)" value="${data.org||''}">
+          <input class="info-input cert-year" type="text" placeholder="취득연도" style="max-width:100px;" value="${data.year||''}">
+        </div>
+      </div>
+      <button class="btn-dyn-del" onclick="this.parentElement.remove()">×</button>`;
+    document.getElementById('certList').appendChild(div);
+  };
+
+  // ── 학력 동적 리스트 ──
+  window.addEdu = function(data = {}) {
+    const div = document.createElement('div');
+    div.className = 'dyn-item';
+    div.innerHTML = `
+      <div class="dyn-fields">
+        <input class="info-input edu-school" type="text" placeholder="학교명 (예: 한국체육대학교)" value="${data.school||''}">
+        <div class="row2">
+          <input class="info-input edu-major" type="text" placeholder="학과 (예: 스포츠재활학과)" value="${data.major||''}">
+          <input class="info-input edu-year" type="text" placeholder="졸업연도" style="max-width:100px;" value="${data.year||''}">
+        </div>
+      </div>
+      <button class="btn-dyn-del" onclick="this.parentElement.remove()">×</button>`;
+    document.getElementById('eduList').appendChild(div);
+  };
+
+  // ── 경력 동적 리스트 ──
+  window.addCareer = function(data = {}) {
+    const div = document.createElement('div');
+    div.className = 'dyn-item';
+    div.innerHTML = `
+      <div class="dyn-fields">
+        <input class="info-input career-org" type="text" placeholder="기관명 (예: 서울재활병원)" value="${data.org||''}">
+        <div class="row2">
+          <input class="info-input career-role" type="text" placeholder="직책 (예: 물리치료사)" value="${data.role||''}">
+          <input class="info-input career-period" type="text" placeholder="기간 (예: 2018-2023)" style="max-width:120px;" value="${data.period||''}">
+        </div>
+      </div>
+      <button class="btn-dyn-del" onclick="this.parentElement.remove()">×</button>`;
+    document.getElementById('careerList').appendChild(div);
+  };
 
   // ── 견적 요청 목록 (open 상태 전체) ──
   async function loadRequests() {
@@ -649,10 +793,41 @@
     const intro = document.getElementById('editIntro').value.trim();
     const area  = document.getElementById('editArea').value.trim();
     if (!name) { alert('이름을 입력해주세요.'); return; }
+
+    // 전문 분야
+    const specialties = [...document.querySelectorAll('#specialtyGrid .spec-chip.on')]
+      .map(c => c.dataset.val);
+
+    // 자격증
+    const certifications = [...document.querySelectorAll('#certList .dyn-item')]
+      .map(el => ({
+        name:   el.querySelector('.cert-name').value.trim(),
+        org:    el.querySelector('.cert-org').value.trim(),
+        year:   el.querySelector('.cert-year').value.trim(),
+      })).filter(c => c.name);
+
+    // 학력
+    const education = [...document.querySelectorAll('#eduList .dyn-item')]
+      .map(el => ({
+        school: el.querySelector('.edu-school').value.trim(),
+        major:  el.querySelector('.edu-major').value.trim(),
+        year:   el.querySelector('.edu-year').value.trim(),
+      })).filter(e => e.school);
+
+    // 경력
+    const careers = [...document.querySelectorAll('#careerList .dyn-item')]
+      .map(el => ({
+        org:    el.querySelector('.career-org').value.trim(),
+        role:   el.querySelector('.career-role').value.trim(),
+        period: el.querySelector('.career-period').value.trim(),
+      })).filter(c => c.org);
+
     try {
-      await db.collection('users').doc(currentUser.uid).update({ name, phone, intro, area });
+      await db.collection('users').doc(currentUser.uid).update({
+        name, phone, intro, area, specialties, certifications, education, careers,
+      });
       await currentUser.updateProfile({ displayName: name });
-      teacherData = { ...teacherData, name, phone, intro, area };
+      teacherData = { ...teacherData, name, phone, intro, area, specialties, certifications, education, careers };
       alert('✅ 프로필이 저장됐어요!');
     } catch(e) { alert('저장 중 오류: ' + e.message); }
   };

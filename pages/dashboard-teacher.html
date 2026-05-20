@@ -522,6 +522,51 @@
 
   </div>
 
+  <!-- ── 사이트 설정 (관리자 전용) ── -->
+  <div id="siteSettingsSection" style="display:none;margin-top:8px;">
+    <div class="section-card" style="margin-bottom:14px;">
+      <div class="section-title">
+        <div class="section-title-line"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        홈페이지 푸터 설정
+        <span style="margin-left:6px;padding:3px 10px;background:var(--gold-light);color:var(--gold-dark);border-radius:20px;font-size:11px;font-weight:700;">관리자 전용</span>
+      </div>
+
+      <div style="display:grid;gap:16px;">
+        <div>
+          <label style="display:block;font-size:13px;font-weight:700;color:var(--teal);margin-bottom:6px;">
+            브랜드 소개 &amp; 사업자 정보
+            <span style="font-size:11px;font-weight:400;color:var(--gray-400);margin-left:4px;">줄바꿈 그대로 반영됩니다</span>
+          </label>
+          <textarea id="settFooterDesc" rows="5"
+            style="width:100%;padding:12px 14px;border:1.5px solid var(--gray-200);border-radius:12px;
+                   font-size:13px;color:var(--gray-900);outline:none;font-family:inherit;
+                   resize:vertical;line-height:1.7;background:var(--white);transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--gray-200)'"
+            placeholder="어르신의 건강하고 활동적인 삶을 위해&#10;검증된 전문가와 연결합니다.&#10;&#10;대표: 홍길동&#10;사업자등록번호: 000-00-00000"></textarea>
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:700;color:var(--teal);margin-bottom:6px;">저작권 문구</label>
+          <input type="text" id="settFooterCopyright"
+            style="width:100%;padding:12px 14px;border:1.5px solid var(--gray-200);border-radius:12px;
+                   font-size:13px;color:var(--gray-900);outline:none;font-family:inherit;
+                   background:var(--white);transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--gray-200)'"
+            placeholder="© 2025 골든 시니어스. All rights reserved.">
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <button onclick="saveFooterSettings()"
+            style="padding:12px 28px;background:var(--teal);color:white;border:none;border-radius:12px;
+                   font-size:14px;font-weight:800;cursor:pointer;transition:background 0.2s;"
+            onmouseover="this.style.background='var(--teal-mid)'" onmouseout="this.style.background='var(--teal)'">
+            저장하기
+          </button>
+          <span id="settSaveStatus" style="font-size:13px;color:var(--gray-400);"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- 탈퇴 확인 모달 -->
@@ -610,6 +655,7 @@
     await loadTeacherData(user);
     await loadRequests();
     loadSentQuotes();
+    loadFooterSettings(user.uid);
   });
 
   async function loadTeacherData(user) {
@@ -1057,6 +1103,46 @@
       <div class="empty-sub">${sub}</div>
     </div>`;
   }
+
+  // ── 사이트 설정 (관리자 전용) ──
+  async function loadFooterSettings(uid) {
+    try {
+      const userSnap = await db.collection('users').doc(uid).get();
+      if (!userSnap.exists || !userSnap.data().isAdmin) return;
+      // 관리자인 경우 섹션 표시
+      document.getElementById('siteSettingsSection').style.display = 'block';
+      // 현재 설정 로드
+      const snap = await db.collection('settings').doc('site').get();
+      if (!snap.exists) return;
+      const s = snap.data();
+      if (s.footer_desc)      document.getElementById('settFooterDesc').value      = s.footer_desc;
+      if (s.footer_copyright) document.getElementById('settFooterCopyright').value = s.footer_copyright;
+    } catch(e) { console.warn('설정 로드 오류:', e); }
+  }
+
+  window.saveFooterSettings = async function() {
+    const desc      = document.getElementById('settFooterDesc').value.trim();
+    const copyright = document.getElementById('settFooterCopyright').value.trim();
+    const statusEl  = document.getElementById('settSaveStatus');
+    if (!desc && !copyright) {
+      statusEl.textContent = '내용을 입력해주세요';
+      return;
+    }
+    try {
+      const update = {};
+      if (desc)      update.footer_desc      = desc;
+      if (copyright) update.footer_copyright = copyright;
+      update.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection('settings').doc('site').set(update, { merge: true });
+      statusEl.style.color = 'var(--green)';
+      statusEl.textContent = '저장 완료! 홈페이지에 즉시 반영됩니다.';
+      setTimeout(() => { statusEl.textContent = ''; statusEl.style.color = ''; }, 4000);
+    } catch(e) {
+      statusEl.style.color = 'var(--red)';
+      statusEl.textContent = '저장 중 오류가 발생했어요.';
+      console.error(e);
+    }
+  };
 </script>
 
 </body>

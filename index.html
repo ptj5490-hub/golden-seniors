@@ -1548,7 +1548,7 @@
     <div class="footer-inner">
       <div>
         <div class="footer-brand-name">골든 시니어스</div>
-        <div class="footer-brand-desc">
+        <div class="footer-brand-desc" id="ftDesc">
           어르신의 건강하고 활동적인 삶을 위해<br>
           검증된 전문가와 연결합니다.<br><br>
           대표: 박태준<br>
@@ -1570,7 +1570,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="footer-info">
+      <div class="footer-info" id="ftCopyright">
         © 2025 골든 시니어스. All rights reserved.
       </div>
       <div style="display:flex;gap:16px;">
@@ -1826,6 +1826,22 @@
     await _auth.signOut();
     window.location.reload();
   };
+
+  // ── 푸터 동적 로드 ──
+  (async () => {
+    try {
+      const snap = await _db.collection('settings').doc('site').get();
+      if (!snap.exists) return;
+      const s = snap.data();
+      if (s.footer_desc) {
+        document.getElementById('ftDesc').innerHTML =
+          s.footer_desc.replace(/\n/g, '<br>');
+      }
+      if (s.footer_copyright) {
+        document.getElementById('ftCopyright').textContent = s.footer_copyright;
+      }
+    } catch(e) {}
+  })();
 
   const _params = new URLSearchParams(window.location.search);
   if (_params.get('welcome') === '1') {

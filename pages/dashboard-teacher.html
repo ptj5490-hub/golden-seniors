@@ -663,7 +663,7 @@
     if (!snap.exists) return;
     teacherData = snap.data();
 
-    if (teacherData.role !== 'teacher') {
+    if (teacherData.role !== 'teacher' && teacherData.role !== 'admin') {
       window.location.href = 'mypage.html'; return;
     }
 
@@ -1108,7 +1108,7 @@
   async function loadFooterSettings(uid) {
     try {
       const userSnap = await db.collection('users').doc(uid).get();
-      if (!userSnap.exists || !userSnap.data().isAdmin) return;
+      if (!userSnap.exists || userSnap.data().role !== 'admin') return;
       // 관리자인 경우 섹션 표시
       document.getElementById('siteSettingsSection').style.display = 'block';
       // 현재 설정 로드

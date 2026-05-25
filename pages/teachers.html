@@ -4,60 +4,62 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>선생님 찾기 | 골든 시니어스</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #C17D0E;
-      --navy: #1A3B6E; --navy-light: #2A5298; --white: #FFFFFF;
+      --teal: #0D4A38; --teal-dark: #083328; --teal-light: #E8F4F0; --teal-pale: #F2FAF7;
+      --gold: #C4973A; --gold-light: #FDF6E7; --gold-dark: #A07830;
+      --white: #FFFFFF;
       --gray-100: #F8F9FA; --gray-200: #E9ECEF; --gray-400: #9CA3AF;
       --gray-600: #6B7280; --gray-900: #1F2937;
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { overflow-x: hidden; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--gray-100); color: var(--gray-900);
     }
 
     /* ===== 헤더 ===== */
     header {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: var(--white); box-shadow: 0 1px 8px rgba(0,0,0,0.08);
-      height: 64px; display: flex; align-items: center; padding: 0 24px; gap: 16px;
+      background: var(--teal-dark); height: 64px;
+      display: flex; align-items: center; padding: 0 24px; gap: 16px;
     }
     .back-btn {
       width: 36px; height: 36px; border-radius: 10px;
-      background: var(--gray-100); border: none; cursor: pointer;
+      background: rgba(255,255,255,0.12); border: none; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px; text-decoration: none; color: var(--navy);
-      transition: background 0.2s; flex-shrink: 0;
+      color: white; transition: background 0.2s; flex-shrink: 0;
+      text-decoration: none;
     }
-    .back-btn:hover { background: var(--gray-200); }
+    .back-btn:hover { background: rgba(255,255,255,0.2); }
+    .back-btn svg { width:20px; height:20px; }
     .logo {
       display: flex; align-items: center; gap: 10px;
-      font-size: 18px; font-weight: 900; color: var(--navy); text-decoration: none;
+      font-size: 18px; font-weight: 900; color: white; text-decoration: none;
     }
     .logo-icon {
       width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
     }
     .header-count {
-      margin-left: auto; background: var(--gold-light);
-      color: var(--gold-dark); font-size: 13px; font-weight: 800;
+      margin-left: auto; background: rgba(255,255,255,0.15);
+      color: white; font-size: 13px; font-weight: 700;
       padding: 6px 14px; border-radius: 100px; white-space: nowrap;
     }
 
     /* ===== 메인 ===== */
     main { padding-top: 64px; }
-    .container { max-width: 900px; margin: 0 auto; padding: 28px 20px 80px; }
+    .container { max-width: 960px; margin: 0 auto; padding: 28px 20px 80px; }
 
-    /* 상단 제목 */
     .page-header { margin-bottom: 24px; }
-    .page-header h1 { font-size: 22px; font-weight: 900; color: var(--navy); margin-bottom: 6px; }
+    .page-header h1 { font-size: 22px; font-weight: 900; color: var(--teal); margin-bottom: 6px; }
     .page-header p  { font-size: 14px; color: var(--gray-600); }
 
-    /* ===== 필터 영역 ===== */
+    /* ===== 필터 ===== */
     .filter-section {
       background: var(--white); border-radius: 16px;
       padding: 20px; box-shadow: var(--shadow-md); margin-bottom: 24px;
@@ -68,7 +70,7 @@
     .filter-row + .filter-row { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-100); }
     .filter-label {
       font-size: 12px; font-weight: 800; color: var(--gray-400);
-      width: 60px; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.3px;
+      width: 60px; flex-shrink: 0; letter-spacing: 0.3px;
     }
     .filter-chips { display: flex; gap: 8px; flex-wrap: wrap; }
     .f-chip {
@@ -76,31 +78,30 @@
       border: 1.5px solid var(--gray-200); background: var(--white);
       cursor: pointer; transition: all 0.18s; color: var(--gray-600);
     }
-    .f-chip.active {
-      border-color: var(--navy); background: var(--navy); color: var(--white);
-    }
-    .f-chip:hover:not(.active) { border-color: var(--navy); color: var(--navy); }
+    .f-chip.active { border-color: var(--teal); background: var(--teal); color: var(--white); }
+    .f-chip:hover:not(.active) { border-color: var(--teal); color: var(--teal); }
     .filter-reset {
       margin-left: auto; font-size: 13px; color: var(--gray-400);
       background: none; border: none; cursor: pointer; font-weight: 600;
       transition: color 0.2s; flex-shrink: 0;
     }
-    .filter-reset:hover { color: var(--navy); }
+    .filter-reset:hover { color: var(--teal); }
 
-    /* 결과 카운트 + 정렬 */
+    /* 결과 바 */
     .result-bar {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
     }
     .result-count { font-size: 14px; color: var(--gray-600); font-weight: 600; }
-    .result-count strong { color: var(--navy); }
+    .result-count strong { color: var(--teal); }
     .sort-select {
       padding: 7px 12px; border-radius: 10px; font-size: 13px; font-weight: 700;
-      border: 1.5px solid var(--gray-200); background: var(--white); color: var(--navy);
-      cursor: pointer;
+      border: 1.5px solid var(--gray-200); background: var(--white); color: var(--teal);
+      cursor: pointer; outline: none;
     }
+    .sort-select:focus { border-color: var(--teal); }
 
-    /* ===== 선생님 카드 그리드 ===== */
+    /* ===== 그리드 ===== */
     .teachers-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
     }
@@ -115,14 +116,11 @@
     .t-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
     .t-card.best { border-color: var(--gold); }
 
-    /* 카드 상단 뱃지 */
     .t-badge-bar {
       background: var(--gold); color: var(--white);
       font-size: 11px; font-weight: 800; padding: 5px 14px;
       display: flex; align-items: center; gap: 5px;
     }
-
-    /* 카드 아바타 영역 */
     .t-avatar-wrap {
       padding: 20px 20px 0;
       display: flex; justify-content: center;
@@ -130,52 +128,52 @@
     .t-avatar {
       width: 80px; height: 80px; border-radius: 20px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 38px;
+      flex-shrink: 0;
     }
-    .av-gold   { background: linear-gradient(135deg, #FFE09A, #F5A623); }
-    .av-silver { background: linear-gradient(135deg, #E8E8E8, #C0C0C0); }
-    .av-blue   { background: linear-gradient(135deg, #E8F4FF, #7BC8F8); }
-    .av-green  { background: linear-gradient(135deg, #E8FFF0, #52D08F); }
-    .av-purple { background: linear-gradient(135deg, #F0E8FF, #A78BFA); }
-
-    /* 카드 정보 */
     .t-info {
       padding: 16px 20px 20px; flex: 1; display: flex; flex-direction: column;
     }
-    .t-name { font-size: 16px; font-weight: 900; color: var(--navy); margin-bottom: 4px; }
+    .t-name { font-size: 16px; font-weight: 900; color: var(--teal); margin-bottom: 4px; }
     .t-spec { font-size: 12px; color: var(--gray-600); margin-bottom: 10px; line-height: 1.5; }
     .t-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
     .t-tag {
       font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 100px;
-      background: #EEF2FF; color: var(--navy);
+      background: var(--teal-light); color: var(--teal);
     }
-    .t-tag.green { background: #EAF8EF; color: #27AE60; }
+    .t-tag.green { background: #EAF8EF; color: #15803d; }
     .t-stats {
       display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px;
     }
     .t-stat {
-      background: var(--gray-100); border-radius: 10px;
+      background: var(--teal-pale); border-radius: 10px;
       padding: 8px 10px; text-align: center;
     }
-    .t-stat .v { font-size: 14px; font-weight: 900; color: var(--navy); display: block; }
+    .t-stat .v { font-size: 14px; font-weight: 900; color: var(--teal); display: block; }
     .t-stat .l { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
     .t-star { color: var(--gold); }
-    .t-price {
-      font-size: 17px; font-weight: 900; color: var(--navy);
-      margin-bottom: 12px;
-    }
+    .t-price { font-size: 17px; font-weight: 900; color: var(--teal); margin-bottom: 6px; }
     .t-price span { font-size: 13px; font-weight: 500; color: var(--gray-600); }
-    .t-region { font-size: 12px; color: var(--gray-400); margin-bottom: 14px; }
+    .t-region { font-size: 12px; color: var(--gray-400); margin-bottom: 14px; display: flex; align-items: center; gap: 4px; }
+    .t-region svg { flex-shrink: 0; }
     .t-btn {
       display: block; width: 100%; padding: 12px;
-      background: var(--navy); color: var(--white);
+      background: var(--teal); color: var(--white);
       border: none; border-radius: 12px; font-size: 14px; font-weight: 800;
       cursor: pointer; text-decoration: none; text-align: center;
       transition: background 0.2s; margin-top: auto;
     }
-    .t-btn:hover { background: var(--navy-light); }
+    .t-btn:hover { background: var(--teal-dark); }
     .t-btn.gold { background: var(--gold); }
     .t-btn.gold:hover { background: var(--gold-dark); }
+
+    /* 스켈레톤 로딩 */
+    .skeleton {
+      background: linear-gradient(90deg, var(--gray-100) 25%, var(--gray-200) 50%, var(--gray-100) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite; border-radius: 8px;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .t-card-skeleton { background: var(--white); border-radius: 20px; box-shadow: var(--shadow-md); padding: 20px; }
 
     /* 빈 결과 */
     .empty-state {
@@ -183,11 +181,10 @@
       padding: 60px 20px; background: var(--white);
       border-radius: 20px; box-shadow: var(--shadow-md);
     }
-    .empty-state .icon { font-size: 52px; margin-bottom: 16px; }
-    .empty-state h3 { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+    .empty-state svg { margin-bottom: 16px; opacity: 0.4; }
+    .empty-state h3 { font-size: 18px; font-weight: 800; color: var(--teal); margin-bottom: 8px; }
     .empty-state p  { font-size: 14px; color: var(--gray-600); }
 
-    /* 모바일 */
     @media (max-width: 800px) {
       .teachers-grid { grid-template-columns: repeat(2, 1fr); }
     }
@@ -200,12 +197,16 @@
 <body>
 
 <header>
-  <a href="javascript:history.back()" class="back-btn">←</a>
+  <a href="javascript:history.back()" class="back-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
   <a href="../index.html" class="logo">
-    <div class="logo-icon">🏃</div>
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </div>
     골든 시니어스
   </a>
-  <div class="header-count" id="headerCount">선생님 9명</div>
+  <div class="header-count" id="headerCount">불러오는 중…</div>
 </header>
 
 <main>
@@ -222,11 +223,11 @@
         <div class="filter-label">전문분야</div>
         <div class="filter-chips" id="specFilter">
           <span class="f-chip active" onclick="setFilter(this,'spec','all')">전체</span>
-          <span class="f-chip" onclick="setFilter(this,'spec','뇌졸중')">🧠 뇌졸중</span>
-          <span class="f-chip" onclick="setFilter(this,'spec','관절')">🦴 관절·수술</span>
-          <span class="f-chip" onclick="setFilter(this,'spec','낙상')">🚶 낙상 예방</span>
-          <span class="f-chip" onclick="setFilter(this,'spec','근력')">💪 근력 강화</span>
-          <span class="f-chip" onclick="setFilter(this,'spec','파킨슨')">🤲 파킨슨</span>
+          <span class="f-chip" onclick="setFilter(this,'spec','뇌졸중')">뇌졸중</span>
+          <span class="f-chip" onclick="setFilter(this,'spec','관절')">관절·수술</span>
+          <span class="f-chip" onclick="setFilter(this,'spec','낙상')">낙상 예방</span>
+          <span class="f-chip" onclick="setFilter(this,'spec','근력')">근력 강화</span>
+          <span class="f-chip" onclick="setFilter(this,'spec','파킨슨')">파킨슨</span>
         </div>
       </div>
       <div class="filter-row">
@@ -252,7 +253,7 @@
 
     <!-- 결과 바 -->
     <div class="result-bar">
-      <div class="result-count"><strong id="resultNum">9</strong>명의 선생님을 찾았어요</div>
+      <div class="result-count"><strong id="resultNum">0</strong>명의 선생님을 찾았어요</div>
       <select class="sort-select" onchange="sortTeachers(this.value)">
         <option value="rating">평점 높은순</option>
         <option value="review">후기 많은순</option>
@@ -263,318 +264,217 @@
 
     <!-- 선생님 목록 -->
     <div class="teachers-grid" id="teacherGrid">
+      <!-- 스켈레톤 로딩 -->
+      <div class="t-card-skeleton" id="sk1"><div class="skeleton" style="height:80px;margin-bottom:12px;border-radius:16px;"></div><div class="skeleton" style="height:18px;width:60%;margin-bottom:8px;"></div><div class="skeleton" style="height:14px;width:80%;margin-bottom:16px;"></div><div class="skeleton" style="height:60px;"></div></div>
+      <div class="t-card-skeleton" id="sk2"><div class="skeleton" style="height:80px;margin-bottom:12px;border-radius:16px;"></div><div class="skeleton" style="height:18px;width:60%;margin-bottom:8px;"></div><div class="skeleton" style="height:14px;width:80%;margin-bottom:16px;"></div><div class="skeleton" style="height:60px;"></div></div>
+      <div class="t-card-skeleton" id="sk3"><div class="skeleton" style="height:80px;margin-bottom:12px;border-radius:16px;"></div><div class="skeleton" style="height:18px;width:60%;margin-bottom:8px;"></div><div class="skeleton" style="height:14px;width:80%;margin-bottom:16px;"></div><div class="skeleton" style="height:60px;"></div></div>
+    </div>
 
-      <!-- 1 박성민 (베스트) -->
-      <a class="t-card best" href="teacher.html"
-         data-spec="뇌졸중 관절" data-lic="물리치료사" data-price="60000"
-         data-rating="4.99" data-reviews="127" data-career="11">
-        <div class="t-badge-bar">🥇 이달의 베스트 선생님</div>
-        <div class="t-avatar-wrap">
-          <div class="t-avatar av-gold">👨‍⚕️</div>
-        </div>
-        <div class="t-info">
-          <div class="t-name">박성민 선생님</div>
-          <div class="t-spec">관절·수술 후 재활 · 보행 훈련 전문</div>
-          <div class="t-tags">
-            <span class="t-tag">물리치료사</span>
-            <span class="t-tag green">✓ 신원인증</span>
-          </div>
-          <div class="t-stats">
-            <div class="t-stat"><span class="v t-star">★ 4.99</span><div class="l">평점</div></div>
-            <div class="t-stat"><span class="v">127개</span><div class="l">후기</div></div>
-            <div class="t-stat"><span class="v">214회</span><div class="l">누적 방문</div></div>
-            <div class="t-stat"><span class="v">11년</span><div class="l">경력</div></div>
-          </div>
-          <div class="t-price">60,000원 <span>/ 1회 방문</span></div>
-          <div class="t-region">📍 서울 강남·서초·송파</div>
-          <div class="t-btn gold">프로필 보기 →</div>
-        </div>
-      </a>
-
-      <!-- 2 김재훈 -->
-      <a class="t-card" href="teacher.html"
-         data-spec="뇌졸중 낙상" data-lic="물리치료사" data-price="55000"
-         data-rating="4.98" data-reviews="89" data-career="8">
-        <div class="t-avatar-wrap">
-          <div class="t-avatar av-silver">👨‍⚕️</div>
-        </div>
-        <div class="t-info">
-          <div class="t-name">김재훈 선생님</div>
-          <div class="t-spec">뇌졸중 재활 · 보행 훈련 전문</div>
-          <div class="t-tags">
-            <span class="t-tag">물리치료사</span>
-            <span class="t-tag green">✓ 신원인증</span>
-          </div>
-          <div class="t-stats">
-            <div class="t-stat"><span class="v t-star">★ 4.98</span><div class="l">평점</div></div>
-            <div class="t-stat"><span class="v">89개</span><div class="l">후기</div></div>
-            <div class="t-stat"><span class="v">127회</span><div class="l">누적 방문</div></div>
-            <div class="t-stat"><span class="v">8년</span><div class="l">경력</div></div>
-          </div>
-          <div class="t-price">55,000원 <span>/ 1회 방문</span></div>
-          <div class="t-region">📍 서울 마포·은평·서대문</div>
-          <div class="t-btn">프로필 보기 →</div>
-        </div>
-      </a>
-
-      <!-- 3 이수진 -->
-      <a class="t-card" href="teacher.html"
-         data-spec="낙상 근력" data-lic="운동처방사" data-price="65000"
-         data-rating="4.97" data-reviews="74" data-career="5">
-        <div class="t-avatar-wrap">
-          <div class="t-avatar av-blue">👩‍⚕️</div>
-        </div>
-        <div class="t-info">
-          <div class="t-name">이수진 선생님</div>
-          <div class="t-spec">낙상 예방 · 근력 강화 전문</div>
-          <div class="t-tags">
-            <span class="t-tag">운동처방사</span>
-            <span class="t-tag green">✓ 신원인증</span>
-          </div>
-          <div class="t-stats">
-            <div class="t-stat"><span class="v t-star">★ 4.97</span><div class="l">평점</div></div>
-            <div class="t-stat"><span class="v">74개</span><div class="l">후기</div></div>
-            <div class="t-stat"><span class="v">98회</span><div class="l">누적 방문</div></div>
-            <div class="t-stat"><span class="v">5년</span><div class="l">경력</div></div>
-          </div>
-          <div class="t-price">65,000원 <span>/ 1회 방문</span></div>
-          <div class="t-region">📍 서울 노원·도봉·강북</div>
-          <div class="t-btn">프로필 보기 →</div>
-        </div>
-      </a>
-
-      <!-- 4 정민호 -->
-      <a class="t-card" href="teacher.html"
-         data-spec="뇌졸중 관절 파킨슨" data-lic="스포츠재활사" data-price="58000"
-         data-rating="4.95" data-reviews="62" data-career="7">
-        <div class="t-avatar-wrap">
-          <div class="t-avatar av-green">👨‍⚕️</div>
-        </div>
-        <div class="t-info">
-          <div class="t-name">정민호 선생님</div>
-          <div class="t-spec">신경계 재활 · 균형 훈련 전문</div>
-          <div class="t-tags">
-            <span class="t-tag">스포츠재활사</span>
-            <span class="t-tag green">✓ 신원인증</span>
-          </div>
-          <div class="t-stats">
-            <div class="t-stat"><span class="v t-star">★ 4.95</span><div class="l">평점</div></div>
-            <div class="t-stat"><span class="v">62개</span><div class="l">후기</div></div>
-            <div class="t-stat"><span class="v">86회</span><div class="l">누적 방문</div></div>
-            <div class="t-stat"><span class="v">7년</span><div class="l">경력</div></div>
-          </div>
-          <div class="t-price">58,000원 <span>/ 1회 방문</span></div>
-          <div class="t-region">📍 경기 성남·분당·용인</div>
-          <div class="t-btn">프로필 보기 →</div>
-        </div>
-      </a>
-
-      <!-- 5 최유나 -->
-      <a class="t-card" href="teacher.html"
-         data-spec="파킨슨 근력 낙상" data-lic="운동처방사" data-price="62000"
-         data-rating="4.93" data-reviews="51" data-career="6">
-        <div class="t-avatar-wrap">
-          <div class="t-avatar av-purple">👩‍⚕️</div>
-        </div>
-        <div class="t-info">
-          <div class="t-name">최유나 선생님</div>
-          <div class="t-spec">파킨슨 재활 · 인지 복합 운동</div>
-          <div class="t-tags">
-            <span class="t-tag">운동처방사</span>
-            <span class="t-tag green">✓ 신원인증</span>
-          </div>
-          <div class="t-stats">
-            <div class="t-stat"><span class="v t-star">★ 4.93</span><div class="l">평점</div></div>
-            <div class="t-stat"><span class="v">51개</span><div class="l">후기</div></div>
-            <div class="t-stat"><span class="v">73회</span><div class="l">누적 방문</div></div>
-            <div class="t-stat"><span class="v">6년</span><div class="l">경력</div></div>
-          </div>
-          <div class="t-price">62,000원 <span>/ 1회 방문</span></div>
-          <div class="t-region">📍 서울 강서·양천·구로</div>
-          <div class="t-btn">프로필 보기 →</div>
-        </div>
-      </a>
-
-      <!-- 6 한동훈 -->
-      <a class="t-card" href="teacher.html"
-         data-spec="관절 낙상 근력" data-lic="물리치료사" data-price="70000"
-         data-rating="4.92" data-reviews="44" data-career="9">
-        <div class="t-avatar-wrap">
-          <div class="t-avatar av-gold">👨‍⚕️</div>
-        </div>
-        <div class="t-info">
-          <div class="t-name">한동훈 선생님</div>
-          <div class="t-spec">관절·고관절 수술 후 재활 전문</div>
-          <div class="t-tags">
-            <span class="t-tag">물리치료사</span>
-            <span class="t-tag green">✓ 신원인증</span>
-          </div>
-          <div class="t-stats">
-            <div class="t-stat"><span class="v t-star">★ 4.92</span><div class="l">평점</div></div>
-            <div class="t-stat"><span class="v">44개</span><div class="l">후기</div></div>
-            <div class="t-stat"><span class="v">61회</span><div class="l">누적 방문</div></div>
-            <div class="t-stat"><span class="v">9년</span><div class="l">경력</div></div>
-          </div>
-          <div class="t-price">70,000원 <span>/ 1회 방문</span></div>
-          <div class="t-region">📍 경기 수원·화성·오산</div>
-          <div class="t-btn">프로필 보기 →</div>
-        </div>
-      </a>
-
-      <!-- 7 서지은 -->
-      <a class="t-card" href="teacher.html"
-         data-spec="뇌졸중 파킨슨" data-lic="물리치료사" data-price="60000"
-         data-rating="4.91" data-reviews="38" data-career="6">
-        <div class="t-avatar-wrap">
-          <div class="t-avatar av-blue">👩‍⚕️</div>
-        </div>
-        <div class="t-info">
-          <div class="t-name">서지은 선생님</div>
-          <div class="t-spec">뇌졸중·파킨슨 신경계 재활</div>
-          <div class="t-tags">
-            <span class="t-tag">물리치료사</span>
-            <span class="t-tag green">✓ 신원인증</span>
-          </div>
-          <div class="t-stats">
-            <div class="t-stat"><span class="v t-star">★ 4.91</span><div class="l">평점</div></div>
-            <div class="t-stat"><span class="v">38개</span><div class="l">후기</div></div>
-            <div class="t-stat"><span class="v">52회</span><div class="l">누적 방문</div></div>
-            <div class="t-stat"><span class="v">6년</span><div class="l">경력</div></div>
-          </div>
-          <div class="t-price">60,000원 <span>/ 1회 방문</span></div>
-          <div class="t-region">📍 인천 남동·연수·부평</div>
-          <div class="t-btn">프로필 보기 →</div>
-        </div>
-      </a>
-
-      <!-- 8 윤재원 -->
-      <a class="t-card" href="teacher.html"
-         data-spec="근력 낙상" data-lic="스포츠재활사" data-price="55000"
-         data-rating="4.90" data-reviews="29" data-career="5">
-        <div class="t-avatar-wrap">
-          <div class="t-avatar av-green">👨‍⚕️</div>
-        </div>
-        <div class="t-info">
-          <div class="t-name">윤재원 선생님</div>
-          <div class="t-spec">시니어 근력 강화 · 낙상 예방</div>
-          <div class="t-tags">
-            <span class="t-tag">스포츠재활사</span>
-            <span class="t-tag green">✓ 신원인증</span>
-          </div>
-          <div class="t-stats">
-            <div class="t-stat"><span class="v t-star">★ 4.90</span><div class="l">평점</div></div>
-            <div class="t-stat"><span class="v">29개</span><div class="l">후기</div></div>
-            <div class="t-stat"><span class="v">41회</span><div class="l">누적 방문</div></div>
-            <div class="t-stat"><span class="v">5년</span><div class="l">경력</div></div>
-          </div>
-          <div class="t-price">55,000원 <span>/ 1회 방문</span></div>
-          <div class="t-region">📍 경기 고양·파주·김포</div>
-          <div class="t-btn">프로필 보기 →</div>
-        </div>
-      </a>
-
-      <!-- 9 임혜원 -->
-      <a class="t-card" href="teacher.html"
-         data-spec="관절 근력" data-lic="운동처방사" data-price="58000"
-         data-rating="4.88" data-reviews="22" data-career="5">
-        <div class="t-avatar-wrap">
-          <div class="t-avatar av-purple">👩‍⚕️</div>
-        </div>
-        <div class="t-info">
-          <div class="t-name">임혜원 선생님</div>
-          <div class="t-spec">여성 어르신 전문 · 관절 재활</div>
-          <div class="t-tags">
-            <span class="t-tag">운동처방사</span>
-            <span class="t-tag green">✓ 신원인증</span>
-          </div>
-          <div class="t-stats">
-            <div class="t-stat"><span class="v t-star">★ 4.88</span><div class="l">평점</div></div>
-            <div class="t-stat"><span class="v">22개</span><div class="l">후기</div></div>
-            <div class="t-stat"><span class="v">33회</span><div class="l">누적 방문</div></div>
-            <div class="t-stat"><span class="v">5년</span><div class="l">경력</div></div>
-          </div>
-          <div class="t-price">58,000원 <span>/ 1회 방문</span></div>
-          <div class="t-region">📍 서울 동작·관악·금천</div>
-          <div class="t-btn">프로필 보기 →</div>
-        </div>
-      </a>
-
-    </div><!-- /teachers-grid -->
   </div>
 </main>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
+  firebase.initializeApp({
+    apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
+    authDomain:        "golden-seniors.firebaseapp.com",
+    projectId:         "golden-seniors",
+    storageBucket:     "golden-seniors.firebasestorage.app",
+    messagingSenderId: "244026917780",
+    appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
+  });
+  const db = firebase.firestore();
+
+  // ── 아바타 색상 ──
+  const AVATAR_COLORS = ['#0D4A38','#C4973A','#1A6B52','#16A34A','#2563EB','#7C3AED','#DC2626','#D97706','#0891B2','#374151'];
+  const PERSON_SVG = (size, stroke='white') =>
+    `<svg viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+
+  function avatarColor(uid) {
+    let h = 0;
+    for (let i = 0; i < (uid||'').length; i++) h = (h * 31 + uid.charCodeAt(i)) & 0xffffffff;
+    return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+  }
+
+  const MAP_PIN_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+  const STAR_SVG = `<svg viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" stroke-width="1.5" width="13" height="13"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+  const CHECK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="11" height="11"><polyline points="20 6 9 17 4 12"/></svg>`;
+  const TROPHY_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17a1 1 0 0 1-1 1H7"/><path d="M14 14.66V17a1 1 0 0 0 1 1h2"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>`;
+
+  // ── 데이터 ──
+  let allTeachers = [];
   const activeFilters = { spec: 'all', lic: 'all', price: 'all' };
+  let currentSort = 'rating';
 
-  function setFilter(el, type, value) {
-    // 같은 그룹 칩 해제
-    const groupId = { spec: 'specFilter', lic: 'licFilter', price: 'priceFilter' }[type];
-    document.getElementById(groupId).querySelectorAll('.f-chip').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    activeFilters[type] = value;
-    applyFilters();
+  // ── 카드 렌더링 ──
+  function renderCard(t, isBest) {
+    const uid    = t.id;
+    const d      = t;
+    const color  = avatarColor(uid);
+    const rating = d.rating > 0 ? d.rating.toFixed(2) : '신규';
+    const visits = d.visitCount || 0;
+    const reviews= d.reviewCount || 0;
+    const career = d.careerYears || (d.career ? parseInt(d.career) : 0);
+    const price  = d.price ? parseInt(String(d.price).replace(/[^0-9]/g,'')) : 0;
+    const priceStr = price > 0 ? price.toLocaleString() + '원' : '문의';
+    const area   = d.area || d.region || '';
+    const specs  = (d.specialties || []).slice(0,3);
+    const license = d.license || d.qualifications || '';
+
+    // 필터용 data attributes
+    const specJoined = specs.join(' ');
+    const priceData  = price || 0;
+    const careerData = career || 0;
+    const ratingData = d.rating || 0;
+    const reviewData = reviews || 0;
+
+    const bestBadge = isBest
+      ? `<div class="t-badge-bar">${TROPHY_SVG} 이달의 베스트 선생님</div>` : '';
+
+    return `
+      <a class="t-card${isBest?' best':''}" href="teacher.html?uid=${uid}"
+         data-spec="${specJoined}" data-lic="${license}"
+         data-price="${priceData}" data-rating="${ratingData}"
+         data-reviews="${reviewData}" data-career="${careerData}">
+        ${bestBadge}
+        <div class="t-avatar-wrap">
+          <div class="t-avatar" style="background:${color}">
+            ${d.photoURL
+              ? `<img src="${d.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:18px;" alt="${d.name}">`
+              : PERSON_SVG(40)}
+          </div>
+        </div>
+        <div class="t-info">
+          <div class="t-name">${d.name || '선생님'}</div>
+          <div class="t-spec">${d.intro ? d.intro.slice(0,40) + (d.intro.length>40?'…':'') : (specs.join(' · ') || '방문 재활운동')}</div>
+          <div class="t-tags">
+            ${license ? `<span class="t-tag">${license}</span>` : ''}
+            <span class="t-tag green">${CHECK_SVG} 신원인증</span>
+          </div>
+          <div class="t-stats">
+            <div class="t-stat"><span class="v">${STAR_SVG} ${rating}</span><div class="l">평점</div></div>
+            <div class="t-stat"><span class="v">${reviews > 0 ? reviews+'개' : '-'}</span><div class="l">후기</div></div>
+            <div class="t-stat"><span class="v">${visits > 0 ? visits+'회' : '-'}</span><div class="l">누적 방문</div></div>
+            <div class="t-stat"><span class="v">${career > 0 ? career+'년' : '신규'}</span><div class="l">경력</div></div>
+          </div>
+          <div class="t-price">${priceStr} <span>/ 1회 방문</span></div>
+          ${area ? `<div class="t-region">${MAP_PIN_SVG} ${area}</div>` : ''}
+          <div class="t-btn${isBest?' gold':''}">프로필 보기 →</div>
+        </div>
+      </a>`;
   }
 
-  function resetFilters() {
-    ['specFilter','licFilter','priceFilter'].forEach(id => {
-      const chips = document.getElementById(id).querySelectorAll('.f-chip');
-      chips.forEach((c, i) => { c.classList.toggle('active', i === 0); });
-    });
-    activeFilters.spec = activeFilters.lic = activeFilters.price = 'all';
-    applyFilters();
-  }
+  function renderGrid() {
+    const grid = document.getElementById('teacherGrid');
+    // 스켈레톤 제거
+    ['sk1','sk2','sk3'].forEach(id => { const el = document.getElementById(id); if(el) el.remove(); });
 
-  function applyFilters() {
-    const cards = document.querySelectorAll('.t-card');
-    let visible = 0;
-    cards.forEach(card => {
-      const spec  = card.dataset.spec  || '';
-      const lic   = card.dataset.lic   || '';
-      const price = parseInt(card.dataset.price) || 0;
-
+    let filtered = allTeachers.filter((t,i) => {
+      const spec  = (t.specialties||[]).join(' ');
+      const lic   = t.license || t.qualifications || '';
+      const price = t.price ? parseInt(String(t.price).replace(/[^0-9]/g,'')) : 0;
       const specOk  = activeFilters.spec  === 'all' || spec.includes(activeFilters.spec);
-      const licOk   = activeFilters.lic   === 'all' || lic === activeFilters.lic;
+      const licOk   = activeFilters.lic   === 'all' || lic.includes(activeFilters.lic);
       const priceOk = activeFilters.price === 'all' ||
         (activeFilters.price === '50000' && price >= 50000 && price < 60000) ||
         (activeFilters.price === '60000' && price >= 60000 && price < 70000) ||
         (activeFilters.price === '70000' && price >= 70000);
-
-      const show = specOk && licOk && priceOk;
-      card.style.display = show ? '' : 'none';
-      if (show) visible++;
+      return specOk && licOk && priceOk;
     });
 
-    document.getElementById('resultNum').textContent = visible;
-    document.getElementById('headerCount').textContent = `선생님 ${visible}명`;
-
-    // 빈 결과 처리
-    let empty = document.getElementById('emptyState');
-    if (visible === 0) {
-      if (!empty) {
-        empty = document.createElement('div');
-        empty.id = 'emptyState';
-        empty.className = 'empty-state';
-        empty.innerHTML = '<div class="icon">🔍</div><h3>조건에 맞는 선생님이 없어요</h3><p>필터를 조정하거나 초기화해보세요.</p>';
-        document.getElementById('teacherGrid').appendChild(empty);
+    // 정렬
+    filtered.sort((a, b) => {
+      if (currentSort === 'rating')    return (b.rating||0) - (a.rating||0);
+      if (currentSort === 'review')    return (b.reviewCount||0) - (a.reviewCount||0);
+      if (currentSort === 'price_asc') {
+        const pa = a.price ? parseInt(String(a.price).replace(/[^0-9]/g,'')) : 999999;
+        const pb = b.price ? parseInt(String(b.price).replace(/[^0-9]/g,'')) : 999999;
+        return pa - pb;
       }
-      empty.style.display = '';
-    } else if (empty) {
-      empty.style.display = 'none';
+      if (currentSort === 'career')    return (b.careerYears||0) - (a.careerYears||0);
+      return 0;
+    });
+
+    // 기존 카드 제거
+    grid.querySelectorAll('.t-card, .empty-state').forEach(el => el.remove());
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="52" height="52"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <h3>조건에 맞는 선생님이 없어요</h3>
+        <p>필터를 조정하거나 초기화해보세요.</p>
+      </div>`;
+    } else {
+      // 가장 높은 평점 = best (첫 번째)
+      const topRated = [...filtered].sort((a,b) => (b.rating||0)-(a.rating||0));
+      const bestId = topRated[0]?.id;
+      filtered.forEach(t => {
+        grid.insertAdjacentHTML('beforeend', renderCard(t, t.id === bestId));
+      });
+    }
+
+    const count = filtered.length;
+    document.getElementById('resultNum').textContent = count;
+    document.getElementById('headerCount').textContent = `선생님 ${count}명`;
+  }
+
+  // ── Firestore 로딩 ──
+  async function loadTeachers() {
+    try {
+      const snap = await db.collection('users')
+        .where('role', '==', 'teacher')
+        .where('status', '==', 'active')
+        .get();
+
+      allTeachers = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // active가 없으면 pending 포함해서 재시도
+      if (allTeachers.length === 0) {
+        const snap2 = await db.collection('users')
+          .where('role', '==', 'teacher')
+          .get();
+        allTeachers = snap2.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      }
+
+      renderGrid();
+    } catch(e) {
+      console.error('선생님 로딩 실패:', e);
+      const grid = document.getElementById('teacherGrid');
+      ['sk1','sk2','sk3'].forEach(id => { const el = document.getElementById(id); if(el) el.remove(); });
+      grid.innerHTML = `<div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.5" width="52" height="52"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <h3>데이터를 불러올 수 없어요</h3>
+        <p>잠시 후 다시 시도해주세요.</p>
+      </div>`;
+      document.getElementById('headerCount').textContent = '선생님 0명';
     }
   }
 
-  function sortTeachers(type) {
-    const grid  = document.getElementById('teacherGrid');
-    const cards = Array.from(document.querySelectorAll('.t-card'));
-    cards.sort((a, b) => {
-      if (type === 'rating')    return parseFloat(b.dataset.rating)  - parseFloat(a.dataset.rating);
-      if (type === 'review')    return parseInt(b.dataset.reviews)   - parseInt(a.dataset.reviews);
-      if (type === 'price_asc') return parseInt(a.dataset.price)     - parseInt(b.dataset.price);
-      if (type === 'career')    return parseInt(b.dataset.career)    - parseInt(a.dataset.career);
-      return 0;
-    });
-    cards.forEach(c => grid.appendChild(c));
+  // ── 필터/정렬 ──
+  function setFilter(el, type, value) {
+    const groupId = { spec: 'specFilter', lic: 'licFilter', price: 'priceFilter' }[type];
+    document.getElementById(groupId).querySelectorAll('.f-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    activeFilters[type] = value;
+    renderGrid();
   }
+
+  function resetFilters() {
+    ['specFilter','licFilter','priceFilter'].forEach(id => {
+      document.getElementById(id).querySelectorAll('.f-chip').forEach((c,i) => c.classList.toggle('active', i===0));
+    });
+    activeFilters.spec = activeFilters.lic = activeFilters.price = 'all';
+    renderGrid();
+  }
+
+  function sortTeachers(type) {
+    currentSort = type;
+    renderGrid();
+  }
+
+  loadTeachers();
 </script>
 
 </body>

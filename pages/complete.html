@@ -6,12 +6,13 @@
   <title>신청 완료 | 골든 시니어스</title>
   <style>
     :root {
-      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #C17D0E;
-      --navy: #1A3B6E; --navy-light: #2A5298; --white: #FFFFFF;
+      --teal: #0D4A38; --teal-dark: #083328; --teal-light: #E8F4F0; --teal-pale: #F2FAF7;
+      --gold: #C4973A; --gold-light: #FDF6E7; --gold-dark: #A07830;
+      --navy: #0D4A38; --navy-light: #1A6B52; --white: #FFFFFF;
       --gray-100: #F8F9FA; --gray-200: #E9ECEF; --gray-400: #9CA3AF;
       --gray-600: #6B7280; --gray-900: #1F2937;
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { overflow-x: hidden; }
@@ -23,18 +24,18 @@
     /* ===== 헤더 ===== */
     header {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: var(--white); box-shadow: 0 1px 8px rgba(0,0,0,0.08);
-      height: 64px; display: flex; align-items: center; padding: 0 24px;
+      background: var(--teal-dark); height: 64px;
+      display: flex; align-items: center; padding: 0 24px;
     }
     .logo {
       display: flex; align-items: center; gap: 10px;
-      font-size: 18px; font-weight: 900; color: var(--navy);
+      font-size: 18px; font-weight: 900; color: white;
       text-decoration: none;
     }
     .logo-icon {
       width: 36px; height: 36px; background: var(--gold);
       border-radius: 10px; display: flex; align-items: center;
-      justify-content: center; font-size: 18px;
+      justify-content: center;
     }
 
     /* ===== 메인 ===== */
@@ -124,12 +125,12 @@
     /* 버튼 */
     .btn-primary {
       display: block; width: 100%; padding: 16px;
-      background: var(--navy); color: var(--white);
+      background: var(--teal); color: var(--white);
       border: none; border-radius: 14px; font-size: 16px; font-weight: 800;
       cursor: pointer; text-decoration: none; text-align: center;
       transition: background 0.2s; margin-bottom: 12px;
     }
-    .btn-primary:hover { background: var(--navy-light); }
+    .btn-primary:hover { background: var(--teal-dark); }
     .btn-kakao {
       display: flex; align-items: center; justify-content: center; gap: 10px;
       width: 100%; padding: 16px;

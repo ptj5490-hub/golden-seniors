@@ -1354,70 +1354,7 @@
       <p class="section-sub">모든 선생님은 자격증 확인과 심사를 거쳐 등록됩니다.</p>
     </div>
     <div class="experts-grid" id="expertsList">
-      <!-- 예시 카드 (Firebase 로드 전) -->
-      <a href="pages/teachers.html" class="expert-card">
-        <div class="expert-top">
-          <div class="expert-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </div>
-          <div>
-            <div class="expert-name">김재훈 선생님</div>
-            <div class="expert-title">물리치료사 · 경력 8년</div>
-          </div>
-        </div>
-        <div class="expert-rating">★★★★★ <span style="color:var(--gray-600);font-weight:500">4.98 (127개 후기)</span></div>
-        <div class="expert-tags">
-          <span class="expert-tag">뇌졸중 재활</span>
-          <span class="expert-tag">낙상 예방</span>
-          <span class="expert-tag">관절 재활</span>
-        </div>
-        <div class="expert-footer">
-          <div class="expert-price">55,000원~</div>
-          <div class="expert-visits">방문 127회</div>
-        </div>
-      </a>
-      <a href="pages/teachers.html" class="expert-card">
-        <div class="expert-top">
-          <div class="expert-avatar" style="background:linear-gradient(135deg,var(--gold-light),#FFF8E8)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold-dark)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </div>
-          <div>
-            <div class="expert-name">이수진 선생님</div>
-            <div class="expert-title">운동처방사 · 경력 5년</div>
-          </div>
-        </div>
-        <div class="expert-rating">★★★★★ <span style="color:var(--gray-600);font-weight:500">4.97 (98개 후기)</span></div>
-        <div class="expert-tags">
-          <span class="expert-tag">치매 예방</span>
-          <span class="expert-tag">근감소증</span>
-          <span class="expert-tag">균형 훈련</span>
-        </div>
-        <div class="expert-footer">
-          <div class="expert-price">48,000원~</div>
-          <div class="expert-visits">방문 98회</div>
-        </div>
-      </a>
-      <a href="pages/teachers.html" class="expert-card">
-        <div class="expert-top">
-          <div class="expert-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </div>
-          <div>
-            <div class="expert-name">박성민 선생님</div>
-            <div class="expert-title">물리치료사 · 경력 11년</div>
-          </div>
-        </div>
-        <div class="expert-rating">★★★★★ <span style="color:var(--gray-600);font-weight:500">4.99 (214개 후기)</span></div>
-        <div class="expert-tags">
-          <span class="expert-tag">파킨슨 재활</span>
-          <span class="expert-tag">수술 후 재활</span>
-          <span class="expert-tag">심폐 재활</span>
-        </div>
-        <div class="expert-footer">
-          <div class="expert-price">62,000원~</div>
-          <div class="expert-visits">방문 214회</div>
-        </div>
-      </a>
+      <!-- JS로 Firestore에서 동적 로드 -->
     </div>
     <div class="experts-more">
       <a href="pages/teachers.html" class="btn-outline">전문가 전체 보기 →</a>
@@ -1841,6 +1778,92 @@
         document.getElementById('ftCopyright').textContent = s.footer_copyright;
       }
     } catch(e) {}
+  })();
+
+  // ── 이달의 베스트 선생님 동적 로드 ──
+  (async () => {
+    const grid = document.getElementById('expertsList');
+    if (!grid) return;
+
+    const _AVATAR_COLORS = ['#0D4A38','#C4973A','#1A6B52','#16A34A','#2563EB','#7C3AED','#DC2626','#D97706','#0891B2','#374151'];
+    const _PERSON_SVG = (stroke='var(--teal)') =>
+      `<svg viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+
+    function _avatarColor(uid) {
+      let h = 0;
+      for (let i = 0; i < (uid||'').length; i++) h = (h*31 + uid.charCodeAt(i)) & 0xffffffff;
+      return _AVATAR_COLORS[Math.abs(h) % _AVATAR_COLORS.length];
+    }
+
+    try {
+      let snap = await _db.collection('users')
+        .where('role', '==', 'teacher')
+        .where('status', '==', 'active')
+        .orderBy('rating', 'desc')
+        .limit(3)
+        .get();
+
+      // active 없으면 pending 포함
+      if (snap.empty) {
+        snap = await _db.collection('users')
+          .where('role', '==', 'teacher')
+          .limit(3)
+          .get();
+      }
+
+      if (snap.empty) {
+        // 실제 선생님 없을 때 숨김
+        document.getElementById('experts')?.style.setProperty('display','none');
+        return;
+      }
+
+      grid.innerHTML = '';
+      snap.docs.forEach(doc => {
+        const d   = doc.data();
+        const uid = doc.id;
+        const color = _avatarColor(uid);
+        const price = d.price ? parseInt(String(d.price).replace(/[^0-9]/g,'')) : 0;
+        const priceStr = price > 0 ? price.toLocaleString() + '원~' : '문의';
+        const visits = d.visitCount || 0;
+        const rating = d.rating > 0 ? d.rating.toFixed(2) : null;
+        const reviews = d.reviewCount || 0;
+        const specs = (d.specialties || []).slice(0,3);
+        const license = d.license || d.qualifications || '';
+        const career = d.careerYears || 0;
+
+        const avatarBg = d.photoURL ? '' : `background:${color}`;
+        const avatarContent = d.photoURL
+          ? `<img src="${d.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="${d.name}">`
+          : _PERSON_SVG('white');
+
+        const html = `
+          <a href="pages/teacher.html?uid=${uid}" class="expert-card">
+            <div class="expert-top">
+              <div class="expert-avatar" style="${avatarBg}">
+                ${avatarContent}
+              </div>
+              <div>
+                <div class="expert-name">${d.name || '선생님'}</div>
+                <div class="expert-title">${license}${license&&career?' · ':''}${career?'경력 '+career+'년':''}</div>
+              </div>
+            </div>
+            ${rating ? `<div class="expert-rating">★★★★★ <span style="color:var(--gray-600);font-weight:500">${rating} (${reviews}개 후기)</span></div>` : '<div class="expert-rating" style="color:var(--gray-400);font-size:13px;">신규 선생님</div>'}
+            <div class="expert-tags">
+              ${specs.map(s => `<span class="expert-tag">${s}</span>`).join('')}
+              ${!specs.length ? '<span class="expert-tag">방문 재활운동</span>' : ''}
+            </div>
+            <div class="expert-footer">
+              <div class="expert-price">${priceStr}</div>
+              <div class="expert-visits">${visits > 0 ? '방문 '+visits+'회' : '신규'}</div>
+            </div>
+          </a>`;
+        grid.insertAdjacentHTML('beforeend', html);
+      });
+    } catch(e) {
+      console.warn('이달의 베스트 로드 실패:', e);
+      // 오류 시 섹션 숨김
+      document.getElementById('experts')?.style.setProperty('display','none');
+    }
   })();
 
   const _params = new URLSearchParams(window.location.search);

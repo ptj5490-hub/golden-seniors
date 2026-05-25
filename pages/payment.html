@@ -6,9 +6,9 @@
   <title>결제 | 골든 시니어스</title>
   <style>
     :root {
-      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #D4891A;
-      --navy: #1A2B4A; --navy-light: #2C3E6B;
-      --green: #2ECC71; --red: #E74C3C;
+      --teal: #0D4A38; --teal-dark: #083328; --teal-light: #E8F4F0; --teal-pale: #F2FAF7;
+      --gold: #C4973A; --gold-light: #FDF6E7; --gold-dark: #A07830;
+      --navy: #0D4A38; --navy-light: #1A6B52;
       --gray-100: #F7F8FA; --gray-200: #EEEFF2;
       --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
       --white: #FFFFFF;
@@ -20,16 +20,23 @@
       background: var(--gray-100); color: var(--gray-900); min-height: 100vh;
     }
     header {
-      background: var(--navy); height: 64px;
-      display: flex; align-items: center; padding: 0 24px;
+      background: var(--teal-dark); height: 64px;
+      display: flex; align-items: center; padding: 0 24px; gap: 16px;
     }
+    .back-btn {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: rgba(255,255,255,0.12); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: white; text-decoration: none; flex-shrink: 0;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.2); }
     .logo {
       display: flex; align-items: center; gap: 10px;
       font-size: 18px; font-weight: 900; color: white; text-decoration: none;
     }
     .logo-icon {
       width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
     }
     main { max-width: 540px; margin: 0 auto; padding: 32px 20px 80px; }
 
@@ -149,8 +156,13 @@
 <body>
 
 <header>
+  <a href="javascript:history.back()" class="back-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
   <a href="../index.html" class="logo">
-    <div class="logo-icon">🏃</div>
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </div>
     골든 시니어스
   </a>
 </header>
@@ -163,7 +175,7 @@
 
   <div id="payContent" style="display:none;">
     <div style="text-align:center;margin-bottom:20px;">
-      <h1 style="font-size:22px;font-weight:900;color:var(--navy);">💳 결제하기</h1>
+      <h1 style="font-size:22px;font-weight:900;color:var(--teal);">결제하기</h1>
     </div>
 
     <!-- 서비스 요약 -->
@@ -187,8 +199,8 @@
     <div class="amount-input-wrap" id="amountInputWrap">
       <label>결제 금액 (채팅에서 협의한 금액을 입력해주세요)</label>
       <div class="amount-input-row">
-        <input type="number" class="amount-input" id="amountInput"
-          placeholder="0" min="1000" step="1000">
+        <input type="text" inputmode="numeric" class="amount-input" id="amountInput"
+          placeholder="0">
         <span class="amount-unit">원</span>
       </div>
       <div class="amount-hint">※ 1회 방문 기준 금액이에요</div>
@@ -292,15 +304,17 @@
     document.getElementById('displayQuoteId').textContent = quoteId ? '#' + quoteId.substring(0,8).toUpperCase() : '-';
 
     if (amount > 0) {
-      document.getElementById('amountInput').value = amount;
+      document.getElementById('amountInput').value = amount.toLocaleString();
       document.getElementById('amountInputWrap').querySelector('label').textContent = '결제 금액';
       document.getElementById('payBtnText').textContent = `${amount.toLocaleString()}원 결제하기`;
     }
 
-    // 금액 변경 시 버튼 텍스트 업데이트
+    // 금액 변경 시 쉼표 포맷 + 버튼 텍스트 업데이트
     document.getElementById('amountInput').addEventListener('input', (e) => {
-      const val = parseInt(e.target.value, 10);
-      currentAmount = val || 0;
+      const raw = e.target.value.replace(/[^0-9]/g, '');
+      const val = parseInt(raw, 10) || 0;
+      e.target.value = val > 0 ? val.toLocaleString() : '';
+      currentAmount = val;
       document.getElementById('payBtnText').textContent =
         val >= 1000 ? `${val.toLocaleString()}원 결제하기` : '결제하기';
     });
@@ -311,7 +325,7 @@
 
   // ── 결제 요청 (Toss v1 일반 결제창) ──
   window.requestPayment = async function() {
-    const amount = parseInt(document.getElementById('amountInput').value, 10);
+    const amount = parseInt(document.getElementById('amountInput').value.replace(/[^0-9]/g,''), 10);
     if (!amount || amount < 1000) {
       alert('결제 금액을 1,000원 이상 입력해주세요.');
       document.getElementById('amountInput').focus();

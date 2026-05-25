@@ -905,7 +905,13 @@
     document.getElementById('modalSchedule').value = '';
     document.getElementById('modalMessage').value  = '';
     document.getElementById('modalPlan').value     = '';
+    const savedScrollY = window.scrollY;
     document.getElementById('quoteModal').classList.add('open');
+    // 모달 open 후 스크롤 위치 복원 (일부 브라우저에서 위로 튀는 버그 방지)
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: savedScrollY, behavior: 'instant' });
+      document.getElementById('modalPrice').focus();
+    });
   };
   window.closeModal = function() {
     document.getElementById('quoteModal').classList.remove('open');

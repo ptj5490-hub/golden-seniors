@@ -6,8 +6,9 @@
   <title>일정 조율 | 골든 시니어스</title>
   <style>
     :root {
-      --gold: #F5A623; --gold-light: #FFF8EC; --gold-dark: #D4891A;
-      --navy: #1A2B4A; --navy-light: #2C3E6B;
+      --teal: #0D4A38; --teal-dark: #083328; --teal-light: #E8F4F0;
+      --gold: #C4973A; --gold-light: #FDF6E7; --gold-dark: #A07830;
+      --navy: #0D4A38; --navy-light: #1A6B52;
       --green: #2ECC71; --green-light: #EAFAF1;
       --gray-100: #F7F8FA; --gray-200: #EEEFF2;
       --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
@@ -25,20 +26,20 @@
 
     /* ─── HEADER ─── */
     header {
-      background: var(--white); border-bottom: 1px solid var(--gray-200);
+      background: var(--teal-dark); box-shadow: 0 2px 12px rgba(0,0,0,0.15);
       height: 60px; display: flex; align-items: center;
       padding: 0 20px; gap: 14px; position: sticky; top: 0; z-index: 100;
     }
     .back-btn {
       width: 36px; height: 36px; border-radius: 10px;
-      background: var(--gray-100); border: none; cursor: pointer;
+      background: rgba(255,255,255,0.15); border: none; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px; color: var(--navy); transition: background 0.2s;
+      color: white; transition: background 0.2s;
       text-decoration: none; flex-shrink: 0;
     }
-    .back-btn:hover { background: var(--gray-200); }
-    .header-title { font-size: 17px; font-weight: 800; color: var(--navy); }
-    .header-step  { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--gray-400); }
+    .back-btn:hover { background: rgba(255,255,255,0.25); }
+    .header-title { font-size: 17px; font-weight: 800; color: white; }
+    .header-step  { margin-left: auto; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.6); }
 
     /* ─── PROGRESS ─── */
     .progress-bar { height: 3px; background: var(--gray-200); }
@@ -56,7 +57,7 @@
     }
     .teacher-avatar {
       width: 52px; height: 52px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--navy), #2C3E6B);
+      background: linear-gradient(135deg, var(--teal-dark), var(--teal));
       display: flex; align-items: center; justify-content: center;
       font-size: 24px; flex-shrink: 0;
     }
@@ -217,7 +218,9 @@
 <body>
 
 <header>
-  <a href="javascript:history.back()" class="back-btn">←</a>
+  <a href="javascript:history.back()" class="back-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12l7 7M5 12l7-7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
   <span class="header-title">일정 조율</span>
   <span class="header-step" id="stepIndicator">1 / 3</span>
 </header>

@@ -6,8 +6,9 @@
   <title>개인정보처리방침 | 골든 시니어스</title>
   <style>
     :root {
-      --gold: #F5A623; --gold-light: #FFF8EC;
-      --navy: #1A2B4A; --navy-light: #2C3E6B;
+      --teal: #0D4A38; --teal-dark: #083328; --teal-light: #E8F4F0;
+      --gold: #C4973A; --gold-light: #FDF6E7; --gold-dark: #A07830;
+      --navy: #0D4A38; --navy-light: #1A6B52;
       --gray-100: #F7F8FA; --gray-200: #EEEFF2;
       --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
       --white: #FFFFFF;
@@ -19,26 +20,26 @@
     }
 
     header {
-      background: var(--white); border-bottom: 1px solid var(--gray-200);
+      background: var(--teal-dark); box-shadow: 0 2px 12px rgba(0,0,0,0.15);
       height: 64px; display: flex; align-items: center;
       justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 99;
     }
     .logo {
       display: flex; align-items: center; gap: 10px;
-      font-size: 18px; font-weight: 900; color: var(--navy); text-decoration: none;
+      font-size: 18px; font-weight: 900; color: white; text-decoration: none;
     }
     .logo-icon {
       width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
     }
     .tab-links { display: flex; gap: 8px; }
     .tab-link {
       padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700;
       text-decoration: none; transition: all 0.2s;
-      color: var(--gray-600); background: var(--gray-100);
+      color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.1);
     }
-    .tab-link.active { background: var(--navy); color: var(--white); }
-    .tab-link:hover:not(.active) { background: var(--gray-200); }
+    .tab-link.active { background: var(--gold); color: white; }
+    .tab-link:hover:not(.active) { background: rgba(255,255,255,0.2); color: white; }
 
     .container { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
 
@@ -101,7 +102,7 @@
 
 <header>
   <a href="../index.html" class="logo">
-    <div class="logo-icon">🏃</div>
+    <div class="logo-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 12h3l2-7 4 14 3-9 2 5h4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     골든 시니어스
   </a>
   <div class="tab-links">

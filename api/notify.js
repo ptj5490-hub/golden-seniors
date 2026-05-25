@@ -43,63 +43,82 @@ function sendSolapi(body) {
 
 // ── 알림톡 템플릿 ──
 const TEMPLATES = {
-  // 고객 → 새 견적 도착
+
+  // ① 고객용 - 견적서 도착
   quote_arrived: {
-    templateId: process.env.TEMPLATE_QUOTE_ARRIVED || '',
+    templateId: 'KA01TP260517082936046At2hvwQrRPt',
     build: ({ customerName, teacherName, price, link }) => ({
-      '#{고객명}': customerName,
+      '#{고객명}':   customerName,
       '#{선생님명}': teacherName,
-      '#{금액}': price,
-      '#{링크}': link,
+      '#{금액}':     price,
+      '#{링크}':     link,
     }),
     sms: ({ customerName, teacherName, price, link }) =>
       `[골든 시니어스] ${customerName}님, ${teacherName} 선생님의 견적이 도착했어요!\n제안 금액: ${price}원\n확인: ${link}`,
   },
-  // 선생님 → 새 견적 요청
+
+  // ② 선생님용 - 새 견적 요청
   quote_requested: {
-    templateId: process.env.TEMPLATE_QUOTE_REQUESTED || '',
+    templateId: 'KA01TP260517083051492o3mzxZcmpy0',
     build: ({ teacherName, region, condition, link }) => ({
       '#{선생님명}': teacherName,
-      '#{지역}': region,
-      '#{증상}': condition,
-      '#{링크}': link,
+      '#{지역}':     region,
+      '#{증상}':     condition,
+      '#{링크}':     link,
     }),
     sms: ({ teacherName, region, condition, link }) =>
       `[골든 시니어스] ${teacherName} 선생님, 새 견적 요청이 들어왔어요!\n지역: ${region} / 증상: ${condition}\n확인: ${link}`,
   },
-  // 고객 → 결제/매칭 완료
+
+  // ③ 고객용 - 결제 완료
   payment_done_customer: {
-    templateId: process.env.TEMPLATE_PAYMENT_CUSTOMER || '',
+    templateId: 'KA01TP260517083132307obUOKLOARmZ',
     build: ({ customerName, teacherName, link }) => ({
-      '#{고객명}': customerName,
+      '#{고객명}':   customerName,
       '#{선생님명}': teacherName,
-      '#{링크}': link,
+      '#{링크}':     link,
     }),
     sms: ({ customerName, teacherName, link }) =>
       `[골든 시니어스] ${customerName}님, 결제 완료! ${teacherName} 선생님과 매칭됐어요.\n채팅: ${link}`,
   },
-  // 선생님 → 결제 완료
+
+  // ④ 선생님용 - 매칭 확정
   payment_done_teacher: {
-    templateId: process.env.TEMPLATE_PAYMENT_TEACHER || '',
+    templateId: 'KA01TP260517083236179DBApGOlNv17',
     build: ({ teacherName, customerName, price, link }) => ({
       '#{선생님명}': teacherName,
-      '#{고객명}': customerName,
-      '#{금액}': price,
-      '#{링크}': link,
+      '#{고객명}':   customerName,
+      '#{금액}':     price,
+      '#{링크}':     link,
     }),
     sms: ({ teacherName, customerName, price, link }) =>
       `[골든 시니어스] ${teacherName} 선생님, ${customerName}님 결제 완료! 금액: ${price}원\n채팅: ${link}`,
   },
-  // 채팅 새 메시지
-  new_message: {
-    templateId: process.env.TEMPLATE_NEW_MESSAGE || '',
-    build: ({ receiverName, senderName, link }) => ({
-      '#{수신자명}': receiverName,
-      '#{발신자명}': senderName,
-      '#{링크}': link,
+
+  // ⑤-A 고객용 - 선생님 메시지 도착 (검수 중)
+  new_message_customer: {
+    templateId: process.env.TEMPLATE_MSG_CUSTOMER || '',
+    build: ({ receiverName, senderName, preview, link }) => ({
+      '#{수신자명}':     receiverName,
+      '#{발신자명}':     senderName,
+      '#{메시지미리보기}': preview,
+      '#{링크}':         link,
     }),
-    sms: ({ receiverName, senderName, link }) =>
-      `[골든 시니어스] ${receiverName}님, ${senderName}님이 메시지를 보냈어요.\n확인: ${link}`,
+    sms: ({ receiverName, senderName, preview, link }) =>
+      `[골든 시니어스] ${receiverName}님, ${senderName} 선생님이 메시지를 보냈어요.\n"${preview}"\n확인: ${link}`,
+  },
+
+  // ⑤-B 선생님용 - 고객 메시지 도착 (검수 중)
+  new_message_teacher: {
+    templateId: process.env.TEMPLATE_MSG_TEACHER || '',
+    build: ({ receiverName, senderName, preview, link }) => ({
+      '#{수신자명}':     receiverName,
+      '#{발신자명}':     senderName,
+      '#{메시지미리보기}': preview,
+      '#{링크}':         link,
+    }),
+    sms: ({ receiverName, senderName, preview, link }) =>
+      `[골든 시니어스] ${receiverName} 선생님, ${senderName}님이 메시지를 보냈어요.\n"${preview}"\n확인: ${link}`,
   },
 };
 
@@ -114,7 +133,6 @@ module.exports = async function handler(req, res) {
 
   const { type, to, params } = req.body;
 
-  // 필수값 체크
   if (!type || !to || !params) {
     return res.status(400).json({ error: '필수 파라미터 누락' });
   }
@@ -124,18 +142,28 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: `알 수 없는 알림 유형: ${type}` });
   }
   if (!template.templateId) {
-    // 템플릿 미설정 시 조용히 성공 처리 (개발 중)
-    return res.status(200).json({ ok: true, skipped: true, reason: '템플릿 미설정' });
+    // 템플릿 미설정 시 SMS 폴백으로 발송
+    const phone = String(to).replace(/[^0-9]/g, '');
+    if (phone.length < 10) return res.status(400).json({ error: '유효하지 않은 전화번호' });
+    const smsText = template.sms ? template.sms(params) : '';
+    if (!smsText) return res.status(200).json({ ok: true, skipped: true, reason: '템플릿 미설정' });
+    try {
+      const result = await sendSolapi({
+        message: { to: phone, from: process.env.SOLAPI_SENDER, text: smsText },
+      });
+      return res.status(200).json({ ok: true, result, via: 'sms_fallback' });
+    } catch(e) {
+      return res.status(500).json({ error: e.message });
+    }
   }
 
-  // 전화번호 정리 (010-xxxx → 01011110000)
   const phone = String(to).replace(/[^0-9]/g, '');
   if (phone.length < 10) {
     return res.status(400).json({ error: '유효하지 않은 전화번호' });
   }
 
   const variables = template.build(params);
-  const smsText  = template.sms ? template.sms(params) : '';
+  const smsText   = template.sms ? template.sms(params) : '';
 
   try {
     const result = await sendSolapi({
@@ -144,10 +172,10 @@ module.exports = async function handler(req, res) {
         from: process.env.SOLAPI_SENDER,
         text: smsText,
         kakaoOptions: {
-          pfId:        process.env.KAKAO_CHANNEL_ID,
-          templateId:  template.templateId,
+          pfId:       process.env.KAKAO_CHANNEL_ID,
+          templateId: template.templateId,
           variables,
-          disableSms:  false,
+          disableSms: false,
         },
       },
     });

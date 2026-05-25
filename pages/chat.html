@@ -554,9 +554,15 @@
         if (partnerUid) {
           db.collection('users').doc(partnerUid).get().then(uSnap => {
             if (!uSnap.exists) return;
-            const partner = uSnap.data();
+            const partner     = uSnap.data();
             const partnerName = data.participantNames?.[partnerUid] || partner.name || '상대방';
-            notifyNewMessage(partner.phone || '', partnerName, me.name || '상대방', activeChatId);
+            const msgPreview  = text.length > 30 ? text.slice(0, 30) + '…' : text;
+            // 수신자 role에 따라 다른 템플릿 사용
+            if (partner.role === 'teacher') {
+              notifyNewMessageTeacher(partner.phone || '', partnerName, me.name || '고객', msgPreview, activeChatId);
+            } else {
+              notifyNewMessageCustomer(partner.phone || '', partnerName, me.name || '선생님', msgPreview, activeChatId);
+            }
           }).catch(() => {});
         }
       }).catch(() => {});

@@ -19,7 +19,7 @@ window.sendNotify = async function(type, phone, params) {
 
 // ── 알림 유형별 편의 함수 ──
 
-// 1. 고객에게: 선생님 견적 도착
+// ① 고객에게: 선생님 견적 도착
 window.notifyQuoteArrived = function(customerPhone, customerName, teacherName, price, quoteId) {
   return sendNotify('quote_arrived', customerPhone, {
     customerName,
@@ -29,7 +29,7 @@ window.notifyQuoteArrived = function(customerPhone, customerName, teacherName, p
   });
 };
 
-// 2. 선생님에게: 새 견적 요청
+// ② 선생님에게: 새 견적 요청
 window.notifyQuoteRequested = function(teacherPhone, teacherName, region, condition, quoteId) {
   return sendNotify('quote_requested', teacherPhone, {
     teacherName,
@@ -39,7 +39,7 @@ window.notifyQuoteRequested = function(teacherPhone, teacherName, region, condit
   });
 };
 
-// 3. 고객에게: 결제/매칭 완료
+// ③ 고객에게: 결제/매칭 완료
 window.notifyPaymentDoneCustomer = function(customerPhone, customerName, teacherName, quoteId) {
   return sendNotify('payment_done_customer', customerPhone, {
     customerName,
@@ -48,7 +48,7 @@ window.notifyPaymentDoneCustomer = function(customerPhone, customerName, teacher
   });
 };
 
-// 4. 선생님에게: 결제 완료
+// ④ 선생님에게: 매칭 확정
 window.notifyPaymentDoneTeacher = function(teacherPhone, teacherName, customerName, price, quoteId) {
   return sendNotify('payment_done_teacher', teacherPhone, {
     teacherName,
@@ -58,11 +58,33 @@ window.notifyPaymentDoneTeacher = function(teacherPhone, teacherName, customerNa
   });
 };
 
-// 5. 채팅 새 메시지
+// ⑤-A 고객에게: 선생님 메시지 도착 (검수 중 → 통과 전까지 SMS 폴백)
+window.notifyNewMessageCustomer = function(customerPhone, customerName, teacherName, preview, chatId) {
+  return sendNotify('new_message_customer', customerPhone, {
+    receiverName: customerName,
+    senderName:   teacherName,
+    preview:      preview ? preview.slice(0, 30) : '새 메시지',
+    link:         `${SITE_URL}/pages/chat.html?chatId=${chatId}`,
+  });
+};
+
+// ⑤-B 선생님에게: 고객 메시지 도착 (검수 중 → 통과 전까지 SMS 폴백)
+window.notifyNewMessageTeacher = function(teacherPhone, teacherName, customerName, preview, chatId) {
+  return sendNotify('new_message_teacher', teacherPhone, {
+    receiverName: teacherName,
+    senderName:   customerName,
+    preview:      preview ? preview.slice(0, 30) : '새 메시지',
+    link:         `${SITE_URL}/pages/chat.html?chatId=${chatId}`,
+  });
+};
+
+// 구버전 호환 (role 구분 전 코드에서 호출 시 — 삭제 예정)
 window.notifyNewMessage = function(receiverPhone, receiverName, senderName, chatId) {
-  return sendNotify('new_message', receiverPhone, {
+  console.warn('notifyNewMessage deprecated → notifyNewMessageCustomer/Teacher 사용 권장');
+  return sendNotify('new_message_customer', receiverPhone, {
     receiverName,
     senderName,
-    link: `${SITE_URL}/pages/chat.html?chatId=${chatId}`,
+    preview: '새 메시지가 도착했습니다',
+    link:    `${SITE_URL}/pages/chat.html?chatId=${chatId}`,
   });
 };

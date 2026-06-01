@@ -58,23 +58,21 @@ window.notifyPaymentDoneTeacher = function(teacherPhone, teacherName, customerNa
   });
 };
 
-// ⑤-A 고객에게: 선생님 메시지 도착 (검수 중 → 통과 전까지 SMS 폴백)
-window.notifyNewMessageCustomer = function(customerPhone, customerName, teacherName, preview, chatId) {
+// ⑤-A 고객에게: 선생님 메시지 도착
+window.notifyNewMessageCustomer = function(customerPhone, customerName, teacherName, chatId) {
   return sendNotify('new_message_customer', customerPhone, {
-    receiverName: customerName,
-    senderName:   teacherName,
-    preview:      preview ? preview.slice(0, 30) : '새 메시지',
-    link:         `${SITE_URL}/pages/chat.html?chatId=${chatId}`,
+    customerName,
+    teacherName,
+    link: `${SITE_URL}/pages/chat.html?chatId=${chatId}`,
   });
 };
 
-// ⑤-B 선생님에게: 고객 메시지 도착 (검수 중 → 통과 전까지 SMS 폴백)
-window.notifyNewMessageTeacher = function(teacherPhone, teacherName, customerName, preview, chatId) {
+// ⑤-B 선생님에게: 고객 메시지 도착
+window.notifyNewMessageTeacher = function(teacherPhone, teacherName, customerName, chatId) {
   return sendNotify('new_message_teacher', teacherPhone, {
-    receiverName: teacherName,
-    senderName:   customerName,
-    preview:      preview ? preview.slice(0, 30) : '새 메시지',
-    link:         `${SITE_URL}/pages/chat.html?chatId=${chatId}`,
+    teacherName,
+    customerName,
+    link: `${SITE_URL}/pages/chat.html?chatId=${chatId}`,
   });
 };
 
@@ -82,9 +80,8 @@ window.notifyNewMessageTeacher = function(teacherPhone, teacherName, customerNam
 window.notifyNewMessage = function(receiverPhone, receiverName, senderName, chatId) {
   console.warn('notifyNewMessage deprecated → notifyNewMessageCustomer/Teacher 사용 권장');
   return sendNotify('new_message_customer', receiverPhone, {
-    receiverName,
-    senderName,
-    preview: '새 메시지가 도착했습니다',
-    link:    `${SITE_URL}/pages/chat.html?chatId=${chatId}`,
+    customerName: receiverName,
+    teacherName:  senderName,
+    link:         `${SITE_URL}/pages/chat.html?chatId=${chatId}`,
   });
 };

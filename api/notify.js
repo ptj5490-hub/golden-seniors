@@ -95,30 +95,38 @@ const TEMPLATES = {
       `[골든 시니어스] ${teacherName} 선생님, ${customerName}님 결제 완료! 금액: ${price}원\n채팅: ${link}`,
   },
 
-  // ⑤-A 고객용 - 선생님 메시지 도착 (검수 중)
+  // ⑤-A 고객용 - 선생님 메시지 도착
+  // 템플릿 본문:
+  // [골든 시니어스]
+  // #{고객명}님, 신청하신 방문재활운동 서비스 관련하여 #{선생님명} 선생님의 답변 메시지가 도착했습니다.
+  // 채팅창에서 내용을 확인해 주세요.
+  // #{링크}
   new_message_customer: {
-    templateId: process.env.TEMPLATE_MSG_CUSTOMER || '',
-    build: ({ receiverName, senderName, preview, link }) => ({
-      '#{수신자명}':     receiverName,
-      '#{발신자명}':     senderName,
-      '#{메시지미리보기}': preview,
-      '#{링크}':         link,
+    templateId: process.env.TEMPLATE_MSG_CUSTOMER || 'KA01TP260525110658825dtwtV22X80B',
+    build: ({ customerName, teacherName, link }) => ({
+      '#{고객명}':   customerName,
+      '#{선생님명}': teacherName,
+      '#{링크}':     link,
     }),
-    sms: ({ receiverName, senderName, preview, link }) =>
-      `[골든 시니어스] ${receiverName}님, ${senderName} 선생님이 메시지를 보냈어요.\n"${preview}"\n확인: ${link}`,
+    sms: ({ customerName, teacherName, link }) =>
+      `[골든 시니어스] ${customerName}님, 신청하신 방문재활운동 서비스 관련하여 ${teacherName} 선생님의 답변 메시지가 도착했습니다.\n확인: ${link}`,
   },
 
-  // ⑤-B 선생님용 - 고객 메시지 도착 (검수 중)
+  // ⑤-B 선생님용 - 고객 메시지 도착
+  // 템플릿 본문:
+  // [골든 시니어스]
+  // #{선생님명} 선생님, #{고객명}님으로부터 방문재활운동 서비스 관련 문의 메시지가 도착했습니다.
+  // 채팅창에서 내용을 확인해 주세요.
+  // #{링크}
   new_message_teacher: {
-    templateId: process.env.TEMPLATE_MSG_TEACHER || '',
-    build: ({ receiverName, senderName, preview, link }) => ({
-      '#{수신자명}':     receiverName,
-      '#{발신자명}':     senderName,
-      '#{메시지미리보기}': preview,
-      '#{링크}':         link,
+    templateId: process.env.TEMPLATE_MSG_TEACHER || 'KA01TP260517083314766utBFbCtJBIb',
+    build: ({ teacherName, customerName, link }) => ({
+      '#{선생님명}': teacherName,
+      '#{고객명}':   customerName,
+      '#{링크}':     link,
     }),
-    sms: ({ receiverName, senderName, preview, link }) =>
-      `[골든 시니어스] ${receiverName} 선생님, ${senderName}님이 메시지를 보냈어요.\n"${preview}"\n확인: ${link}`,
+    sms: ({ teacherName, customerName, link }) =>
+      `[골든 시니어스] ${teacherName} 선생님, ${customerName}님으로부터 방문재활운동 서비스 관련 문의 메시지가 도착했습니다.\n확인: ${link}`,
   },
 };
 

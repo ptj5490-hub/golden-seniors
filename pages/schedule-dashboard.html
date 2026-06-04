@@ -519,23 +519,29 @@ function getWeekRange(offset = 0) {
 }
 
 // ── Firebase 실시간 구독 ──
+let sampleLoaded = false;
 function subscribeSessions() {
   db.collection('sessions')
     .orderBy('dateTime', 'asc')
     .onSnapshot(snap => {
-      allSessions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      updateStats();
-      renderList();
-      renderWeek();
-      updateTeacherFilter();
+      const firestoreData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      // Firebase에 실제 데이터가 있을 때만 교체 (빈 컬렉션으로 샘플 덮어쓰기 방지)
+      if (firestoreData.length > 0) {
+        allSessions = firestoreData;
+        sampleLoaded = false;
+      } else if (!sampleLoaded) {
+        loadSampleData();
+        return;
+      }
+      updateStats(); renderList(); renderWeek(); updateTeacherFilter();
     }, err => {
       console.warn('Firebase 오류, 로컬 데이터 사용:', err);
-      // 로컬 샘플 데이터 (Firebase 미연결 시)
-      loadSampleData();
+      if (!sampleLoaded) loadSampleData();
     });
 }
 
 function loadSampleData() {
+  sampleLoaded = true;
   const today = new Date();
   const fmt = (d) => d.toISOString();
   const makeDate = (daysOffset, hour) => {
@@ -731,34 +737,30 @@ function openDetail(id) {
 
 // ── 상태 변경 ──
 function openStatusModal(id) {
-  const s = allSessions.find(x => x.id === id);
-  if (!s) return;
   statusTargetId = id;
-  document.getElementById('statusModalInfo').textContent =
-    `${s.teacherName} 선생님 · ${s.customerName}님 세션`;
+  const s = allSessions.find(x => x.id === id);
+  const info = s
+    ? `${s.teacherName} 선생님 · ${s.customerName}님 세션`
+    : `세션 ID: ${id}`;
+  document.getElementById('statusModalInfo').textContent = info;
   openModal('statusModal');
 }
 
 function updateStatus(newStatus) {
   if (!statusTargetId) return;
-  const s = allSessions.find(x => x.id === statusTargetId);
-  if (!s) return;
 
-  // Firebase 업데이트 시도
-  db.collection('sessions').doc(statusTargetId)
-    .update({ status: newStatus, updatedAt: new Date().toISOString() })
-    .catch(() => {
-      // 로컬 업데이트
-      const idx = allSessions.findIndex(x => x.id === statusTargetId);
-      if (idx !== -1) allSessions[idx].status = newStatus;
-      updateStats(); renderList(); renderWeek();
-    });
-
-  // 로컬도 즉시 업데이트
+  // 로컬 즉시 업데이트 (Firebase 결과와 무관하게 항상 실행)
   const idx = allSessions.findIndex(x => x.id === statusTargetId);
-  if (idx !== -1) allSessions[idx].status = newStatus;
+  if (idx !== -1) {
+    allSessions[idx].status = newStatus;
+  }
   updateStats(); renderList(); renderWeek();
   closeModal('statusModal');
+
+  // Firebase 백그라운드 업데이트 (실패해도 로컬은 이미 반영됨)
+  db.collection('sessions').doc(statusTargetId)
+    .set({ status: newStatus, updatedAt: new Date().toISOString() }, { merge: true })
+    .catch(err => console.warn('Firebase 동기화 실패 (로컬 반영됨):', err));
 }
 
 // ── 세션 추가 ──
@@ -795,17 +797,19 @@ function saveSession() {
     createdAt:    new Date().toISOString(),
   };
 
+  // 로컬 먼저 추가 (즉시 반영)
+  const localId = 'local_' + Date.now();
+  allSessions.push({ id: localId, ...data });
+  updateStats(); renderList(); renderWeek(); updateTeacherFilter();
+
+  // Firebase 백그라운드 저장
   db.collection('sessions').add(data)
     .then(ref => {
-      allSessions.push({ id: ref.id, ...data });
-      updateStats(); renderList(); renderWeek(); updateTeacherFilter();
+      // Firebase ID로 교체
+      const idx = allSessions.findIndex(x => x.id === localId);
+      if (idx !== -1) allSessions[idx].id = ref.id;
     })
-    .catch(() => {
-      // 로컬 저장
-      const localId = 'local_' + Date.now();
-      allSessions.push({ id: localId, ...data });
-      updateStats(); renderList(); renderWeek(); updateTeacherFilter();
-    });
+    .catch(err => console.warn('Firebase 저장 실패 (로컬 반영됨):', err));
 
   closeModal('addModal');
 }

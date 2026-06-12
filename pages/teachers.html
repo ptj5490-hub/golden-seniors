@@ -249,6 +249,22 @@
           <span class="f-chip" onclick="setFilter(this,'price','70000')">7만원 이상</span>
         </div>
       </div>
+      <div class="filter-row">
+        <div class="filter-label">지역</div>
+        <div class="filter-chips" id="areaFilter" style="flex-wrap:wrap;">
+          <span class="f-chip active" onclick="setFilter(this,'area','all')">전체</span>
+          <span class="f-chip" onclick="setFilter(this,'area','강동구')">강동구</span>
+          <span class="f-chip" onclick="setFilter(this,'area','강남구')">강남구</span>
+          <span class="f-chip" onclick="setFilter(this,'area','서초구')">서초구</span>
+          <span class="f-chip" onclick="setFilter(this,'area','송파구')">송파구</span>
+          <span class="f-chip" onclick="setFilter(this,'area','마포구')">마포구</span>
+          <span class="f-chip" onclick="setFilter(this,'area','성동구')">성동구</span>
+          <span class="f-chip" onclick="setFilter(this,'area','노원구')">노원구</span>
+          <span class="f-chip" onclick="setFilter(this,'area','강서구')">강서구</span>
+          <span class="f-chip" onclick="setFilter(this,'area','영등포구')">영등포구</span>
+          <span class="f-chip" onclick="setFilter(this,'area','용산구')">용산구</span>
+        </div>
+      </div>
     </div>
 
     <!-- 결과 바 -->
@@ -305,7 +321,7 @@
 
   // ── 데이터 ──
   let allTeachers = [];
-  const activeFilters = { spec: 'all', lic: 'all', price: 'all' };
+  const activeFilters = { spec: 'all', lic: 'all', price: 'all', area: 'all' };
   let currentSort = 'rating';
 
   // ── 카드 렌더링 ──
@@ -375,13 +391,15 @@
       const spec  = (t.specialties||[]).join(' ');
       const lic   = t.license || t.qualifications || '';
       const price = t.price ? parseInt(String(t.price).replace(/[^0-9]/g,'')) : 0;
+      const area    = Array.isArray(t.area) ? t.area : (t.area || t.region || '').split(/[,，\s]+/).map(s=>s.trim()).filter(Boolean);
       const specOk  = activeFilters.spec  === 'all' || spec.includes(activeFilters.spec);
       const licOk   = activeFilters.lic   === 'all' || lic.includes(activeFilters.lic);
       const priceOk = activeFilters.price === 'all' ||
         (activeFilters.price === '50000' && price >= 50000 && price < 60000) ||
         (activeFilters.price === '60000' && price >= 60000 && price < 70000) ||
         (activeFilters.price === '70000' && price >= 70000);
-      return specOk && licOk && priceOk;
+      const areaOk  = activeFilters.area  === 'all' || area.includes(activeFilters.area);
+      return specOk && licOk && priceOk && areaOk;
     });
 
     // 정렬
@@ -454,7 +472,7 @@
 
   // ── 필터/정렬 ──
   function setFilter(el, type, value) {
-    const groupId = { spec: 'specFilter', lic: 'licFilter', price: 'priceFilter' }[type];
+    const groupId = { spec: 'specFilter', lic: 'licFilter', price: 'priceFilter', area: 'areaFilter' }[type];
     document.getElementById(groupId).querySelectorAll('.f-chip').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
     activeFilters[type] = value;
@@ -462,10 +480,10 @@
   }
 
   function resetFilters() {
-    ['specFilter','licFilter','priceFilter'].forEach(id => {
+    ['specFilter','licFilter','priceFilter','areaFilter'].forEach(id => {
       document.getElementById(id).querySelectorAll('.f-chip').forEach((c,i) => c.classList.toggle('active', i===0));
     });
-    activeFilters.spec = activeFilters.lic = activeFilters.price = 'all';
+    activeFilters.spec = activeFilters.lic = activeFilters.price = activeFilters.area = 'all';
     renderGrid();
   }
 

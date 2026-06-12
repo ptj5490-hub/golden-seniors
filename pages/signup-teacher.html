@@ -98,6 +98,17 @@
     .field-hint.success { color: var(--green); }
     .field-hint.danger  { color: var(--red); }
 
+    /* ─── 지역 칩 ─── */
+    .area-chip {
+      padding: 8px 6px; border-radius: 10px; font-size: 12px; font-weight: 600;
+      border: 1.5px solid var(--gray-200); background: var(--gray-100);
+      color: var(--gray-600); cursor: pointer; text-align: center;
+      transition: all 0.15s; user-select: none;
+    }
+    .area-chip.selected {
+      border-color: var(--teal); background: #E8F4F0; color: var(--teal);
+    }
+
     /* ─── 전문분야 칩 ─── */
     .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
     .chip {
@@ -269,9 +280,9 @@
       </div>
 
       <div class="field">
-        <label for="area">주요 활동 지역 *</label>
-        <input type="text" id="area" placeholder="예: 서울 강남구, 서초구" required>
-        <div class="field-hint">방문 가능한 지역을 입력해주세요</div>
+        <label>주요 활동 지역 * <span style="font-weight:400;color:var(--gray-400)">(중복 선택 가능)</span></label>
+        <div id="areaGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px;"></div>
+        <div class="field-hint" id="areaHint">방문 가능한 구를 모두 선택해주세요</div>
       </div>
 
       <div class="field">
@@ -433,7 +444,7 @@
     const password2= document.getElementById('passwordConfirm').value;
     const license  = document.getElementById('license').value.trim();
     const career   = document.getElementById('career').value;
-    const area     = document.getElementById('area').value.trim();
+    const area     = [...document.querySelectorAll('.area-chip.selected')].map(c => c.dataset.gu);
     const intro    = document.getElementById('intro').value.trim();
     const specs    = [...document.querySelectorAll('#specChips .chip.selected')].map(c => c.dataset.value);
     const bgCheck  = document.getElementById('agreeBackground').checked;
@@ -441,6 +452,7 @@
     // 유효성 검사
     if (password !== password2) { showError('비밀번호가 일치하지 않아요.'); return; }
     if (phone.length < 10)       { showError('휴대폰 번호를 올바르게 입력해주세요.'); return; }
+    if (area.length === 0)       { showError('활동 가능한 지역을 최소 1개 이상 선택해주세요.'); return; }
     if (specs.length === 0)      { showError('전문분야를 최소 1개 이상 선택해주세요.'); return; }
     if (intro.length < 50)       { showError('자기소개를 50자 이상 입력해주세요.'); return; }
     if (!bgCheck)                { showError('신원조회 및 자격 확인에 동의해주세요.'); return; }
@@ -503,18 +515,40 @@
     return map[code] || '가입 신청 중 오류가 발생했어요. 다시 시도해주세요.';
   }
 
+  // ── 서울 25개 구 그리드 생성 ──
+  const SEOUL_GU = [
+    '강남구','강동구','강북구','강서구','관악구',
+    '광진구','구로구','금천구','노원구','도봉구',
+    '동대문구','동작구','마포구','서대문구','서초구',
+    '성동구','성북구','송파구','양천구','영등포구',
+    '용산구','은평구','종로구','중구','중랑구'
+  ];
+  const areaGrid = document.getElementById('areaGrid');
+  SEOUL_GU.forEach(gu => {
+    const chip = document.createElement('div');
+    chip.className = 'area-chip';
+    chip.dataset.gu = gu;
+    chip.textContent = gu;
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('selected');
+      updateProgress();
+    });
+    areaGrid.appendChild(chip);
+  });
+
   // ── 진행 바 ──
-  const trackFields = ['name','phone','email','password','passwordConfirm','license','career','area','intro'];
+  const trackFields = ['name','phone','email','password','passwordConfirm','license','career','intro'];
   trackFields.forEach(id => {
-    document.getElementById(id).addEventListener('input', updateProgress);
-    if (document.getElementById(id).tagName === 'SELECT') {
-      document.getElementById(id).addEventListener('change', updateProgress);
-    }
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', updateProgress);
+    if (el.tagName === 'SELECT') el.addEventListener('change', updateProgress);
   });
   function updateProgress() {
-    const filled = trackFields.filter(id => document.getElementById(id).value.length > 0).length;
+    const filled = trackFields.filter(id => { const el = document.getElementById(id); return el && el.value.length > 0; }).length;
     const hasSpec = document.querySelectorAll('#specChips .chip.selected').length > 0;
-    const pct = 10 + ((filled + (hasSpec ? 1 : 0)) / (trackFields.length + 1)) * 88;
+    const hasArea = document.querySelectorAll('.area-chip.selected').length > 0;
+    const pct = 10 + ((filled + (hasSpec ? 1 : 0) + (hasArea ? 1 : 0)) / (trackFields.length + 2)) * 88;
     document.getElementById('progressFill').style.width = pct + '%';
   }
 </script>

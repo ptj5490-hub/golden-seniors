@@ -443,18 +443,10 @@
     try {
       const snap = await db.collection('users')
         .where('role', '==', 'teacher')
-        .where('status', '==', 'active')
+        .where('status', '==', 'approved')
         .get();
 
       allTeachers = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-      // active가 없으면 pending 포함해서 재시도
-      if (allTeachers.length === 0) {
-        const snap2 = await db.collection('users')
-          .where('role', '==', 'teacher')
-          .get();
-        allTeachers = snap2.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      }
 
       renderGrid();
     } catch(e) {

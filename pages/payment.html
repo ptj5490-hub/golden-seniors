@@ -278,6 +278,11 @@
 
   async function initWidget(uid, amount) {
     try {
+      console.log('TossPayments 타입:', typeof TossPayments);
+      console.log('위젯 초기화 시작 — uid:', uid, 'amount:', amount);
+      if (typeof TossPayments === 'undefined') {
+        throw new Error('TossPayments SDK가 로드되지 않았습니다.');
+      }
       const tossPayments = TossPayments(TOSS_CLIENT_KEY);
       widgets = tossPayments.widgets({ customerKey: uid });
 
@@ -297,7 +302,7 @@
       document.getElementById('payBtnWrap').style.display = 'block';
     } catch(e) {
       console.error('결제위젯 초기화 오류:', e);
-      alert('결제 모듈을 불러오는 데 실패했어요. 잠시 후 다시 시도해주세요.');
+      alert('결제 모듈 오류: ' + (e.message || JSON.stringify(e)));
     }
   }
 

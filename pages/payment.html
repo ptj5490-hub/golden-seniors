@@ -189,8 +189,12 @@
   </button>
 </div>
 
-<!-- Toss Payments SDK v2 (결제위젯) -->
-<script src="https://js.tosspayments.com/v2/base"></script>
+<!-- Toss Payments SDK v2 (결제위젯) — ESM 동적 로드 -->
+<script type="module">
+  const { loadTossPayments } = await import('https://js.tosspayments.com/v2/base');
+  window.__loadTossPayments = loadTossPayments;
+  window.dispatchEvent(new Event('tossSDKReady'));
+</script>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -278,12 +282,18 @@
 
   async function initWidget(uid, amount) {
     try {
-      console.log('TossPayments 타입:', typeof TossPayments);
-      console.log('위젯 초기화 시작 — uid:', uid, 'amount:', amount);
-      if (typeof TossPayments === 'undefined') {
-        throw new Error('TossPayments SDK가 로드되지 않았습니다.');
+      // ESM 로드 완료 대기
+      if (!window.__loadTossPayments) {
+        await new Promise(resolve => {
+          if (window.__loadTossPayments) return resolve();
+          window.addEventListener('tossSDKReady', resolve, { once: true });
+          setTimeout(resolve, 5000); // 5초 타임아웃
+        });
       }
-      const tossPayments = TossPayments(TOSS_CLIENT_KEY);
+      if (!window.__loadTossPayments) {
+        throw new Error('TossPayments SDK 로드 실패 (타임아웃)');
+      }
+      const tossPayments = await window.__loadTossPayments(TOSS_CLIENT_KEY);
       widgets = tossPayments.widgets({ customerKey: uid });
 
       await widgets.setAmount({ currency: 'KRW', value: amount || 1000 });

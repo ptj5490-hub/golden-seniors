@@ -278,7 +278,7 @@
 
   async function initWidget(uid, amount) {
     try {
-      const tossPayments = await loadTossPayments(TOSS_CLIENT_KEY);
+      const tossPayments = TossPayments(TOSS_CLIENT_KEY);
       widgets = tossPayments.widgets({ customerKey: uid });
 
       await widgets.setAmount({ currency: 'KRW', value: amount || 1000 });

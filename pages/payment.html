@@ -208,7 +208,8 @@
   const db   = firebase.firestore();
 
   // 심사 완료 후 라이브 키로 교체: live_ck_...
-  const TOSS_CLIENT_KEY = 'test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm';
+  // 심사 완료 후 라이브 키(live_gck_...)로 교체
+  const TOSS_CLIENT_KEY = 'test_gck_AQ92ymxN3496kmDoANkKVajRKXvd';
 
   const params      = new URLSearchParams(location.search);
   const quoteId     = params.get('quoteId') || '';

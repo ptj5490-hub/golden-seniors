@@ -99,6 +99,15 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    .pay-method-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+    .pay-method-chip {
+      padding: 10px 16px; background: var(--gray-100); border-radius: 10px;
+      font-size: 13px; font-weight: 700; color: var(--gray-600);
+      border: 2px solid transparent; cursor: pointer; transition: all 0.15s;
+    }
+    .pay-method-chip:hover { border-color: var(--teal); color: var(--teal); }
+    .pay-method-chip.active { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
+
     .notice {
       font-size: 12px; color: var(--gray-400); text-align: center;
       margin-top: 12px; line-height: 1.7;
@@ -165,14 +174,15 @@
       <div class="amount-hint">※ 1회 방문 기준 금액이에요</div>
     </div>
 
-    <!-- 토스 결제위젯 (결제 수단) -->
-    <div class="section-card" style="padding:0;overflow:hidden;">
-      <div id="payment-method"></div>
-    </div>
-
-    <!-- 토스 결제위젯 (약관 동의) -->
-    <div class="section-card" style="padding:0;overflow:hidden;">
-      <div id="agreement"></div>
+    <!-- 결제 수단 선택 -->
+    <div class="section-card">
+      <div class="section-title">💳 결제 수단 선택</div>
+      <div class="pay-method-list" id="payMethodList">
+        <button class="pay-method-chip active" data-method="카드" onclick="selectMethod(this)">💳 신용·체크카드</button>
+        <button class="pay-method-chip" data-method="카카오페이" onclick="selectMethod(this)">🟡 카카오페이</button>
+        <button class="pay-method-chip" data-method="토스페이" onclick="selectMethod(this)">📱 토스페이</button>
+        <button class="pay-method-chip" data-method="계좌이체" onclick="selectMethod(this)">🏦 계좌이체</button>
+      </div>
     </div>
 
     <p class="notice">
@@ -189,12 +199,8 @@
   </button>
 </div>
 
-<!-- Toss Payments SDK v2 (결제위젯) — ESM 동적 로드 -->
-<script type="module">
-  const { loadTossPayments } = await import('https://js.tosspayments.com/v2/base');
-  window.__loadTossPayments = loadTossPayments;
-  window.dispatchEvent(new Event('tossSDKReady'));
-</script>
+<!-- Toss Payments SDK v1 -->
+<script src="https://js.tosspayments.com/v1/payment"></script>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -211,9 +217,15 @@
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
-  // 심사 완료 후 라이브 키로 교체: live_ck_...
-  // 심사 완료 후 라이브 키(live_gck_...)로 교체
-  const TOSS_CLIENT_KEY = 'test_gck_AQ92ymxN3496kmDoANkKVajRKXvd';
+  // 심사 완료 후 라이브 키(live_ck_...)로 교체
+  const TOSS_CLIENT_KEY = 'test_ck_6BYq7GWPVv5wYJObxXZl3NE5vbo1';
+
+  let selectedMethod = '카드';
+  window.selectMethod = function(el) {
+    document.querySelectorAll('.pay-method-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    selectedMethod = el.dataset.method;
+  };
 
   const params      = new URLSearchParams(location.search);
   const quoteId     = params.get('quoteId') || '';
@@ -224,7 +236,6 @@
 
   let currentUser   = null;
   let currentAmount = preAmount || 0;
-  let widgets       = null;
 
   if (quoteId) sessionStorage.setItem('lastQuoteId', quoteId);
 
@@ -232,10 +243,6 @@
     if (!user) { location.href = 'login.html'; return; }
     currentUser = user;
 
-    const snap     = await db.collection('users').doc(user.uid).get();
-    const userData = snap.exists ? snap.data() : {};
-
-    // 금액: URL → Firestore teacher_quotes 순으로 조회
     let amount = preAmount;
     if (!amount && quoteId) {
       try {
@@ -243,14 +250,12 @@
           .where('quoteId', '==', quoteId).get();
         const wonDoc = tqSnap.docs.find(d => d.data().status === 'won') || tqSnap.docs[0];
         if (wonDoc) {
-          const priceStr = wonDoc.data().price || '';
-          amount = parseInt(priceStr.replace(/[^0-9]/g, ''), 10) || 0;
+          amount = parseInt((wonDoc.data().price || '').replace(/[^0-9]/g, ''), 10) || 0;
         }
       } catch(e) { console.warn('가격 조회 실패:', e); }
     }
     currentAmount = amount;
 
-    // UI 업데이트
     document.getElementById('displayService').textContent = serviceName;
     document.getElementById('displayTeacher').textContent = teacherName;
     document.getElementById('displayQuoteId').textContent = quoteId ? '#' + quoteId.substring(0,8).toUpperCase() : '-';
@@ -268,53 +273,12 @@
       currentAmount = val;
       document.getElementById('payBtnText').textContent =
         val >= 1000 ? `${val.toLocaleString()}원 결제하기` : '결제하기';
-
-      // 금액 변경 시 위젯에 반영
-      if (widgets) widgets.setAmount({ currency: 'KRW', value: val });
     });
 
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('payContent').style.display   = 'block';
-
-    // 결제위젯 초기화
-    await initWidget(user.uid, amount);
+    document.getElementById('payBtnWrap').style.display   = 'block';
   });
-
-  async function initWidget(uid, amount) {
-    try {
-      // ESM 로드 완료 대기
-      if (!window.__loadTossPayments) {
-        await new Promise(resolve => {
-          if (window.__loadTossPayments) return resolve();
-          window.addEventListener('tossSDKReady', resolve, { once: true });
-          setTimeout(resolve, 5000); // 5초 타임아웃
-        });
-      }
-      if (!window.__loadTossPayments) {
-        throw new Error('TossPayments SDK 로드 실패 (타임아웃)');
-      }
-      const tossPayments = await window.__loadTossPayments(TOSS_CLIENT_KEY);
-      widgets = tossPayments.widgets({ customerKey: uid });
-
-      await widgets.setAmount({ currency: 'KRW', value: amount || 1000 });
-
-      await Promise.all([
-        widgets.renderPaymentMethods({
-          selector: '#payment-method',
-          variantKey: 'DEFAULT',
-        }),
-        widgets.renderAgreement({
-          selector: '#agreement',
-          variantKey: 'AGREEMENT',
-        }),
-      ]);
-
-      document.getElementById('payBtnWrap').style.display = 'block';
-    } catch(e) {
-      console.error('결제위젯 초기화 오류:', e);
-      alert('결제 모듈 오류: ' + (e.message || JSON.stringify(e)));
-    }
-  }
 
   window.requestPayment = async function() {
     const amount = parseInt(document.getElementById('amountInput').value.replace(/[^0-9]/g,''), 10);
@@ -340,14 +304,13 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
-      await widgets.setAmount({ currency: 'KRW', value: amount });
-
-      await widgets.requestPayment({
+      const tossPayments = TossPayments(TOSS_CLIENT_KEY);
+      await tossPayments.requestPayment(selectedMethod, {
+        amount,
         orderId,
-        orderName:      serviceName,
-        customerName:   currentUser.displayName || '고객',
-        customerEmail:  currentUser.email || '',
-        customerMobilePhone: '',
+        orderName:     serviceName,
+        customerName:  currentUser.displayName || '고객',
+        customerEmail: currentUser.email || '',
         successUrl: `${location.origin}/pages/payment-success.html`,
         failUrl:    `${location.origin}/pages/payment-fail.html`,
       });

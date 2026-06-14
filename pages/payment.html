@@ -6,9 +6,8 @@
   <title>결제 | 골든 시니어스</title>
   <style>
     :root {
-      --teal: #0D4A38; --teal-dark: #083328; --teal-light: #E8F4F0; --teal-pale: #F2FAF7;
+      --teal: #0D4A38; --teal-dark: #083328; --teal-light: #E8F4F0;
       --gold: #C4973A; --gold-light: #FDF6E7; --gold-dark: #A07830;
-      --navy: #0D4A38; --navy-light: #1A6B52;
       --gray-100: #F7F8FA; --gray-200: #EEEFF2;
       --gray-400: #9CA3AF; --gray-600: #4B5563; --gray-900: #111827;
       --white: #FFFFFF;
@@ -38,118 +37,79 @@
       width: 36px; height: 36px; background: var(--gold); border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
     }
-    main { max-width: 540px; margin: 0 auto; padding: 32px 20px 80px; }
+    main { max-width: 540px; margin: 0 auto; padding: 32px 20px 120px; }
 
-    /* 서비스 요약 카드 */
-    .service-card {
+    .section-card {
       background: var(--white); border-radius: 20px; padding: 24px;
-      box-shadow: var(--shadow-lg); margin-bottom: 20px;
+      box-shadow: var(--shadow-lg); margin-bottom: 16px;
     }
-    .service-card-title {
+    .section-title {
       font-size: 13px; font-weight: 700; color: var(--gray-400);
       margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em;
     }
-    .service-row {
+    .info-row {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 0; border-bottom: 1px solid var(--gray-100);
-      font-size: 14px;
+      padding: 10px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px;
     }
-    .service-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .service-row .label { color: var(--gray-400); font-weight: 600; }
-    .service-row .value { color: var(--gray-900); font-weight: 700; }
-    .amount-big {
-      font-size: 28px; font-weight: 900; color: var(--navy);
-      text-align: center; padding: 16px 0 8px;
-    }
-    .amount-sub { font-size: 12px; color: var(--gray-400); text-align: center; margin-bottom: 4px; }
+    .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .info-row .label { color: var(--gray-400); font-weight: 600; }
+    .info-row .value { color: var(--gray-900); font-weight: 700; }
 
-    /* 금액 입력 */
-    .amount-input-wrap {
-      background: var(--white); border-radius: 20px; padding: 24px;
-      box-shadow: var(--shadow-lg); margin-bottom: 20px;
-    }
     .amount-input-wrap label {
       display: block; font-size: 13px; font-weight: 700;
       color: var(--gray-600); margin-bottom: 10px;
     }
-    .amount-input-row {
-      display: flex; align-items: center; gap: 10px;
-    }
+    .amount-input-row { display: flex; align-items: center; gap: 10px; }
     .amount-input {
       flex: 1; padding: 14px 16px; border: 2px solid var(--gray-200);
       border-radius: 12px; font-size: 20px; font-weight: 800;
-      color: var(--navy); text-align: right; outline: none;
+      color: var(--teal); text-align: right; outline: none;
       background: var(--gray-100); transition: border-color 0.2s;
     }
-    .amount-input:focus { border-color: var(--navy); background: white; }
+    .amount-input:focus { border-color: var(--teal); background: white; }
     .amount-unit { font-size: 18px; font-weight: 800; color: var(--gray-600); }
     .amount-hint { font-size: 12px; color: var(--gray-400); margin-top: 8px; }
 
-    /* 결제 수단 선택 */
-    .pay-methods {
-      background: var(--white); border-radius: 20px;
-      box-shadow: var(--shadow-lg); margin-bottom: 20px;
-      padding: 20px 24px;
-    }
-    .pay-methods-title { font-size: 13px; font-weight: 700; color: var(--gray-400); margin-bottom: 14px; }
-    .pay-method-list { display: flex; gap: 10px; flex-wrap: wrap; }
-    .pay-method-chip {
-      padding: 10px 18px; background: var(--gray-100); border-radius: 10px;
-      font-size: 13px; font-weight: 700; color: var(--gray-600);
-      border: 2px solid transparent; cursor: pointer; transition: all 0.15s;
-    }
-    .pay-method-chip:hover { border-color: var(--navy); color: var(--navy); }
-    .pay-method-chip.active {
-      background: var(--gold-light); border-color: var(--gold);
-      color: var(--gold-dark);
-    }
+    /* 결제위젯 렌더링 영역 */
+    #payment-method { margin-bottom: 0; }
+    #agreement { margin-top: 0; }
 
-    /* 결제 버튼 */
+    .btn-pay-wrap {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      padding: 14px 20px; background: white;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 100;
+    }
     .btn-pay {
-      width: 100%; padding: 18px; background: var(--navy); color: white;
+      width: 100%; max-width: 540px; margin: 0 auto; display: flex;
+      padding: 18px; background: var(--teal); color: white;
       border: none; border-radius: 16px; font-size: 17px; font-weight: 900;
       cursor: pointer; transition: background 0.2s, transform 0.15s;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
+      align-items: center; justify-content: center; gap: 10px;
     }
-    .btn-pay:hover { background: var(--navy-light); transform: translateY(-1px); }
+    .btn-pay:hover { background: var(--teal-dark); transform: translateY(-1px); }
     .btn-pay:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-    /* 로딩 */
     .loading-state {
       text-align: center; padding: 60px 20px; color: var(--gray-400);
     }
     .spinner {
       width: 40px; height: 40px; margin: 0 auto 16px;
-      border: 3px solid var(--gray-200); border-top-color: var(--navy);
+      border: 3px solid var(--gray-200); border-top-color: var(--teal);
       border-radius: 50%; animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .notice {
       font-size: 12px; color: var(--gray-400); text-align: center;
-      margin-top: 14px; line-height: 1.7;
+      margin-top: 12px; line-height: 1.7;
     }
 
-    /* 모바일 반응형 */
     @media (max-width: 480px) {
-      html, body { overflow-x: hidden; }
-      main { padding: 20px 16px 100px; }
-      .service-card { padding: 18px 16px; border-radius: 16px; }
-      .service-row { font-size: 13px; }
-      .service-row .value { font-size: 13px; max-width: 60%; text-align: right; word-break: break-all; }
-      .amount-input-wrap { padding: 18px 16px; border-radius: 16px; }
+      main { padding: 20px 16px 120px; }
+      .section-card { padding: 18px 16px; border-radius: 16px; }
+      .info-row { font-size: 13px; }
       .amount-input { font-size: 18px; padding: 12px 14px; }
-      .amount-unit { font-size: 16px; }
-      .pay-methods { padding: 16px; border-radius: 16px; }
-      .pay-method-list { gap: 8px; }
-      .pay-method-chip { padding: 9px 14px; font-size: 12px; border-radius: 8px; }
-      .btn-pay { padding: 16px; font-size: 16px; border-radius: 14px; }
-      /* 결제 버튼 하단 고정 */
-      .btn-pay-wrap {
-        position: fixed; bottom: 0; left: 0; right: 0;
-        padding: 14px 16px; background: white;
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 100;
-      }
+      .btn-pay { font-size: 16px; padding: 16px; border-radius: 14px; }
     }
   </style>
 </head>
@@ -178,61 +138,59 @@
       <h1 style="font-size:22px;font-weight:900;color:var(--teal);">결제하기</h1>
     </div>
 
-    <!-- 서비스 요약 -->
-    <div class="service-card">
-      <div class="service-card-title">결제 정보</div>
-      <div class="service-row">
+    <!-- 결제 정보 요약 -->
+    <div class="section-card">
+      <div class="section-title">결제 정보</div>
+      <div class="info-row">
         <span class="label">서비스</span>
         <span class="value" id="displayService">방문 재활운동</span>
       </div>
-      <div class="service-row">
+      <div class="info-row">
         <span class="label">선생님</span>
         <span class="value" id="displayTeacher">-</span>
       </div>
-      <div class="service-row">
+      <div class="info-row">
         <span class="label">견적 번호</span>
         <span class="value" id="displayQuoteId" style="font-family:monospace;font-size:12px;">-</span>
       </div>
     </div>
 
     <!-- 금액 입력 -->
-    <div class="amount-input-wrap" id="amountInputWrap">
+    <div class="section-card amount-input-wrap">
       <label>결제 금액 (채팅에서 협의한 금액을 입력해주세요)</label>
       <div class="amount-input-row">
-        <input type="text" inputmode="numeric" class="amount-input" id="amountInput"
-          placeholder="0">
+        <input type="text" inputmode="numeric" class="amount-input" id="amountInput" placeholder="0">
         <span class="amount-unit">원</span>
       </div>
       <div class="amount-hint">※ 1회 방문 기준 금액이에요</div>
     </div>
 
-    <!-- 결제 수단 선택 -->
-    <div class="pay-methods">
-      <div class="pay-methods-title">💳 결제 수단 선택</div>
-      <div class="pay-method-list" id="payMethodList">
-        <button class="pay-method-chip active" data-method="카드" onclick="selectMethod(this)">💳 신용·체크카드</button>
-        <button class="pay-method-chip" data-method="카카오페이" onclick="selectMethod(this)">🟡 카카오페이</button>
-        <button class="pay-method-chip" data-method="네이버페이" onclick="selectMethod(this)">🟢 네이버페이</button>
-        <button class="pay-method-chip" data-method="계좌이체" onclick="selectMethod(this)">🏦 계좌이체</button>
-        <button class="pay-method-chip" data-method="토스페이" onclick="selectMethod(this)">📱 토스페이</button>
-      </div>
+    <!-- 토스 결제위젯 (결제 수단) -->
+    <div class="section-card" style="padding:0;overflow:hidden;">
+      <div id="payment-method"></div>
     </div>
 
-    <!-- 결제 버튼 -->
-    <div class="btn-pay-wrap">
-      <button class="btn-pay" id="payBtn" onclick="requestPayment()">
-        💳 <span id="payBtnText">결제하기</span>
-      </button>
+    <!-- 토스 결제위젯 (약관 동의) -->
+    <div class="section-card" style="padding:0;overflow:hidden;">
+      <div id="agreement"></div>
     </div>
+
     <p class="notice">
       결제는 토스페이먼츠를 통해 안전하게 처리돼요.<br>
-      카드 · 카카오페이 · 네이버페이 · 계좌이체 모두 가능해요.
+      카드 · 카카오페이 · 토스페이 · 계좌이체 모두 가능해요.
     </p>
   </div>
 </main>
 
-<!-- Toss Payments SDK v1 (일반 결제창) -->
-<script src="https://js.tosspayments.com/v1/payment"></script>
+<!-- 결제 버튼 (하단 고정) -->
+<div class="btn-pay-wrap" id="payBtnWrap" style="display:none;">
+  <button class="btn-pay" id="payBtn" onclick="requestPayment()">
+    💳 <span id="payBtnText">결제하기</span>
+  </button>
+</div>
+
+<!-- Toss Payments SDK v2 (결제위젯) -->
+<script src="https://js.tosspayments.com/v2/base"></script>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -249,17 +207,8 @@
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
-  // ── 토스 일반 결제창 클라이언트 키 (본인 키로 교체 필요) ──
-  // 발급: https://developers.tosspayments.com/ → 내 개발정보 → 테스트 클라이언트 키
-  const TOSS_CLIENT_KEY = 'test_ck_6BYq7GWPVv5wYJObxXZl3NE5vbo1';
-
-  // 결제 수단 선택
-  let selectedMethod = '카드';
-  window.selectMethod = function(el) {
-    document.querySelectorAll('.pay-method-chip').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    selectedMethod = el.dataset.method;
-  };
+  // 심사 완료 후 라이브 키로 교체: live_ck_...
+  const TOSS_CLIENT_KEY = 'test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm';
 
   const params      = new URLSearchParams(location.search);
   const quoteId     = params.get('quoteId') || '';
@@ -270,11 +219,10 @@
 
   let currentUser   = null;
   let currentAmount = preAmount || 0;
+  let widgets       = null;
 
-  // 결제 실패 시 돌아오기 위해 quoteId 저장
   if (quoteId) sessionStorage.setItem('lastQuoteId', quoteId);
 
-  // ── 인증 확인 ──
   auth.onAuthStateChanged(async user => {
     if (!user) { location.href = 'login.html'; return; }
     currentUser = user;
@@ -288,7 +236,6 @@
       try {
         const tqSnap = await db.collection('teacher_quotes')
           .where('quoteId', '==', quoteId).get();
-        // status='won'인 것 먼저, 없으면 아무거나
         const wonDoc = tqSnap.docs.find(d => d.data().status === 'won') || tqSnap.docs[0];
         if (wonDoc) {
           const priceStr = wonDoc.data().price || '';
@@ -305,11 +252,10 @@
 
     if (amount > 0) {
       document.getElementById('amountInput').value = amount.toLocaleString();
-      document.getElementById('amountInputWrap').querySelector('label').textContent = '결제 금액';
+      document.getElementById('amountInput').closest('.amount-input-wrap').querySelector('label').textContent = '결제 금액';
       document.getElementById('payBtnText').textContent = `${amount.toLocaleString()}원 결제하기`;
     }
 
-    // 금액 변경 시 쉼표 포맷 + 버튼 텍스트 업데이트
     document.getElementById('amountInput').addEventListener('input', (e) => {
       const raw = e.target.value.replace(/[^0-9]/g, '');
       const val = parseInt(raw, 10) || 0;
@@ -317,13 +263,43 @@
       currentAmount = val;
       document.getElementById('payBtnText').textContent =
         val >= 1000 ? `${val.toLocaleString()}원 결제하기` : '결제하기';
+
+      // 금액 변경 시 위젯에 반영
+      if (widgets) widgets.setAmount({ currency: 'KRW', value: val });
     });
 
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('payContent').style.display   = 'block';
+
+    // 결제위젯 초기화
+    await initWidget(user.uid, amount);
   });
 
-  // ── 결제 요청 (Toss v1 일반 결제창) ──
+  async function initWidget(uid, amount) {
+    try {
+      const tossPayments = await loadTossPayments(TOSS_CLIENT_KEY);
+      widgets = tossPayments.widgets({ customerKey: uid });
+
+      await widgets.setAmount({ currency: 'KRW', value: amount || 1000 });
+
+      await Promise.all([
+        widgets.renderPaymentMethods({
+          selector: '#payment-method',
+          variantKey: 'DEFAULT',
+        }),
+        widgets.renderAgreement({
+          selector: '#agreement',
+          variantKey: 'AGREEMENT',
+        }),
+      ]);
+
+      document.getElementById('payBtnWrap').style.display = 'block';
+    } catch(e) {
+      console.error('결제위젯 초기화 오류:', e);
+      alert('결제 모듈을 불러오는 데 실패했어요. 잠시 후 다시 시도해주세요.');
+    }
+  }
+
   window.requestPayment = async function() {
     const amount = parseInt(document.getElementById('amountInput').value.replace(/[^0-9]/g,''), 10);
     if (!amount || amount < 1000) {
@@ -337,11 +313,8 @@
     btn.querySelector('#payBtnText').textContent = '결제창 여는 중...';
 
     try {
-      const orderId      = `order-${(quoteId.slice(0,8) || 'gs').replace(/[^a-zA-Z0-9]/g,'')}-${Date.now()}`;
-      const customerName = currentUser.displayName || '고객';
-      const customerEmail = currentUser.email || '';
+      const orderId = `order-${(quoteId.slice(0,8) || 'gs').replace(/[^a-zA-Z0-9]/g,'')}-${Date.now()}`;
 
-      // Firestore 결제 시도 기록 (pending)
       await db.collection('payments').doc(orderId).set({
         orderId, quoteId,
         customerUid:  currentUser.uid,
@@ -351,14 +324,14 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
-      // ── Toss v1 일반 결제창 호출 ──
-      const tossPayments = TossPayments(TOSS_CLIENT_KEY);
-      await tossPayments.requestPayment(selectedMethod, {
-        amount,
+      await widgets.setAmount({ currency: 'KRW', value: amount });
+
+      await widgets.requestPayment({
         orderId,
-        orderName:     serviceName,
-        customerName,
-        customerEmail,
+        orderName:      serviceName,
+        customerName:   currentUser.displayName || '고객',
+        customerEmail:  currentUser.email || '',
+        customerMobilePhone: '',
         successUrl: `${location.origin}/pages/payment-success.html`,
         failUrl:    `${location.origin}/pages/payment-fail.html`,
       });

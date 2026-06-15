@@ -178,10 +178,10 @@
     <div class="section-card">
       <div class="section-title">💳 결제 수단 선택</div>
       <div class="pay-method-list" id="payMethodList">
-        <button class="pay-method-chip active" data-method="카드" onclick="selectMethod(this)">💳 신용·체크카드</button>
-        <button class="pay-method-chip" data-method="카카오페이" onclick="selectMethod(this)">🟡 카카오페이</button>
-        <button class="pay-method-chip" data-method="토스페이" onclick="selectMethod(this)">📱 토스페이</button>
-        <button class="pay-method-chip" data-method="계좌이체" onclick="selectMethod(this)">🏦 계좌이체</button>
+        <button class="pay-method-chip active" data-method="CARD" onclick="selectMethod(this)">💳 신용·체크카드</button>
+        <button class="pay-method-chip" data-method="KAKAO_PAY" onclick="selectMethod(this)">🟡 카카오페이</button>
+        <button class="pay-method-chip" data-method="TOSS_PAY" onclick="selectMethod(this)">📱 토스페이</button>
+        <button class="pay-method-chip" data-method="TRANSFER" onclick="selectMethod(this)">🏦 계좌이체</button>
       </div>
     </div>
 
@@ -199,8 +199,8 @@
   </button>
 </div>
 
-<!-- Toss Payments SDK v1 -->
-<script src="https://js.tosspayments.com/v1/payment"></script>
+<!-- Toss Payments SDK v2 -->
+<script src="https://js.tosspayments.com/v2"></script>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -220,7 +220,7 @@
   // 심사 완료 후 라이브 키(live_ck_...)로 교체
   const TOSS_CLIENT_KEY = 'test_ck_6BYq7GWPVv5wYJObxXZl3NE5vbo1';
 
-  let selectedMethod = '카드';
+  let selectedMethod = 'CARD';
   window.selectMethod = function(el) {
     document.querySelectorAll('.pay-method-chip').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
@@ -305,15 +305,24 @@
       });
 
       const tossPayments = TossPayments(TOSS_CLIENT_KEY);
-      await tossPayments.requestPayment(selectedMethod, {
-        amount,
+      const payment = tossPayments.payment({ customerKey: currentUser.uid });
+
+      const payParams = {
+        amount:    { currency: 'KRW', value: amount },
         orderId,
-        orderName:     serviceName,
-        customerName:  currentUser.displayName || '고객',
-        customerEmail: currentUser.email || '',
+        orderName:        serviceName,
+        customerName:     currentUser.displayName || '고객',
+        customerEmail:    currentUser.email || '',
         successUrl: `${location.origin}/pages/payment-success.html`,
         failUrl:    `${location.origin}/pages/payment-fail.html`,
-      });
+      };
+
+      // 카카오페이·토스페이는 EASY_PAY + easyPayType
+      if (selectedMethod === 'KAKAO_PAY' || selectedMethod === 'TOSS_PAY') {
+        await payment.requestPayment({ method: 'EASY_PAY', easyPay: { easyPayType: selectedMethod }, ...payParams });
+      } else {
+        await payment.requestPayment({ method: selectedMethod, ...payParams });
+      }
 
     } catch(e) {
       console.error('결제 오류:', e);

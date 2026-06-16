@@ -191,6 +191,12 @@
       transition: border-color 0.2s; background: var(--gray-100);
     }
     .info-input:focus { border-color: var(--teal); background: var(--white); }
+    .spec-edit-chip {
+      padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600;
+      background: var(--gray-200); color: var(--gray-600); cursor: pointer;
+      border: 2px solid transparent; transition: all 0.15s; user-select: none;
+    }
+    .spec-edit-chip.on { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
 
     /* 탭 패널 */
     .tab-panel { display: none; }
@@ -330,6 +336,57 @@
         저장하기
       </button>
 
+      <!-- 선생님 전용 프로필 편집 -->
+      <div id="teacherProfileSection" style="display:none;margin-top:24px;">
+        <div class="section-title" style="margin-bottom:16px;">👨‍⚕️ 선생님 프로필 편집</div>
+
+        <div class="info-row">
+          <div class="info-label">자기소개</div>
+          <textarea id="editIntro" rows="5" style="width:100%;padding:12px;border:1.5px solid var(--gray-200);border-radius:12px;font-size:14px;font-family:inherit;resize:vertical;outline:none;" placeholder="본인 소개, 전문 분야, 케어 방식 등을 자유롭게 작성해주세요"></textarea>
+        </div>
+
+        <div class="info-row" style="margin-top:12px;">
+          <div class="info-label">전문분야</div>
+          <div id="editSpecChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">
+            <span class="spec-edit-chip" data-value="근골격계" onclick="toggleSpecChip(this)">🦴 근골격계</span>
+            <span class="spec-edit-chip" data-value="뇌졸중" onclick="toggleSpecChip(this)">🧠 뇌졸중</span>
+            <span class="spec-edit-chip" data-value="치매예방" onclick="toggleSpecChip(this)">💆 치매예방</span>
+            <span class="spec-edit-chip" data-value="낙상예방" onclick="toggleSpecChip(this)">🚶 낙상예방</span>
+            <span class="spec-edit-chip" data-value="파킨슨" onclick="toggleSpecChip(this)">⚕️ 파킨슨</span>
+            <span class="spec-edit-chip" data-value="심폐기능" onclick="toggleSpecChip(this)">❤️ 심폐기능</span>
+            <span class="spec-edit-chip" data-value="통증관리" onclick="toggleSpecChip(this)">💊 통증관리</span>
+            <span class="spec-edit-chip" data-value="기타" onclick="toggleSpecChip(this)">기타</span>
+          </div>
+        </div>
+
+        <div class="info-row" style="margin-top:12px;">
+          <div class="info-label">자격증</div>
+          <input class="info-input" id="editLicense" type="text" placeholder="예: 물리치료사, 건강운동관리사">
+        </div>
+
+        <div class="info-row" style="margin-top:12px;">
+          <div class="info-label">경력</div>
+          <select id="editCareer" style="width:100%;padding:12px;border:1.5px solid var(--gray-200);border-radius:12px;font-size:14px;outline:none;background:white;">
+            <option value="">선택</option>
+            <option value="1">1년 미만</option>
+            <option value="1~3">1~3년</option>
+            <option value="3~5">3~5년</option>
+            <option value="5~10">5~10년</option>
+            <option value="10+">10년 이상</option>
+          </select>
+        </div>
+
+        <div class="info-row" style="margin-top:12px;">
+          <div class="info-label">활동 지역</div>
+          <input class="info-input" id="editArea" type="text" placeholder="예: 강동구, 송파구, 강남구">
+        </div>
+
+        <button class="btn-view" style="width:100%;padding:14px;font-size:15px;margin-top:16px;" onclick="saveTeacherProfile()">
+          프로필 저장하기
+        </button>
+        <a id="viewProfileLink" href="#" target="_blank" style="display:block;text-align:center;margin-top:10px;font-size:13px;color:var(--teal);font-weight:700;">내 프로필 보기 →</a>
+      </div>
+
       <!-- 회원 탈퇴 -->
       <div class="danger-zone">
         <div class="danger-title">⚠️ 회원 탈퇴</div>
@@ -404,6 +461,20 @@
     document.getElementById('editName').value  = name;
     document.getElementById('editPhone').value = phone.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
     document.getElementById('editEmail').value = email;
+
+    // 선생님 전용 섹션
+    if (data.role === 'teacher') {
+      document.getElementById('teacherProfileSection').style.display = 'block';
+      document.getElementById('editIntro').value   = data.intro   || '';
+      document.getElementById('editLicense').value = data.license || '';
+      document.getElementById('editCareer').value  = data.career  || '';
+      document.getElementById('editArea').value    = Array.isArray(data.area) ? data.area.join(', ') : (data.area || '');
+      document.getElementById('viewProfileLink').href = `teacher.html?uid=${user.uid}`;
+      const savedSpecs = data.specs || [];
+      document.querySelectorAll('.spec-edit-chip').forEach(chip => {
+        if (savedSpecs.includes(chip.dataset.value)) chip.classList.add('on');
+      });
+    }
   }
 
   // ── 견적 목록 로드 ──
@@ -521,6 +592,32 @@
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     el.classList.add('active');
     document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+  };
+
+  // ── 전문분야 칩 토글 ──
+  window.toggleSpecChip = function(el) {
+    el.classList.toggle('on');
+  };
+
+  // ── 선생님 프로필 저장 ──
+  window.saveTeacherProfile = async function() {
+    if (!currentUser) return;
+    const intro   = document.getElementById('editIntro').value.trim();
+    const license = document.getElementById('editLicense').value.trim();
+    const career  = document.getElementById('editCareer').value;
+    const areaRaw = document.getElementById('editArea').value.trim();
+    const area    = areaRaw ? areaRaw.split(/[,，\s]+/).map(s => s.trim()).filter(Boolean) : [];
+    const specs   = [...document.querySelectorAll('.spec-edit-chip.on')].map(c => c.dataset.value);
+    if (!intro)          { alert('자기소개를 입력해주세요.'); return; }
+    if (specs.length === 0) { alert('전문분야를 최소 1개 선택해주세요.'); return; }
+    if (!career)         { alert('경력을 선택해주세요.'); return; }
+    if (area.length === 0)  { alert('활동 지역을 입력해주세요.'); return; }
+    try {
+      await db.collection('users').doc(currentUser.uid).update({ intro, license, career, area, specs });
+      alert('✅ 프로필이 저장됐어요!');
+    } catch(e) {
+      alert('저장 중 오류가 발생했어요.');
+    }
   };
 
   // ── 정보 저장 ──

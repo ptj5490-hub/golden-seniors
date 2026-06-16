@@ -703,7 +703,10 @@ function renderMembers() {
       <td>${esc(m.phone || '-')}</td>
       <td><span class="role-chip ${m.role || 'customer'}">${roleLabel(m.role)}</span></td>
       <td>${fmtDate(m.createdAt)}</td>
-      <td><button class="btn-ban" onclick="banMember('${m.id}', '${esc(m.name || '')}')">강제탈퇴</button></td>
+      <td style="display:flex;gap:6px;align-items:center;">
+        ${m.role === 'teacher' ? `<a href="teacher.html?uid=${m.id}" target="_blank" style="padding:5px 10px;background:var(--teal);color:#fff;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;">프로필</a>` : ''}
+        <button class="btn-ban" onclick="banMember('${m.id}', '${esc(m.name || '')}')">강제탈퇴</button>
+      </td>
     </tr>
   `).join('');
 }

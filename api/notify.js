@@ -128,12 +128,21 @@ const TEMPLATES = {
     sms: ({ teacherName, customerName, link }) =>
       `[골든 시니어스] ${teacherName} 선생님, ${customerName}님으로부터 방문재활운동 서비스 관련 문의 메시지가 도착했습니다.\n확인: ${link}`,
   },
+  // ⑦ 관리자용 — 선생님 신규 가입 신청 (SMS only)
+  teacher_signup_admin: {
+    templateId: null,
+    sms: ({ teacherName, phone, area, license }) =>
+      `[골든시니어스] 선생님 신규 가입 신청\n이름: ${teacherName}\n연락처: ${phone}\n지역: ${area}\n자격: ${license}\n관리자 페이지에서 승인해주세요.`,
+  },
 };
 
 // ── 메인 핸들러 ──
 module.exports = async function handler(req, res) {
   // CORS
-  res.setHeader('Access-Control-Allow-Origin', 'https://golden-seniors.vercel.app');
+  const origin = req.headers.origin || '';
+  const allowed = ['https://golden-seniors.vercel.app', 'https://www.goldenseniors.co.kr', 'https://goldenseniors.co.kr'];
+  if (allowed.includes(origin)) res.setHeader('Access-Control-Allow-Origin', origin);
+  // legacy single-value header removed — replaced above
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();

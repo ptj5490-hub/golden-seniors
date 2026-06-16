@@ -485,7 +485,18 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
-      // 4. 완료 페이지
+      // 4. 관리자 SMS 알림
+      fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type:   'teacher_signup_admin',
+          to:     '01082835490',
+          params: { teacherName: name, phone, area: area || '미입력', license: license || '미입력' },
+        }),
+      }).catch(() => {});
+
+      // 5. 완료 페이지
       window.location.href = 'signup-teacher-done.html';
 
     } catch (err) {

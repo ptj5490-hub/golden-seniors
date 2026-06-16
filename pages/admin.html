@@ -572,7 +572,7 @@ function renderTeachers() {
           <span class="status-badge ${t.status || 'pending'}">${statusLabel(t.status)}</span>
         </div>
         <div class="teacher-meta">${esc(t.email || '')} · ${esc(t.phone || '')} · 가입 ${fmtDate(t.createdAt)}</div>
-        <div class="teacher-specs">${(t.specialties || []).map(s => `<span class="spec-chip">${esc(s)}</span>`).join('')}</div>
+        <div class="teacher-specs">${(t.specs || t.specialties || []).map(s => `<span class="spec-chip">${esc(s)}</span>`).join('')}</div>
       </div>
       <div class="teacher-actions">
         <button class="btn-detail" onclick="openDetail('${t.id}')">상세보기</button>
@@ -641,10 +641,11 @@ function openDetail(uid) {
     <div class="modal-row"><span class="label">연락처</span><span class="value">${esc(t.phone || '-')}</span></div>
     <div class="modal-row"><span class="label">상태</span><span class="value"><span class="status-badge ${t.status || 'pending'}">${statusLabel(t.status)}</span></span></div>
     <hr class="modal-divider">
-    <div class="modal-row"><span class="label">전문 분야</span><span class="value">${(t.specialties || []).join(', ') || '-'}</span></div>
+    <div class="modal-row"><span class="label">전문 분야</span><span class="value">${(t.specs || t.specialties || []).join(', ') || '-'}</span></div>
+    <div class="modal-row"><span class="label">활동 지역</span><span class="value">${esc(t.area || '-')}</span></div>
     <div class="modal-row"><span class="label">경력</span><span class="value">${esc(t.career || '-')}</span></div>
-    <div class="modal-row"><span class="label">자격증</span><span class="value">${esc(t.certifications || '-')}</span></div>
-    <div class="modal-row"><span class="label">소개글</span><span class="value">${esc(t.bio || '-')}</span></div>
+    <div class="modal-row"><span class="label">자격증</span><span class="value">${esc(t.license || t.certifications || '-')}</span></div>
+    <div class="modal-row"><span class="label">소개글</span><span class="value" style="white-space:pre-wrap;line-height:1.6">${esc(t.intro || t.bio || '-')}</span></div>
     <div class="modal-row"><span class="label">가입일</span><span class="value">${fmtDate(t.createdAt)}</span></div>
     ${t.rejectReason ? `<div class="modal-row"><span class="label">거절 사유</span><span class="value" style="color:var(--red)">${esc(t.rejectReason)}</span></div>` : ''}
   `;

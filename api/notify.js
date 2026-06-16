@@ -128,7 +128,14 @@ const TEMPLATES = {
     sms: ({ teacherName, customerName, link }) =>
       `[골든 시니어스] ${teacherName} 선생님, ${customerName}님으로부터 방문재활운동 서비스 관련 문의 메시지가 도착했습니다.\n확인: ${link}`,
   },
-  // ⑦ 관리자용 — 선생님 신규 가입 신청 (SMS only)
+  // ⑦ 선생님용 — 가입 승인 완료 (SMS only)
+  teacher_approved: {
+    templateId: null,
+    sms: ({ teacherName }) =>
+      `[골든시니어스] ${teacherName} 선생님, 가입 심사가 완료되었습니다! 🎉\n이제 골든시니어스 플랫폼에서 견적 제출이 가능합니다.\n로그인 후 서비스를 시작해주세요.\nhttps://www.goldenseniors.co.kr/pages/login.html`,
+  },
+
+  // ⑧ 관리자용 — 선생님 신규 가입 신청 (SMS only)
   teacher_signup_admin: {
     templateId: null,
     sms: ({ teacherName, phone, area, license }) =>

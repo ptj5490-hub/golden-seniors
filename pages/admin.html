@@ -596,8 +596,23 @@ function statusLabel(s) {
 /* ── 승인 ── */
 async function approveTeacher(uid) {
   if (!confirm('이 전문가를 승인하시겠습니까?')) return;
+  const teacher = allTeachers.find(t => t.id === uid);
   await db.collection('users').doc(uid).update({ status: 'approved', approvedAt: firebase.firestore.FieldValue.serverTimestamp() });
-  showToast('✅ 전문가가 승인되었습니다.');
+
+  // 선생님에게 승인 SMS 발송
+  if (teacher?.phone) {
+    fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type:   'teacher_approved',
+        to:     teacher.phone,
+        params: { teacherName: teacher.name || '선생님' },
+      }),
+    }).catch(() => {});
+  }
+
+  showToast('✅ 전문가가 승인되었습니다. 선생님께 SMS를 발송했습니다.');
   await loadTeachers();
   updateStats();
 }

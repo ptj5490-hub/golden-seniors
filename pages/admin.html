@@ -479,22 +479,40 @@ async function loadAll() {
 
 /* ── 전문가 로드 ── */
 async function loadTeachers() {
-  const snap = await db.collection('users').where('role', '==', 'teacher').orderBy('createdAt', 'desc').get();
-  allTeachers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  try {
+    const snap = await db.collection('users').where('role', '==', 'teacher').orderBy('createdAt', 'desc').get();
+    allTeachers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch(e) {
+    const snap = await db.collection('users').where('role', '==', 'teacher').get();
+    allTeachers = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+  }
   renderTeachers();
 }
 
 /* ── 회원 로드 ── */
 async function loadMembers() {
-  const snap = await db.collection('users').orderBy('createdAt', 'desc').get();
-  allMembers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  try {
+    const snap = await db.collection('users').orderBy('createdAt', 'desc').get();
+    allMembers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch(e) {
+    const snap = await db.collection('users').get();
+    allMembers = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+  }
   renderMembers();
 }
 
 /* ── 견적 로드 ── */
 async function loadQuotes() {
-  const snap = await db.collection('quotes').orderBy('createdAt', 'desc').get();
-  allQuotes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  try {
+    const snap = await db.collection('quotes').orderBy('createdAt', 'desc').get();
+    allQuotes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch(e) {
+    const snap = await db.collection('quotes').get();
+    allQuotes = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+  }
   renderQuotes();
 }
 

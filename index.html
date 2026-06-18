@@ -1676,7 +1676,7 @@
       };
       const docRef = await _db.collection('quotes').add(quoteData);
 
-      _db.collection('users').where('role','==','teacher').where('approved','==',true).get()
+      _db.collection('users').where('role','==','teacher').where('status','==','approved').get()
         .then(snap => {
           snap.forEach(doc => {
             const t = doc.data();

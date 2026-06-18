@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>골든시니어스 선생님 사용 안내서</title>
+  <style>
+    :root {
+      --navy: #1B2B5E;
+      --gold: #C9A84C;
+      --gold-light: #F5E9C8;
+      --bg: #F8F9FC;
+      --white: #ffffff;
+      --gray: #6B7280;
+      --gray-light: #F3F4F6;
+      --text: #1F2937;
+      --green: #10B981;
+      --red: #EF4444;
+      --shadow: 0 2px 12px rgba(27,43,94,0.10);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); }
+
+    /* ── 헤더 ── */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #2d4a9e 100%);
+      color: white; padding: 48px 24px 36px; text-align: center;
+    }
+    .hero-logo { font-size: 13px; font-weight: 700; letter-spacing: 2px; opacity: 0.7; margin-bottom: 16px; text-transform: uppercase; }
+    .hero h1 { font-size: 26px; font-weight: 800; line-height: 1.35; margin-bottom: 10px; }
+    .hero p { font-size: 14px; opacity: 0.8; line-height: 1.6; }
+    .hero-badge {
+      display: inline-block; margin-top: 20px;
+      background: var(--gold); color: white; font-size: 12px; font-weight: 700;
+      padding: 6px 16px; border-radius: 20px; letter-spacing: 0.5px;
+    }
+
+    /* ── 목차 ── */
+    .toc {
+      background: white; margin: 20px 16px; border-radius: 16px;
+      box-shadow: var(--shadow); padding: 20px 20px 16px;
+    }
+    .toc-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 14px; letter-spacing: 0.5px; }
+    .toc-list { list-style: none; }
+    .toc-list li { margin-bottom: 8px; }
+    .toc-list a {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--text); font-size: 14px; font-weight: 500;
+      padding: 8px 10px; border-radius: 10px; transition: background 0.15s;
+    }
+    .toc-list a:hover { background: var(--gray-light); }
+    .toc-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--navy); color: white; font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    /* ── 섹션 ── */
+    .section { margin: 0 16px 24px; }
+    .section-header {
+      background: var(--navy); color: white;
+      border-radius: 16px 16px 0 0; padding: 18px 20px 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--gold); color: white; font-size: 14px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .section-header h2 { font-size: 17px; font-weight: 800; }
+    .section-header p { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+    .section-body {
+      background: white; border-radius: 0 0 16px 16px;
+      padding: 20px; box-shadow: var(--shadow);
+    }
+
+    /* ── 스텝 ── */
+    .step { display: flex; gap: 14px; margin-bottom: 24px; }
+    .step:last-child { margin-bottom: 0; }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--gold-light); color: var(--gold); font-size: 13px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      border: 2px solid var(--gold);
+    }
+    .step-content { flex: 1; }
+    .step-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; color: var(--navy); }
+    .step-desc { font-size: 13px; color: var(--gray); line-height: 1.7; }
+    .step-desc strong { color: var(--text); font-weight: 700; }
+
+    /* ── 모바일 목업 카드 ── */
+    .mockup {
+      background: var(--gray-light); border-radius: 14px;
+      padding: 16px; margin: 12px 0; position: relative;
+    }
+    .mockup-bar {
+      display: flex; align-items: center; gap: 6px; margin-bottom: 12px;
+    }
+    .mockup-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .mockup-url {
+      flex: 1; background: white; border-radius: 6px; padding: 4px 10px;
+      font-size: 11px; color: var(--gray); border: 1px solid #E5E7EB;
+    }
+    .phone-frame {
+      max-width: 280px; margin: 0 auto;
+      background: white; border-radius: 20px; padding: 16px;
+      border: 2px solid #E5E7EB; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .phone-header {
+      background: var(--navy); color: white; border-radius: 10px 10px 0 0;
+      padding: 10px 14px; font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: space-between;
+      margin: -16px -16px 12px;
+    }
+    .phone-content { }
+
+    /* ── 필드 목업 ── */
+    .mock-field { margin-bottom: 10px; }
+    .mock-label { font-size: 11px; color: var(--gray); font-weight: 600; margin-bottom: 3px; }
+    .mock-input {
+      background: var(--gray-light); border-radius: 8px; padding: 8px 12px;
+      font-size: 12px; color: var(--text); border: 1px solid #E5E7EB; width: 100%;
+    }
+    .mock-input.filled { background: #EEF2FF; border-color: var(--navy); color: var(--navy); }
+
+    /* ── 탭 목업 ── */
+    .mock-tabs {
+      display: flex; border-bottom: 2px solid #E5E7EB; margin-bottom: 12px;
+    }
+    .mock-tab {
+      flex: 1; text-align: center; padding: 8px 4px; font-size: 11px;
+      font-weight: 600; color: var(--gray); cursor: default;
+    }
+    .mock-tab.active {
+      color: var(--navy); border-bottom: 2px solid var(--navy); margin-bottom: -2px;
+    }
+
+    /* ── 카드 목업 ── */
+    .mock-card {
+      background: white; border: 1px solid #E5E7EB; border-radius: 12px;
+      padding: 12px; margin-bottom: 8px;
+    }
+    .mock-card-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+    .mock-card-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
+    .mock-tag {
+      background: var(--gold-light); color: #92680A; font-size: 11px;
+      font-weight: 600; padding: 2px 8px; border-radius: 6px;
+    }
+    .mock-tag.navy { background: #EEF2FF; color: var(--navy); }
+    .mock-tag.green { background: #D1FAE5; color: #065F46; }
+    .mock-btn {
+      display: inline-block; padding: 7px 14px; border-radius: 8px;
+      font-size: 12px; font-weight: 700; text-align: center; margin-top: 6px;
+    }
+    .mock-btn.gold { background: var(--gold); color: white; }
+    .mock-btn.navy { background: var(--navy); color: white; }
+    .mock-btn.outline { background: white; color: var(--navy); border: 1.5px solid var(--navy); }
+    .mock-btn.done { background: #E5E7EB; color: var(--gray); }
+
+    /* ── 스탯 바 ── */
+    .mock-stats {
+      display: flex; gap: 8px; margin-bottom: 12px;
+    }
+    .mock-stat {
+      flex: 1; background: var(--navy); color: white; border-radius: 10px;
+      padding: 8px 4px; text-align: center;
+    }
+    .mock-stat-num { font-size: 18px; font-weight: 800; }
+    .mock-stat-label { font-size: 10px; opacity: 0.75; margin-top: 2px; }
+
+    /* ── 알림 카드 ── */
+    .notice {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px 16px; border-radius: 12px; margin: 12px 0;
+    }
+    .notice.info { background: #EEF2FF; }
+    .notice.warn { background: #FEF3C7; }
+    .notice.success { background: #D1FAE5; }
+    .notice.tip { background: var(--gold-light); }
+    .notice-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .notice-text { font-size: 13px; line-height: 1.65; }
+    .notice-text strong { font-weight: 700; display: block; margin-bottom: 3px; }
+
+    /* ── 체크리스트 ── */
+    .checklist { list-style: none; margin: 10px 0; }
+    .checklist li {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 8px;
+    }
+    .check-icon { color: var(--green); font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── 구분선 ── */
+    .divider { height: 1px; background: #E5E7EB; margin: 18px 0; }
+
+    /* ── 배지 ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 6px;
+    }
+    .badge.pending { background: #FEF3C7; color: #92400E; }
+    .badge.approved { background: #D1FAE5; color: #065F46; }
+    .badge.rejected { background: #FEE2E2; color: #991B1B; }
+
+    /* ── URL 링크 ── */
+    .url-box {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--gray-light); border-radius: 10px; padding: 10px 14px; margin: 8px 0;
+    }
+    .url-icon { font-size: 16px; flex-shrink: 0; }
+    .url-text { font-size: 13px; font-weight: 700; color: var(--navy); }
+    .url-sub { font-size: 11px; color: var(--gray); margin-top: 1px; }
+
+    /* ── 플로우 ── */
+    .flow { display: flex; flex-direction: column; gap: 0; margin: 12px 0; }
+    .flow-item {
+      display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+      background: white; border: 1px solid #E5E7EB; border-radius: 10px; margin-bottom: 4px;
+    }
+    .flow-icon { font-size: 20px; flex-shrink: 0; }
+    .flow-text { font-size: 13px; }
+    .flow-text strong { font-weight: 700; color: var(--navy); display: block; }
+    .flow-arrow { text-align: center; color: var(--gray); font-size: 16px; margin: -2px 0; }
+
+    /* ── 푸터 ── */
+    .footer {
+      background: var(--navy); color: white; text-align: center;
+      padding: 32px 24px; margin-top: 16px;
+    }
+    .footer h3 { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+    .footer p { font-size: 13px; opacity: 0.75; line-height: 1.7; }
+    .footer-contact {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.12); border-radius: 10px;
+      padding: 10px 20px; margin-top: 16px; font-size: 14px; font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="hero">
+  <div class="hero-logo">Golden Seniors</div>
+  <h1>선생님 웹사이트<br>사용 안내서</h1>
+  <p>골든시니어스 플랫폼을 처음 사용하시는<br>선생님을 위한 단계별 가이드입니다.</p>
+  <div class="hero-badge">2026년 6월 기준</div>
+</div>
+
+<!-- 목차 -->
+<div class="toc">
+  <div class="toc-title">📋 목차</div>
+  <ul class="toc-list">
+    <li><a href="#step1"><span class="toc-num">1</span> 회원가입 신청하기</a></li>
+    <li><a href="#step2"><span class="toc-num">2</span> 심사 대기 중 안내</a></li>
+    <li><a href="#step3"><span class="toc-num">3</span> 승인 완료 후 로그인</a></li>
+    <li><a href="#step4"><span class="toc-num">4</span> 대시보드 — 새 견적 요청 확인</a></li>
+    <li><a href="#step5"><span class="toc-num">5</span> 고객에게 견적 제출하기</a></li>
+    <li><a href="#step6"><span class="toc-num">6</span> 매칭 완료 후 채팅하기</a></li>
+    <li><a href="#step7"><span class="toc-num">7</span> 내 프로필 관리하기</a></li>
+    <li><a href="#step8"><span class="toc-num">8</span> 카카오 알림 받기</a></li>
+  </ul>
+</div>
+
+<!-- 전체 흐름 -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">✦</div>
+    <div>
+      <h2>서비스 전체 흐름</h2>
+      <p>처음 가입부터 매칭까지 한눈에 확인하세요</p>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="flow">
+      <div class="flow-item">
+        <div class="flow-icon">✍️</div>
+        <div class="flow-text">
+          <strong>가입 신청</strong>
+          이름·자격증·경력·활동지역 입력 후 제출
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">
+        <div class="flow-icon">⏳</div>
+        <div class="flow-text">
+          <strong>관리자 심사</strong>
+          1~3일 내 검토 후 SMS 결과 통보
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">
+        <div class="flow-icon">🔔</div>
+        <div class="flow-text">
+          <strong>신규 고객 알림 수신</strong>
+          고객이 견적 신청하면 카카오 알림톡 발송
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">
+        <div class="flow-icon">📝</div>
+        <div class="flow-text">
+          <strong>견적 제출</strong>
+          대시보드에서 고객 요청 확인 후 견적 제출
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">
+        <div class="flow-icon">💳</div>
+        <div class="flow-text">
+          <strong>고객 결제 완료</strong>
+          고객이 마음에 드는 선생님 견적을 선택해 결제
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-item">
+        <div class="flow-icon">💬</div>
+        <div class="flow-text">
+          <strong>채팅 & 방문 서비스</strong>
+          채팅으로 일정 조율 후 방문 진행
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="section" id="step1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div>
+      <h2>회원가입 신청하기</h2>
+      <p>전문가로 등록하는 첫 번째 단계</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="url-box">
+      <div class="url-icon">🌐</div>
+      <div>
+        <div class="url-text">www.goldenseniors.co.kr</div>
+        <div class="url-sub">→ 상단 메뉴 "전문가 등록" 클릭</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="step">
+      <div class="step-num">①</div>
+      <div class="step-content">
+        <div class="step-title">기본 정보 입력</div>
+        <div class="step-desc">
+          <strong>이름(실명)</strong>과 <strong>휴대폰 번호</strong>를 입력해주세요.<br>
+          휴대폰 번호는 고객 알림 발송에 사용되니 정확히 입력해주세요.
+        </div>
+        <div class="mockup">
+          <div class="phone-frame">
+            <div class="mock-field">
+              <div class="mock-label">이름 (실명) *</div>
+              <div class="mock-input filled">홍길동</div>
+            </div>
+            <div class="mock-field">
+              <div class="mock-label">휴대폰 번호 *</div>
+              <div class="mock-input filled">010-1234-5678</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">②</div>
+      <div class="step-content">
+        <div class="step-title">전문 정보 입력</div>
+        <div class="step-desc">
+          <strong>전문분야</strong>를 선택(중복 가능)하고, <strong>보유 자격증</strong>과 <strong>경력 연수</strong>를 입력해주세요.<br>
+          <strong>자기소개</strong>는 최소 50자 이상 작성해주세요 — 고객이 선생님을 선택할 때 가장 많이 참고하는 항목이에요.
+        </div>
+        <div class="mockup">
+          <div class="phone-frame">
+            <div class="mock-field">
+              <div class="mock-label">전문분야 (중복 선택 가능)</div>
+              <div class="mock-card-row" style="margin-top:4px;">
+                <span class="mock-tag" style="background:#1B2B5E;color:white;">재활운동</span>
+                <span class="mock-tag" style="background:#1B2B5E;color:white;">낙상예방</span>
+                <span class="mock-tag">근력강화</span>
+                <span class="mock-tag">통증관리</span>
+                <span class="mock-tag">스트레칭</span>
+              </div>
+            </div>
+            <div class="mock-field">
+              <div class="mock-label">보유 자격증 *</div>
+              <div class="mock-input filled">물리치료사, 건강운동관리사</div>
+            </div>
+            <div class="mock-field">
+              <div class="mock-label">경력 연수 *</div>
+              <div class="mock-input filled">3~5년</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">③</div>
+      <div class="step-content">
+        <div class="step-title">활동 지역 선택</div>
+        <div class="step-desc">
+          방문 서비스가 가능한 <strong>서울 구(區)</strong>를 선택해주세요. 여러 개 선택 가능해요.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">④</div>
+      <div class="step-content">
+        <div class="step-title">계정 정보 입력 후 제출</div>
+        <div class="step-desc">
+          <strong>이메일</strong>과 <strong>비밀번호(6자리 이상)</strong>를 입력하고, 약관에 동의한 뒤 <strong>"가입 신청하기"</strong> 버튼을 눌러주세요.
+        </div>
+      </div>
+    </div>
+
+    <div class="notice info">
+      <div class="notice-icon">ℹ️</div>
+      <div class="notice-text">
+        <strong>가입 신청 완료 후</strong>
+        관리자에게 신청 내용이 자동으로 전달돼요. 별도로 연락하실 필요 없어요.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="section" id="step2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div>
+      <h2>심사 대기 중 안내</h2>
+      <p>가입 신청 후 승인 전까지</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="step">
+      <div class="step-num">①</div>
+      <div class="step-content">
+        <div class="step-title">심사 기간</div>
+        <div class="step-desc">
+          가입 신청 후 관리자가 내용을 검토해요. 보통 <strong>1~3일 이내</strong>에 결과가 문자로 발송돼요.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">②</div>
+      <div class="step-content">
+        <div class="step-title">로그인 시 화면</div>
+        <div class="step-desc">
+          심사 중에는 로그인하면 아래와 같은 안내 배너가 표시돼요. 견적 제출 기능은 승인 후에만 활성화돼요.
+        </div>
+        <div class="mockup">
+          <div class="phone-frame">
+            <div class="phone-header">
+              <span>골든시니어스</span>
+              <span class="badge pending">심사 중</span>
+            </div>
+            <div style="background:#FEF3C7;border-radius:10px;padding:12px;font-size:12px;color:#92400E;line-height:1.6;">
+              ⏳ <strong>심사가 진행 중이에요</strong><br>
+              현재 가입 신청서를 검토하고 있어요.<br>
+              승인 완료 시 SMS로 알려드릴게요.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">③</div>
+      <div class="step-content">
+        <div class="step-title">승인 완료 SMS 수신</div>
+        <div class="step-desc">
+          심사가 통과되면 가입 시 입력한 번호로 아래와 같은 문자가 발송돼요.
+        </div>
+        <div class="mockup">
+          <div class="phone-frame">
+            <div style="background:#F0FDF4;border-radius:10px;padding:12px;font-size:12px;color:#065F46;line-height:1.8;border:1px solid #BBF7D0;">
+              📱 <strong>[골든시니어스]</strong><br>
+              홍길동 선생님, 가입 심사가 완료되었습니다! 🎉<br>
+              이제 골든시니어스 플랫폼에서 견적 제출이 가능합니다.<br>
+              로그인 후 서비스를 시작해주세요.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="section" id="step3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div>
+      <h2>승인 완료 후 로그인</h2>
+      <p>대시보드 접속 방법</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="url-box">
+      <div class="url-icon">🔗</div>
+      <div>
+        <div class="url-text">www.goldenseniors.co.kr/pages/login.html</div>
+        <div class="url-sub">가입 시 등록한 이메일 + 비밀번호로 로그인</div>
+      </div>
+    </div>
+
+    <div class="notice success">
+      <div class="notice-icon">✅</div>
+      <div class="notice-text">
+        <strong>로그인 후 자동으로 선생님 대시보드로 이동해요</strong>
+        북마크 해두시면 편리하게 접속할 수 있어요.
+      </div>
+    </div>
+
+    <div class="notice tip">
+      <div class="notice-icon">💡</div>
+      <div class="notice-text">
+        <strong>홈 화면에 추가하기 (추천)</strong>
+        스마트폰 브라우저에서 "홈 화면에 추가"를 하면 앱처럼 빠르게 접속할 수 있어요.<br>
+        Safari: 공유 버튼 → 홈 화면에 추가<br>
+        Chrome: 메뉴(⋮) → 홈 화면에 추가
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="section" id="step4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div>
+      <h2>대시보드 — 새 견적 요청 확인</h2>
+      <p>고객이 신청한 요청 목록 보기</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="step">
+      <div class="step-num">①</div>
+      <div class="step-content">
+        <div class="step-title">대시보드 상단 통계</div>
+        <div class="step-desc">
+          로그인하면 가장 먼저 나의 활동 현황을 한눈에 볼 수 있어요.
+        </div>
+        <div class="mockup">
+          <div class="phone-frame">
+            <div class="phone-header">
+              <span>안녕하세요, 홍길동 선생님</span>
+              <span style="font-size:11px;opacity:0.8;">👋</span>
+            </div>
+            <div class="mock-stats">
+              <div class="mock-stat">
+                <div class="mock-stat-num">3</div>
+                <div class="mock-stat-label">새 요청</div>
+              </div>
+              <div class="mock-stat">
+                <div class="mock-stat-num">5</div>
+                <div class="mock-stat-label">견적 제출</div>
+              </div>
+              <div class="mock-stat">
+                <div class="mock-stat-num">2</div>
+                <div class="mock-stat-label">매칭 성공</div>
+              </div>
+              <div class="mock-stat">
+                <div class="mock-stat-num">4.8</div>
+                <div class="mock-stat-label">평균 평점</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">②</div>
+      <div class="step-content">
+        <div class="step-title">3개 탭 구성</div>
+        <div class="step-desc">
+          대시보드는 세 개의 탭으로 구성돼 있어요.
+        </div>
+        <div class="mockup">
+          <div class="phone-frame">
+            <div class="mock-tabs">
+              <div class="mock-tab active">📋 견적 요청</div>
+              <div class="mock-tab">✉️ 제출한 견적</div>
+              <div class="mock-tab">👤 내 프로필</div>
+            </div>
+            <div style="font-size:12px;color:var(--gray);text-align:center;padding:8px 0;">
+              현재 탭: 고객이 올린 새 견적 요청 목록
+            </div>
+          </div>
+        </div>
+        <ul class="checklist" style="margin-top:10px;">
+          <li><span class="check-icon">📋</span> <span><strong>견적 요청</strong> — 고객들이 올린 모든 새 요청 확인 (견적 미제출 건만 표시)</span></li>
+          <li><span class="check-icon">✉️</span> <span><strong>제출한 견적</strong> — 내가 이미 견적을 보낸 목록과 결과 확인</span></li>
+          <li><span class="check-icon">👤</span> <span><strong>내 프로필</strong> — 자기소개, 자격증, 경력 수정</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">③</div>
+      <div class="step-content">
+        <div class="step-title">견적 요청 카드 읽는 법</div>
+        <div class="step-desc">
+          각 카드에서 고객의 요청 내용을 확인할 수 있어요.
+        </div>
+        <div class="mockup">
+          <div class="phone-frame">
+            <div class="mock-card">
+              <div class="mock-card-title">무릎 통증 및 하체 근력 강화</div>
+              <div class="mock-card-row">
+                <span class="mock-tag navy">📍 서울 강동구</span>
+                <span class="mock-tag">주 2회</span>
+              </div>
+              <div style="font-size:11px;color:var(--gray);margin:4px 0;">💰 예산: 7만원대 &nbsp;|&nbsp; 👴 70대 남성</div>
+              <div style="font-size:11px;color:var(--gray);">🕐 오전 희망 &nbsp;|&nbsp; 📅 6월 중 시작 희망</div>
+              <div class="mock-btn gold" style="width:100%;margin-top:8px;text-align:center;">견적 제출하기</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="section" id="step5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div>
+      <h2>고객에게 견적 제출하기</h2>
+      <p>원하는 요청에 나의 제안을 보내는 방법</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="step">
+      <div class="step-num">①</div>
+      <div class="step-content">
+        <div class="step-title">"견적 제출하기" 버튼 클릭</div>
+        <div class="step-desc">
+          견적 요청 카드에서 <strong>"견적 제출하기"</strong> 버튼을 누르면 제출 창이 열려요.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">②</div>
+      <div class="step-content">
+        <div class="step-title">견적 내용 작성</div>
+        <div class="step-desc">
+          <strong>제안 금액</strong>과 <strong>메모(선택)</strong>를 입력해요. 고객에게 보여지는 내용이니 성의 있게 작성해주세요.
+        </div>
+        <div class="mockup">
+          <div class="phone-frame">
+            <div class="phone-header">
+              <span>견적 제출</span>
+            </div>
+            <div class="mock-field">
+              <div class="mock-label">제안 금액 (원) *</div>
+              <div class="mock-input filled">70,000</div>
+            </div>
+            <div class="mock-field">
+              <div class="mock-label">고객에게 전할 메시지 (선택)</div>
+              <div class="mock-input filled" style="height:60px;padding-top:8px;">안녕하세요! 무릎 재활 전문 물리치료사입니다. 강동구 인근 방문 가능하며...</div>
+            </div>
+            <div class="mock-btn gold" style="width:100%;text-align:center;margin-top:4px;">견적 제출</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">③</div>
+      <div class="step-content">
+        <div class="step-title">제출 완료 확인</div>
+        <div class="step-desc">
+          제출하면 해당 카드 버튼이 <strong>"✅ 제출 완료"</strong>로 바뀌어요. 고객에게 카카오 알림톡으로 견적 도착 알림이 자동 발송돼요.
+        </div>
+        <div class="mockup">
+          <div class="phone-frame">
+            <div class="mock-card">
+              <div class="mock-card-title">무릎 통증 및 하체 근력 강화</div>
+              <div class="mock-card-row">
+                <span class="mock-tag navy">📍 서울 강동구</span>
+              </div>
+              <div class="mock-btn done" style="width:100%;text-align:center;margin-top:8px;">✅ 제출 완료</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notice warn">
+      <div class="notice-icon">⚠️</div>
+      <div class="notice-text">
+        <strong>견적 중복 제출 불가</strong>
+        한 요청에 한 번만 견적을 제출할 수 있어요. 신중하게 금액과 메시지를 작성해주세요.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- STEP 6 -->
+<div class="section" id="step6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div>
+      <h2>매칭 완료 후 채팅하기</h2>
+      <p>고객이 결제하면 채팅이 열려요</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="step">
+      <div class="step-num">①</div>
+      <div class="step-content">
+        <div class="step-title">매칭 확정 알림 수신</div>
+        <div class="step-desc">
+          고객이 내 견적을 선택해 결제를 완료하면 <strong>카카오 알림톡</strong>으로 매칭 확정 알림이 와요.
+        </div>
+        <div class="mockup">
+          <div class="phone-frame">
+            <div style="background:#F0FDF4;border-radius:10px;padding:12px;font-size:12px;color:#065F46;line-height:1.8;border:1px solid #BBF7D0;">
+              📱 <strong>[골든 시니어스]</strong><br>
+              홍길동 선생님, 김철수님 결제 완료!<br>
+              금액: 70,000원<br>
+              채팅: goldenseniors.co.kr/pages/chat.html
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">②</div>
+      <div class="step-content">
+        <div class="step-title">"고객과 채팅하기" 버튼</div>
+        <div class="step-desc">
+          대시보드 <strong>"제출한 견적"</strong> 탭에서 매칭 완료된 건을 클릭하면 <strong>"💬 고객과 채팅하기"</strong> 버튼이 나타나요.
+        </div>
+        <div class="mockup">
+          <div class="phone-frame">
+            <div class="mock-card" style="border:2px solid #10B981;">
+              <div class="mock-card-title">무릎 통증 및 하체 근력 강화</div>
+              <div class="mock-card-row">
+                <span class="mock-tag green">✅ 매칭 완료</span>
+                <span class="mock-tag">70,000원</span>
+              </div>
+              <div class="mock-btn navy" style="width:100%;text-align:center;margin-top:8px;">💬 고객과 채팅하기</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">③</div>
+      <div class="step-content">
+        <div class="step-title">채팅으로 일정 조율</div>
+        <div class="step-desc">
+          채팅창에서 고객과 <strong>방문 날짜·시간</strong>을 조율하세요. 새 메시지가 오면 카카오 알림톡으로 알림이 발송돼요.
+        </div>
+      </div>
+    </div>
+
+    <div class="notice info">
+      <div class="notice-icon">ℹ️</div>
+      <div class="notice-text">
+        <strong>채팅 페이지 직접 접속</strong>
+        www.goldenseniors.co.kr/pages/chat.html
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- STEP 7 -->
+<div class="section" id="step7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div>
+      <h2>내 프로필 관리하기</h2>
+      <p>고객에게 보여지는 프로필을 최신 상태로 유지하세요</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="notice tip">
+      <div class="notice-icon">💡</div>
+      <div class="notice-text">
+        <strong>프로필이 잘 갖춰질수록 선택받을 확률이 높아져요!</strong>
+        사진, 자기소개, 자격증, 경력을 꼼꼼히 채워주세요.
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="step">
+      <div class="step-num">①</div>
+      <div class="step-content">
+        <div class="step-title">대시보드 "내 프로필" 탭</div>
+        <div class="step-desc">
+          대시보드 세 번째 탭에서 프로필을 수정할 수 있어요.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">②</div>
+      <div class="step-content">
+        <div class="step-title">수정 가능한 항목</div>
+        <ul class="checklist">
+          <li><span class="check-icon">✅</span> <span><strong>자기소개</strong> — 전문성과 케어 철학을 자유롭게 소개</span></li>
+          <li><span class="check-icon">✅</span> <span><strong>전문분야</strong> — 재활운동, 낙상예방, 근력강화 등 해당 분야 선택</span></li>
+          <li><span class="check-icon">✅</span> <span><strong>자격증</strong> — 여러 개 추가 가능 (이름 + 취득연도)</span></li>
+          <li><span class="check-icon">✅</span> <span><strong>학력</strong> — 학교명 + 전공 + 졸업연도</span></li>
+          <li><span class="check-icon">✅</span> <span><strong>경력</strong> — 기관명 + 직위 + 근무 기간</span></li>
+          <li><span class="check-icon">✅</span> <span><strong>활동 지역</strong> — 방문 가능한 구(區) 목록</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">③</div>
+      <div class="step-content">
+        <div class="step-title">저장하기</div>
+        <div class="step-desc">
+          수정 후 반드시 <strong>"저장하기"</strong> 버튼을 눌러야 변경 내용이 적용돼요.
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;">마이페이지에서도 프로필 수정 가능</div>
+    <div class="url-box">
+      <div class="url-icon">🔗</div>
+      <div>
+        <div class="url-text">www.goldenseniors.co.kr/pages/mypage.html</div>
+        <div class="url-sub">상세 프로필 및 계정 정보 관리</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- STEP 8 -->
+<div class="section" id="step8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div>
+      <h2>카카오 알림 받기</h2>
+      <p>중요한 순간을 놓치지 마세요</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="step">
+      <div class="step-num">①</div>
+      <div class="step-content">
+        <div class="step-title">알림이 오는 상황 3가지</div>
+        <ul class="checklist">
+          <li><span class="check-icon">🔔</span> <span><strong>새 견적 요청</strong> — 고객이 견적 신청 시 → 즉시 알림</span></li>
+          <li><span class="check-icon">💳</span> <span><strong>매칭 확정</strong> — 고객이 결제 완료 시 → 즉시 알림</span></li>
+          <li><span class="check-icon">💬</span> <span><strong>새 메시지</strong> — 고객이 채팅 메시지 발송 시 → 즉시 알림</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">②</div>
+      <div class="step-content">
+        <div class="step-title">알림이 안 온다면?</div>
+        <div class="step-desc">
+          가입 시 입력한 <strong>휴대폰 번호가 정확한지</strong> 확인해주세요. 번호 변경이 필요하면 마이페이지에서 수정하거나 관리자에게 문의해주세요.
+        </div>
+      </div>
+    </div>
+
+    <div class="notice warn">
+      <div class="notice-icon">📱</div>
+      <div class="notice-text">
+        <strong>카카오톡 수신 설정 확인</strong>
+        카카오톡 → 설정 → 알림 → 알림톡 수신이 켜져 있어야 해요.<br>
+        알림톡이 차단되어 있으면 SMS로 대체 발송돼요.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num">❓</div>
+    <div>
+      <h2>자주 묻는 질문</h2>
+      <p>궁금한 점을 미리 확인하세요</p>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div style="margin-bottom:18px;">
+      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;">Q. 수수료는 얼마인가요?</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.7;">플랫폼 수수료는 매칭 금액의 <strong>20%</strong>예요. 선생님께는 <strong>80%</strong>가 정산돼요. (원천징수 3.3% 별도)</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="margin-bottom:18px;">
+      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;">Q. 정산은 어떻게 되나요?</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.7;">현재는 <strong>수동 정산</strong> 방식으로 운영돼요. 매칭 완료 후 관리자가 개별 연락드려요. 추후 자동 정산 시스템이 도입될 예정이에요.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="margin-bottom:18px;">
+      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;">Q. 비밀번호를 잊어버렸어요</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.7;">로그인 페이지에서 <strong>"비밀번호 찾기"</strong>를 클릭하면 이메일로 재설정 링크가 발송돼요.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="margin-bottom:0;">
+      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;">Q. 활동 지역을 변경하고 싶어요</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.7;">대시보드 <strong>"내 프로필"</strong> 탭 또는 마이페이지에서 활동 지역을 언제든지 수정할 수 있어요.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 푸터 -->
+<div class="footer">
+  <h3>골든시니어스 고객센터</h3>
+  <p>사용 중 문제가 생기거나 궁금한 점이 있으시면<br>아래로 연락 주세요.</p>
+  <div class="footer-contact">📞 0507-1402-5490</div>
+  <p style="margin-top:12px;font-size:12px;opacity:0.6;">
+    운영시간: 평일 09:00 ~ 18:00<br>
+    이메일: goldenseniors@naver.com
+  </p>
+  <p style="margin-top:20px;font-size:11px;opacity:0.4;">© 2026 골든시니어스 (라이프앤듀어)</p>
+</div>
+
+</body>
+</html>

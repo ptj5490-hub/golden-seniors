@@ -954,20 +954,16 @@
       closeModal();
       alert('✅ 견적이 제출됐어요! 고객이 확인하면 연락이 갈 거예요.');
 
-      // 고객에게 카카오 알림톡 발송
-      if (quoteData.userId) {
+      // 고객에게 카카오 알림톡 발송 (견적 데이터에 저장된 phone 사용)
+      if (quoteData.phone) {
         try {
-          const customerSnap = await db.collection('users').doc(quoteData.userId).get();
-          if (customerSnap.exists) {
-            const customer = customerSnap.data();
-            notifyQuoteArrived(
-              customer.phone,
-              customer.name || '고객',
-              teacherData?.name || '선생님',
-              price,
-              selectedQuoteId
-            );
-          }
+          notifyQuoteArrived(
+            quoteData.phone,
+            quoteData.name || '고객',
+            teacherData?.name || '선생님',
+            price,
+            selectedQuoteId
+          );
         } catch(e) { console.warn('알림 발송 실패:', e); }
       }
 

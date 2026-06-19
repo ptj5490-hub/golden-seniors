@@ -223,28 +223,43 @@
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
 
-    /* ── 후기 입력 ── */
-    .review-entry {
-      display: flex; gap: 10px; align-items: flex-start;
+    /* ── 사진 업로드 ── */
+    .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 4px; }
+    .photo-slot {
+      aspect-ratio: 1; border-radius: 12px; overflow: hidden;
+      background: var(--gray-100); border: 2px dashed var(--gray-200);
+      cursor: pointer; position: relative; transition: border-color 0.2s;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .photo-slot:hover { border-color: var(--teal); }
+    .photo-slot.has-img { border-style: solid; border-color: var(--gray-200); }
+    .photo-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-add-icon { font-size: 28px; color: var(--gray-400); margin-bottom: 4px; }
+    .photo-add-text { font-size: 11px; color: var(--gray-400); font-weight: 600; }
+    .photo-remove {
+      position: absolute; top: 6px; right: 6px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(0,0,0,0.55); border: none; cursor: pointer;
+      color: white; font-size: 13px; display: none;
+      align-items: center; justify-content: center; line-height: 1;
+    }
+    .photo-slot.has-img .photo-remove { display: flex; }
+    .photo-uploading { opacity: 0.5; pointer-events: none; }
+
+    /* ── 고객 후기 (읽기 전용) ── */
+    .review-card {
       background: var(--gray-50); border-radius: 10px; padding: 14px;
       margin-bottom: 10px; border: 1.5px solid var(--gray-200);
     }
-    .review-entry-body { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-    .review-entry-row { display: flex; gap: 8px; }
-    .review-entry-row input { flex: 1; }
-    .review-stars { display: flex; gap: 4px; margin-bottom: 2px; }
-    .star-btn {
-      background: none; border: none; cursor: pointer;
-      font-size: 22px; line-height: 1; color: #D1D5DB; padding: 0;
-      transition: color 0.15s;
+    .review-card-top { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .review-stars-ro { color: #F59E0B; font-size: 14px; letter-spacing: 1px; }
+    .review-card-name { font-size: 12px; color: var(--gray-400); }
+    .review-card-text { font-size: 13px; color: var(--gray-600); line-height: 1.65; }
+    .review-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .review-tag {
+      font-size: 11px; background: var(--teal-light); color: var(--teal);
+      padding: 2px 8px; border-radius: 6px; font-weight: 600;
     }
-    .star-btn.on { color: #F59E0B; }
-    .review-entry-del {
-      background: none; border: none; cursor: pointer;
-      color: var(--gray-400); font-size: 20px; line-height: 1;
-      padding: 0 2px; flex-shrink: 0; margin-top: 2px;
-    }
-    .review-entry-del:hover { color: var(--red); }
 
     /* ── SNS 링크 ── */
     .sns-row {
@@ -421,7 +436,37 @@
       </div>
     </div>
 
-    <!-- 6. SNS / 포트폴리오 링크 -->
+    <!-- 6. 대표 사진 -->
+    <div class="section">
+      <div class="section-title">
+        <div class="s-bar"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        대표 사진
+      </div>
+      <p style="font-size:12px;color:var(--gray-400);margin-bottom:14px;">최대 3장 업로드 가능해요. 방문 서비스 현장 사진이나 프로필 사진을 올려주세요.</p>
+      <div class="photo-grid">
+        <div class="photo-slot" id="slot0" onclick="triggerUpload(0)">
+          <input type="file" id="fileInput0" accept="image/*" style="display:none" onchange="uploadPhoto(0,this)">
+          <div class="photo-add-icon">📷</div>
+          <div class="photo-add-text">사진 추가</div>
+          <button class="photo-remove" onclick="removePhoto(event,0)">×</button>
+        </div>
+        <div class="photo-slot" id="slot1" onclick="triggerUpload(1)">
+          <input type="file" id="fileInput1" accept="image/*" style="display:none" onchange="uploadPhoto(1,this)">
+          <div class="photo-add-icon">📷</div>
+          <div class="photo-add-text">사진 추가</div>
+          <button class="photo-remove" onclick="removePhoto(event,1)">×</button>
+        </div>
+        <div class="photo-slot" id="slot2" onclick="triggerUpload(2)">
+          <input type="file" id="fileInput2" accept="image/*" style="display:none" onchange="uploadPhoto(2,this)">
+          <div class="photo-add-icon">📷</div>
+          <div class="photo-add-text">사진 추가</div>
+          <button class="photo-remove" onclick="removePhoto(event,2)">×</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. SNS / 포트폴리오 링크 -->
     <div class="section">
       <div class="section-title">
         <div class="s-bar"></div>
@@ -430,35 +475,28 @@
       </div>
       <p style="font-size:12px;color:var(--gray-400);margin-bottom:16px;">입력한 링크는 공개 프로필에 표시돼요. 선택 사항이에요.</p>
       <div class="sns-row">
-        <div class="sns-icon insta">
-          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-        </div>
+        <div class="sns-icon insta"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
         <input type="url" id="inputInstagram" class="field-input" placeholder="https://instagram.com/your_id">
       </div>
       <div class="sns-row">
-        <div class="sns-icon youtube">
-          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>
-        </div>
+        <div class="sns-icon youtube"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
         <input type="url" id="inputYoutube" class="field-input" placeholder="https://youtube.com/@your_channel">
       </div>
       <div class="sns-row">
-        <div class="sns-icon blog">
-          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        </div>
+        <div class="sns-icon blog"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
         <input type="url" id="inputBlog" class="field-input" placeholder="https://blog.naver.com/your_id">
       </div>
     </div>
 
-    <!-- 7. 고객 후기 -->
+    <!-- 8. 고객 후기 (읽기 전용) -->
     <div class="section">
       <div class="section-title">
         <div class="s-bar"></div>
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         고객 후기
       </div>
-      <p style="font-size:12px;color:var(--gray-400);margin-bottom:16px;">카카오톡·전화로 받은 고객 후기를 직접 입력해주세요. 공개 프로필에 표시돼요.</p>
-      <div id="reviewEntries"></div>
-      <button class="btn-add-career" onclick="addReview()">+ 후기 추가</button>
+      <p style="font-size:12px;color:var(--gray-400);margin-bottom:14px;">고객이 직접 작성한 후기예요. 수정이나 삭제는 관리자에게 문의해주세요.</p>
+      <div id="reviewList"><p style="font-size:13px;color:var(--gray-400);text-align:center;padding:20px 0;">후기를 불러오는 중...</p></div>
     </div>
 
   </div><!-- /left-col -->
@@ -505,6 +543,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 <script>
   firebase.initializeApp({
     apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
@@ -517,8 +556,9 @@
 </script>
 
 <script>
-const auth = firebase.auth();
-const db   = firebase.firestore();
+const auth    = firebase.auth();
+const db      = firebase.firestore();
+const storage = firebase.storage();
 
 const SPECS = ['근골격계','뇌졸중','치매예방','낙상예방','심폐기능','파킨슨','수술 후 재활','보행훈련'];
 const AVATAR_COLORS = ['#0D4A38','#C4973A','#1A6B52','#16A34A','#2563EB','#7C3AED','#DC2626','#D97706','#0891B2','#374151'];
@@ -541,6 +581,7 @@ auth.onAuthStateChanged(async (user) => {
   buildAvatarGrid();
   buildSpecGrid();
   loadProfile(snap.data());
+  loadReviews(user.uid);
   document.getElementById('pvLink').href = `teacher.html?uid=${user.uid}`;
 });
 
@@ -678,9 +719,10 @@ function loadProfile(d) {
   document.getElementById('inputYoutube').value   = d.snsYoutube   || '';
   document.getElementById('inputBlog').value      = d.snsBlog      || '';
 
-  // 고객 후기
-  const reviews = Array.isArray(d.testimonials) ? d.testimonials : [];
-  reviews.forEach(r => addReview(r));
+  // 대표 사진
+  (d.photos || []).forEach((url, idx) => {
+    if (url && idx < 3) { photoUrls[idx] = url; setPhotoSlot(idx, url); }
+  });
 
   // 저장 시각
   if (d.profileUpdatedAt) {
@@ -762,7 +804,7 @@ async function saveProfile() {
     snsInstagram: document.getElementById('inputInstagram').value.trim(),
     snsYoutube:   document.getElementById('inputYoutube').value.trim(),
     snsBlog:      document.getElementById('inputBlog').value.trim(),
-    testimonials: collectReviews(),
+    photos:       photoUrls.filter(Boolean),
     profileUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
 
@@ -780,49 +822,104 @@ async function saveProfile() {
   }
 }
 
-/* ── 고객 후기 ── */
-let reviewCount = 0;
-function addReview(data = {}) {
-  reviewCount++;
-  const id = 'review_' + reviewCount;
-  const rating = data.rating || 5;
-  const div = document.createElement('div');
-  div.className = 'review-entry';
-  div.id = id;
-  div.innerHTML = `
-    <div class="review-entry-body">
-      <div class="review-stars" id="stars_${id}">
-        ${[1,2,3,4,5].map(n =>
-          `<button type="button" class="star-btn${n <= rating ? ' on' : ''}" data-n="${n}" onclick="setRating('${id}',${n})">★</button>`
-        ).join('')}
-      </div>
-      <div class="review-entry-row">
-        <input type="text" placeholder="고객명 (예: 이○○님, 70대 어머니)" value="${esc(data.name||'')}">
-        <input type="text" placeholder="서비스 날짜 (예: 2026.05)" value="${esc(data.date||'')}" style="max-width:120px">
-      </div>
-      <textarea rows="3" placeholder="후기 내용을 입력해주세요" style="width:100%;resize:vertical;padding:8px 10px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:inherit">${esc(data.content||'')}</textarea>
-    </div>
-    <button class="review-entry-del" onclick="document.getElementById('${id}').remove()">×</button>
-  `;
-  document.getElementById('reviewEntries').appendChild(div);
+/* ── 대표 사진 ── */
+const photoUrls = [null, null, null];
+
+function triggerUpload(idx) {
+  document.getElementById('fileInput' + idx).click();
 }
 
-function setRating(entryId, n) {
-  document.querySelectorAll(`#stars_${entryId} .star-btn`).forEach(btn => {
-    btn.classList.toggle('on', Number(btn.dataset.n) <= n);
-  });
+async function uploadPhoto(idx, input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('사진은 5MB 이하만 가능해요'); return; }
+
+  const slot = document.getElementById('slot' + idx);
+  slot.classList.add('photo-uploading');
+  showToast('📷 사진 업로드 중...');
+
+  try {
+    const ext  = file.name.split('.').pop();
+    const ref  = storage.ref(`teacher-photos/${currentUid}/${idx}.${ext}`);
+    await ref.put(file);
+    const url  = await ref.getDownloadURL();
+    photoUrls[idx] = url;
+    setPhotoSlot(idx, url);
+    showToast('✅ 사진이 업로드됐어요!');
+  } catch(e) {
+    showToast('❌ 업로드 실패: ' + e.message);
+  } finally {
+    slot.classList.remove('photo-uploading');
+    input.value = '';
+  }
 }
 
-function collectReviews() {
-  return [...document.querySelectorAll('#reviewEntries .review-entry')].map(el => {
-    const inputs = el.querySelectorAll('input');
-    const textarea = el.querySelector('textarea');
-    const rating = [...el.querySelectorAll('.star-btn.on')].length;
-    const name = inputs[0].value.trim();
-    const content = textarea.value.trim();
-    if (!name && !content) return null;
-    return { name, date: inputs[1].value.trim(), rating: rating || 5, content };
-  }).filter(Boolean);
+function setPhotoSlot(idx, url) {
+  const slot = document.getElementById('slot' + idx);
+  slot.classList.add('has-img');
+  slot.querySelector('.photo-add-icon').style.display = 'none';
+  slot.querySelector('.photo-add-text').style.display = 'none';
+  let img = slot.querySelector('img');
+  if (!img) {
+    img = document.createElement('img');
+    slot.insertBefore(img, slot.querySelector('.photo-remove'));
+  }
+  img.src = url;
+}
+
+function removePhoto(e, idx) {
+  e.stopPropagation();
+  photoUrls[idx] = null;
+  const slot = document.getElementById('slot' + idx);
+  slot.classList.remove('has-img');
+  const img = slot.querySelector('img');
+  if (img) img.remove();
+  slot.querySelector('.photo-add-icon').style.display = '';
+  slot.querySelector('.photo-add-text').style.display = '';
+}
+
+/* ── 고객 후기 로드 (읽기 전용) ── */
+async function loadReviews(uid) {
+  const list = document.getElementById('reviewList');
+  try {
+    const snap = await db.collection('reviews')
+      .where('teacherUid', '==', uid)
+      .orderBy('createdAt', 'desc')
+      .limit(10)
+      .get();
+    if (snap.empty) {
+      list.innerHTML = '<p style="font-size:13px;color:var(--gray-400);text-align:center;padding:20px 0;">아직 고객 후기가 없어요.<br>매칭 완료 후 고객이 직접 작성해요.</p>';
+      return;
+    }
+    list.innerHTML = snap.docs.map(d => {
+      const r = d.data();
+      const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
+      const tags  = (r.tags || []).map(t => `<span class="review-tag">${t}</span>`).join('');
+      const date  = r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleDateString('ko-KR', {year:'numeric',month:'long'}) : '';
+      return `
+        <div class="review-card">
+          <div class="review-card-top">
+            <span class="review-stars-ro">${stars}</span>
+            <span class="review-card-name">${r.authorName || '보호자님'} · ${date}</span>
+          </div>
+          ${r.content ? `<div class="review-card-text">${r.content}</div>` : ''}
+          ${tags ? `<div class="review-tags">${tags}</div>` : ''}
+        </div>`;
+    }).join('');
+  } catch(e) {
+    // orderBy 인덱스 없으면 단순 조회
+    try {
+      const snap2 = await db.collection('reviews').where('teacherUid', '==', uid).limit(10).get();
+      if (snap2.empty) { list.innerHTML = '<p style="font-size:13px;color:var(--gray-400);text-align:center;padding:20px 0;">아직 고객 후기가 없어요.</p>'; return; }
+      list.innerHTML = snap2.docs.map(d => {
+        const r = d.data();
+        const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
+        return `<div class="review-card"><div class="review-card-top"><span class="review-stars-ro">${stars}</span><span class="review-card-name">${r.authorName || '보호자님'}</span></div>${r.content ? `<div class="review-card-text">${r.content}</div>` : ''}</div>`;
+      }).join('');
+    } catch(e2) {
+      list.innerHTML = '<p style="font-size:13px;color:var(--gray-400);text-align:center;padding:20px 0;">후기를 불러올 수 없어요.</p>';
+    }
+  }
 }
 
 /* ── 유틸 ── */

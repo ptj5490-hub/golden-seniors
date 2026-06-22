@@ -759,7 +759,7 @@ function updatePreview() {
 
 /* ── 경력 데이터 수집 ── */
 function collectCareers() {
-  const entries = document.querySelectorAll('.career-entry');
+  const entries = document.querySelectorAll('#careerEntries .career-entry');
   const result = [];
   entries.forEach(el => {
     const inputs = el.querySelectorAll('input');
@@ -780,35 +780,34 @@ async function saveProfile() {
   saveBtn.disabled = true;
   saveBtn.textContent = '저장 중...';
 
-  const data = {
-    name,
-    avatar:        selectedAvatar,
-    phone:         document.getElementById('inputPhone').value.trim(),
-    tagline:       document.getElementById('inputTagline').value.trim(),
-    bio:           document.getElementById('inputBio').value.trim(),
-    specialties:   selectedSpecs,
-    careerList:    collectCareers(),
-    certifications: [...document.querySelectorAll('#certEntries .career-entry')].map(el => {
-      const inputs = el.querySelectorAll('input');
-      return { name: inputs[0].value.trim(), detail: inputs[1].value.trim() };
-    }).filter(c => c.name),
-    education: [...document.querySelectorAll('#eduEntries .career-entry')].map(el => {
-      const inputs = el.querySelectorAll('input');
-      return { school: inputs[0].value.trim(), detail: inputs[1].value.trim() };
-    }).filter(e => e.school),
-    price:         Number(document.getElementById('inputPrice').value) || null,
-    region:        document.getElementById('inputRegion').value.trim(),
-    availTime:     document.getElementById('inputAvailTime').value.trim(),
-    duration:      document.getElementById('inputDuration').value,
-    minVisit:      document.getElementById('inputMinVisit').value,
-    snsInstagram: document.getElementById('inputInstagram').value.trim(),
-    snsYoutube:   document.getElementById('inputYoutube').value.trim(),
-    snsBlog:      document.getElementById('inputBlog').value.trim(),
-    photos:       photoUrls.filter(Boolean),
-    profileUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-  };
-
   try {
+    const data = {
+      name,
+      avatar:        selectedAvatar,
+      phone:         document.getElementById('inputPhone').value.trim(),
+      tagline:       document.getElementById('inputTagline').value.trim(),
+      bio:           document.getElementById('inputBio').value.trim(),
+      specialties:   selectedSpecs,
+      careerList:    collectCareers(),
+      certifications: [...document.querySelectorAll('#certEntries .career-entry')].map(el => {
+        const inputs = el.querySelectorAll('input');
+        return { name: inputs[0].value.trim(), detail: inputs[1].value.trim() };
+      }).filter(c => c.name),
+      education: [...document.querySelectorAll('#eduEntries .career-entry')].map(el => {
+        const inputs = el.querySelectorAll('input');
+        return { school: inputs[0].value.trim(), detail: inputs[1].value.trim() };
+      }).filter(e => e.school),
+      price:         Number(document.getElementById('inputPrice').value) || null,
+      region:        document.getElementById('inputRegion').value.trim(),
+      availTime:     document.getElementById('inputAvailTime').value.trim(),
+      duration:      document.getElementById('inputDuration').value,
+      minVisit:      document.getElementById('inputMinVisit').value,
+      snsInstagram: document.getElementById('inputInstagram').value.trim(),
+      snsYoutube:   document.getElementById('inputYoutube').value.trim(),
+      snsBlog:      document.getElementById('inputBlog').value.trim(),
+      photos:       photoUrls.filter(Boolean),
+      profileUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    };
     await db.collection('users').doc(currentUid).update(data);
     const now = new Date();
     document.getElementById('saveStatus').textContent = '마지막 저장: ' + fmtDateTime(now);

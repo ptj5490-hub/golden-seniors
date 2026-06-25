@@ -831,14 +831,18 @@ function triggerUpload(idx) {
 async function uploadPhoto(idx, input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 5 * 1024 * 1024) { showToast('사진은 5MB 이하만 가능해요'); return; }
+  if (file.size > 10 * 1024 * 1024) {
+    alert('사진 용량이 너무 커요 (최대 10MB)\n현재 파일: ' + (file.size / 1024 / 1024).toFixed(1) + 'MB\n\n카메라 설정에서 사진 화질을 낮추거나\n다른 사진을 선택해주세요.');
+    input.value = '';
+    return;
+  }
 
   const slot = document.getElementById('slot' + idx);
   slot.classList.add('photo-uploading');
   showToast('📷 사진 업로드 중...');
 
   try {
-    const ext  = file.name.split('.').pop();
+    const ext  = file.name.split('.').pop().toLowerCase();
     const ref  = storage.ref(`teacher-photos/${currentUid}/${idx}.${ext}`);
     await ref.put(file);
     const url  = await ref.getDownloadURL();
@@ -846,7 +850,7 @@ async function uploadPhoto(idx, input) {
     setPhotoSlot(idx, url);
     showToast('✅ 사진이 업로드됐어요!');
   } catch(e) {
-    showToast('❌ 업로드 실패: ' + e.message);
+    alert('업로드 실패: ' + e.message + '\n\n잠시 후 다시 시도해주세요.');
   } finally {
     slot.classList.remove('photo-uploading');
     input.value = '';

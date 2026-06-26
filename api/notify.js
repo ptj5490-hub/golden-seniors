@@ -33,7 +33,16 @@ function sendSolapi(body) {
     const req = https.request(options, res => {
       let raw = '';
       res.on('data', d => raw += d);
-      res.on('end', () => resolve(JSON.parse(raw)));
+      res.on('end', () => {
+        let parsed;
+        try { parsed = JSON.parse(raw); } catch { parsed = { raw }; }
+        if (res.statusCode >= 400) {
+          console.error('[Solapi] 오류 응답:', res.statusCode, JSON.stringify(parsed));
+          reject(new Error(`Solapi ${res.statusCode}: ${parsed.errorCode || parsed.message || raw}`));
+        } else {
+          resolve(parsed);
+        }
+      });
     });
     req.on('error', reject);
     req.write(data);

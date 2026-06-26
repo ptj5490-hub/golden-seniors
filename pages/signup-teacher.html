@@ -494,7 +494,9 @@
           to:     '01082835490',
           params: { teacherName: name, phone, area: area || '미입력', license: license || '미입력' },
         }),
-      }).catch(() => {});
+      }).then(r => r.json()).then(r => {
+        if (!r.ok) console.error('[관리자 알림 실패]', r);
+      }).catch(e => console.error('[관리자 알림 오류]', e));
 
       // 5. 완료 페이지
       window.location.href = 'signup-teacher-done.html';

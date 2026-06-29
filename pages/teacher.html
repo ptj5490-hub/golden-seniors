@@ -547,7 +547,8 @@ async function renderProfile(d, matchedQuoteId, isPaid) {
   document.getElementById('statRating').textContent   = '★ ' + (d.rating   || '신규');
   document.getElementById('statVisits').textContent   = d.visitCount   ? d.visitCount + '회' : '신규';
   document.getElementById('statRebook').textContent   = d.rebookRate   ? d.rebookRate + '%'  : '-';
-  document.getElementById('statCareerYears').textContent = d.careerYears ? d.careerYears + '년' : '-';
+  const careerYears = d.careerYears || calcCareerYears(d.careerList);
+  document.getElementById('statCareerYears').textContent = careerYears ? careerYears + '년' : '-';
 
   // 활동 사진
   const photos = (d.photos || []).filter(Boolean);
@@ -662,9 +663,10 @@ async function renderProfile(d, matchedQuoteId, isPaid) {
     mobileCta.textContent = '💳 결제하기';
     mobileCta.href = payHref;
   } else {
-    // 일반 방문 → 견적 요청
-    ctaBtn.href    = `../index.html#quote`;
-    mobileCta.href = `../index.html#quote`;
+    // 일반 방문 → 견적 요청 (선생님 정보 파라미터로 전달)
+    const quoteHref = `../index.html?preferredTeacher=${encodeURIComponent(teacherUid)}&preferredTeacherName=${teacherNameEnc}#calc`;
+    ctaBtn.href    = quoteHref;
+    mobileCta.href = quoteHref;
   }
 
   // 화면 전환
@@ -726,6 +728,22 @@ function shareProfile() {
   } else {
     navigator.clipboard.writeText(url).then(() => showToast('📋 링크가 복사됐어요!')).catch(() => prompt('링크를 복사하세요:', url));
   }
+}
+
+function calcCareerYears(careerList) {
+  const now = new Date().getFullYear();
+  let minStart = Infinity, maxEnd = 0;
+  for (const c of (careerList || [])) {
+    const years = (c.period || '').match(/\d{4}/g);
+    if (!years) continue;
+    const start = parseInt(years[0]);
+    const isPresent = /현재|present|now/i.test(c.period);
+    const end = isPresent ? now : (years[1] ? parseInt(years[1]) : start);
+    if (start < minStart) minStart = start;
+    if (end > maxEnd) maxEnd = end;
+  }
+  if (minStart === Infinity) return null;
+  return Math.max(1, maxEnd - minStart);
 }
 
 function esc(str) {

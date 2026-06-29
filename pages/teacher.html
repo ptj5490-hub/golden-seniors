@@ -386,15 +386,6 @@
           <div id="reviewContent"></div>
         </div>
 
-        <!-- 잠금 오버레이 (JS로 제어) -->
-        <div class="pay-lock-overlay" id="payLockOverlay" style="display:none;">
-          <div class="pay-lock-box">
-            <div class="pay-lock-icon">🔒</div>
-            <div class="pay-lock-title">결제 후 전체 프로필 공개</div>
-            <div class="pay-lock-sub">경력 · 자격증 · 이용 후기는<br>결제 완료 후 확인할 수 있어요.</div>
-            <a id="payLockBtn" href="#" class="pay-lock-btn">💳 결제하고 전체 보기</a>
-          </div>
-        </div>
 
       </div>
 
@@ -656,42 +647,22 @@ async function renderProfile(d, matchedQuoteId, isPaid) {
   const payHref  = `payment.html?quoteId=${matchedQuoteId}&teacherUid=${teacherUid}&teacherName=${teacherNameEnc}&serviceName=${serviceEnc}`;
   const chatHref = `chat.html?chatId=${matchedQuoteId}&partnerUid=${teacherUid}&partnerName=${teacherNameEnc}&quoteTitle=${serviceEnc}&from=mypage`;
 
-  if (matchedQuoteId) {
-    // ── 이 선생님과 매칭된 고객 ──
+  if (matchedQuoteId && isPaid) {
+    // 결제 완료 → 채팅 버튼
     document.getElementById('selectedBanner').classList.add('show');
-
-    if (isPaid) {
-      // 결제 완료 → 전체 공개 + 채팅 버튼
-      ctaBtn.textContent = '💬 선생님과 채팅하기';
-      ctaBtn.href = chatHref;
-      mobileCta.textContent = '💬 채팅하기';
-      mobileCta.href = chatHref;
-    } else {
-      // 결제 전 → 하단 콘텐츠 잠금
-      const lockWrap    = document.getElementById('payLockWrap');
-      const lockOverlay = document.getElementById('payLockOverlay');
-      const lockBtn     = document.getElementById('payLockBtn');
-      lockWrap.style.position = 'relative';
-      lockWrap.querySelectorAll('.card').forEach(c => c.classList.add('pay-lock-blur'));
-      lockOverlay.style.display = 'flex';
-      if (lockBtn) lockBtn.href = payHref;
-
-      ctaBtn.textContent = '💳 결제하기';
-      ctaBtn.href = payHref;
-      ctaBtn.style.background = '#C4973A';
-      mobileCta.textContent = '💳 결제하기';
-      mobileCta.href = payHref;
-
-      // 채팅 버튼 추가
-      const ctaWrap   = ctaBtn.parentElement;
-      const chatBtnEl = document.createElement('a');
-      chatBtnEl.href  = chatHref;
-      chatBtnEl.style.cssText = 'display:block;width:100%;padding:14px;background:#0D4A38;color:white;border-radius:14px;font-size:16px;font-weight:800;text-align:center;text-decoration:none;margin-top:10px;';
-      chatBtnEl.textContent = '💬 선생님과 채팅하기';
-      ctaWrap.appendChild(chatBtnEl);
-    }
+    ctaBtn.textContent = '💬 선생님과 채팅하기';
+    ctaBtn.href = chatHref;
+    mobileCta.textContent = '💬 채팅하기';
+    mobileCta.href = chatHref;
+  } else if (matchedQuoteId) {
+    // 매칭됐지만 아직 결제 전 → 결제 버튼
+    document.getElementById('selectedBanner').classList.add('show');
+    ctaBtn.textContent = '💳 결제하기';
+    ctaBtn.href = payHref;
+    mobileCta.textContent = '💳 결제하기';
+    mobileCta.href = payHref;
   } else {
-    // ── 일반 방문 (매칭 없음) ──
+    // 일반 방문 → 견적 요청
     ctaBtn.href    = `../index.html#quote`;
     mobileCta.href = `../index.html#quote`;
   }

@@ -347,12 +347,6 @@
         </div>
       </div>
 
-      <!-- 활동 사진 -->
-      <div class="card" id="photosCard" style="display:none">
-        <div class="card-title">📸 활동 사진</div>
-        <div class="photo-gallery" id="photosGallery"></div>
-      </div>
-
       <!-- 소개글 -->
       <div class="card" id="bioCard" style="display:none">
         <div class="card-title">💬 선생님 소개</div>
@@ -363,6 +357,12 @@
       <div class="card" id="specCard" style="display:none">
         <div class="card-title">🎯 전문 분야</div>
         <div class="spec-tags" id="specTags"></div>
+      </div>
+
+      <!-- 활동 사진 -->
+      <div class="card" id="photosCard" style="display:none">
+        <div class="card-title">📸 활동 사진</div>
+        <div class="photo-gallery" id="photosGallery"></div>
       </div>
 
       <!-- 결제 잠금 영역 (경력 + 후기) -->
@@ -543,12 +543,27 @@ async function renderProfile(d, matchedQuoteId, isPaid) {
   if (certs.length > 0) badgeEl.innerHTML += `<span class="badge badge-navy">${esc(certs[0])}</span>`;
   badgeEl.innerHTML += `<span class="badge badge-green">✓ 골든 시니어스 인증</span>`;
 
-  // 통계 (샘플 — 추후 리뷰 집계로 대체 가능)
-  document.getElementById('statRating').textContent   = '★ ' + (d.rating   || '신규');
-  document.getElementById('statVisits').textContent   = d.visitCount   ? d.visitCount + '회' : '신규';
-  document.getElementById('statRebook').textContent   = d.rebookRate   ? d.rebookRate + '%'  : '-';
+  // 통계
+  document.getElementById('statRating').textContent = d.rating ? '★ ' + d.rating : '신규';
+  if (!d.rating) document.getElementById('statRating').style.color = 'var(--gray-400)';
+
+  if (d.visitCount) {
+    document.getElementById('statVisits').textContent = d.visitCount + '회';
+  } else {
+    document.getElementById('statVisits').textContent = '첫 방문';
+    document.getElementById('statVisits').style.fontSize = '14px';
+    document.getElementById('statVisits').style.color = 'var(--green)';
+  }
+
+  if (d.rebookRate) {
+    document.getElementById('statRebook').textContent = d.rebookRate + '%';
+  } else {
+    document.getElementById('statRebook').closest('.stat-box').style.display = 'none';
+  }
+
   const careerYears = d.careerYears || calcCareerYears(d.careerList);
   document.getElementById('statCareerYears').textContent = careerYears ? careerYears + '년' : '-';
+  if (!careerYears) document.getElementById('statCareerYears').closest('.stat-box').style.display = 'none';
 
   // 활동 사진
   const photos = (d.photos || []).filter(Boolean);

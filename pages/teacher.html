@@ -521,11 +521,13 @@ function showError() {
 async function renderProfile(d, matchedQuoteId, isPaid) {
   document.title = (d.name || '선생님') + ' 프로필 | 골든 시니어스';
 
-  // 아바타
+  // 아바타: URL > photos[0] > 컬러이니셜 > 이모지 순으로 폴백
   const avatarEl = document.getElementById('profileAvatar');
   const avatarVal = d.avatar || '';
-  if (avatarVal.startsWith('http')) {
-    avatarEl.innerHTML = `<img src="${avatarVal}" alt="${esc(d.name || '')} 선생님">`;
+  const firstPhoto = (d.photos || []).find(Boolean) || '';
+  const avatarImg = avatarVal.startsWith('http') ? avatarVal : firstPhoto;
+  if (avatarImg) {
+    avatarEl.innerHTML = `<img src="${avatarImg}" alt="${esc(d.name || '')} 선생님">`;
   } else if (avatarVal.startsWith('#')) {
     avatarEl.style.background = avatarVal;
     avatarEl.textContent = (d.name || '선')[0];

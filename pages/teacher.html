@@ -515,7 +515,10 @@ async function renderProfile(d, matchedQuoteId, isPaid) {
 
   // 뱃지
   const badgeEl = document.getElementById('profileBadges');
-  const certs   = (d.certifications || '').split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+  const certsRaw = d.certifications || [];
+  const certs = Array.isArray(certsRaw)
+    ? certsRaw.map(c => typeof c === 'object' ? c.name : c).filter(Boolean)
+    : String(certsRaw).split(/[,\n]/).map(s => s.trim()).filter(Boolean);
   if (certs.length > 0) badgeEl.innerHTML += `<span class="badge badge-navy">${esc(certs[0])}</span>`;
   badgeEl.innerHTML += `<span class="badge badge-green">✓ 골든 시니어스 인증</span>`;
 
@@ -566,7 +569,7 @@ async function renderProfile(d, matchedQuoteId, isPaid) {
 
   // 자격증
   const certList = document.getElementById('certList');
-  const certItems = (d.certifications || '').split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+  const certItems = certs;
   if (certItems.length > 0) {
     certList.innerHTML = certItems.map(c => `
       <div class="cert-item">

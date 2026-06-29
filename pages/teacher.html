@@ -126,7 +126,17 @@
       background: linear-gradient(135deg, #FFE09A, #F5A623);
       display: flex; align-items: center; justify-content: center;
       font-size: 44px; border: 3px solid var(--gold);
+      overflow: hidden; position: relative;
     }
+    .profile-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 17px; }
+
+    /* ── 활동 사진 갤러리 ── */
+    .photo-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .photo-gallery-item {
+      aspect-ratio: 4/3; border-radius: 12px; overflow: hidden;
+      background: var(--gray-100);
+    }
+    .photo-gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .profile-info { flex: 1; }
     .profile-name { font-size: 24px; font-weight: 900; color: var(--navy); margin-bottom: 6px; }
     .profile-spec { font-size: 14px; color: var(--gray-600); margin-bottom: 12px; line-height: 1.6; }
@@ -337,6 +347,12 @@
         </div>
       </div>
 
+      <!-- 활동 사진 -->
+      <div class="card" id="photosCard" style="display:none">
+        <div class="card-title">📸 활동 사진</div>
+        <div class="photo-gallery" id="photosGallery"></div>
+      </div>
+
       <!-- 소개글 -->
       <div class="card" id="bioCard" style="display:none">
         <div class="card-title">💬 선생님 소개</div>
@@ -506,7 +522,19 @@ async function renderProfile(d, matchedQuoteId, isPaid) {
   document.title = (d.name || '선생님') + ' 프로필 | 골든 시니어스';
 
   // 아바타
-  document.getElementById('profileAvatar').textContent = d.avatar || '👨‍⚕️';
+  const avatarEl = document.getElementById('profileAvatar');
+  const avatarVal = d.avatar || '';
+  if (avatarVal.startsWith('http')) {
+    avatarEl.innerHTML = `<img src="${avatarVal}" alt="${esc(d.name || '')} 선생님">`;
+  } else if (avatarVal.startsWith('#')) {
+    avatarEl.style.background = avatarVal;
+    avatarEl.textContent = (d.name || '선')[0];
+    avatarEl.style.fontSize = '36px';
+    avatarEl.style.color = 'white';
+    avatarEl.style.fontWeight = '900';
+  } else {
+    avatarEl.textContent = avatarVal || '👨‍⚕️';
+  }
 
   // 이름 · 전문분야
   document.getElementById('profileName').textContent = (d.name || '-') + ' 선생님';
@@ -527,6 +555,15 @@ async function renderProfile(d, matchedQuoteId, isPaid) {
   document.getElementById('statVisits').textContent   = d.visitCount   ? d.visitCount + '회' : '신규';
   document.getElementById('statRebook').textContent   = d.rebookRate   ? d.rebookRate + '%'  : '-';
   document.getElementById('statCareerYears').textContent = d.careerYears ? d.careerYears + '년' : '-';
+
+  // 활동 사진
+  const photos = (d.photos || []).filter(Boolean);
+  if (photos.length > 0) {
+    document.getElementById('photosGallery').innerHTML = photos.map(url =>
+      `<div class="photo-gallery-item"><img src="${url}" alt="활동 사진" loading="lazy"></div>`
+    ).join('');
+    document.getElementById('photosCard').style.display = 'block';
+  }
 
   // 소개글
   if (d.bio) {

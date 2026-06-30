@@ -212,6 +212,35 @@
     .btn-save:hover { background: var(--gold-dark); }
     .btn-save:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
 
+    /* ── 커리큘럼 ── */
+    .curriculum-step {
+      display: flex; gap: 14px; padding: 16px 0;
+      border-bottom: 1px solid var(--gray-200); align-items: flex-start;
+    }
+    .curriculum-step:last-child { border-bottom: none; }
+    .curriculum-step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--teal); color: white;
+      font-size: 12px; font-weight: 900;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
+    }
+    .curriculum-step-fields { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .curriculum-step-fields input  { padding: 9px 12px; font-size: 13px; }
+    .curriculum-step-fields textarea { padding: 9px 12px; font-size: 13px; resize: vertical; min-height: 64px; }
+    .curriculum-add-btn {
+      margin-top: 12px; width: 100%; padding: 10px;
+      background: var(--teal-light); color: var(--teal);
+      border: 1.5px dashed var(--teal); border-radius: 10px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .curriculum-add-btn:hover { background: var(--teal-pale); }
+    .curriculum-del-btn {
+      width: 28px; height: 28px; border-radius: 8px; border: none;
+      background: var(--gray-100); color: var(--gray-400);
+      font-size: 16px; cursor: pointer; flex-shrink: 0; margin-top: 2px;
+    }
+    .curriculum-del-btn:hover { background: #FEE2E2; color: #EF4444; }
+
     /* ── 토스트 ── */
     .toast {
       position: fixed; bottom: 80px; left: 50%;
@@ -488,7 +517,19 @@
       </div>
     </div>
 
-    <!-- 8. 고객 후기 (읽기 전용) -->
+    <!-- 8. 수업 진행 방식 -->
+    <div class="section">
+      <div class="section-title">
+        <div class="s-bar"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        수업 진행 방식
+      </div>
+      <p style="font-size:12px;color:var(--gray-400);margin-bottom:16px;">방문 재활 수업이 어떻게 진행되는지 단계별로 알려주세요. 고객이 "어떤 선생님인지" 파악하는 데 큰 도움이 돼요.</p>
+      <div id="curriculumEntries"></div>
+      <button class="curriculum-add-btn" onclick="addCurriculumStep()">+ 단계 추가</button>
+    </div>
+
+    <!-- 9. 고객 후기 (읽기 전용) -->
     <div class="section">
       <div class="section-title">
         <div class="s-bar"></div>
@@ -681,6 +722,44 @@ function addEdu(data = {}) {
   document.getElementById('eduEntries').appendChild(div);
 }
 
+/* ── 커리큘럼 단계 추가 ── */
+let curriculumCount = 0;
+function addCurriculumStep(data = {}) {
+  if (document.querySelectorAll('#curriculumEntries .curriculum-step').length >= 5) {
+    showToast('최대 5단계까지 추가할 수 있어요'); return;
+  }
+  curriculumCount++;
+  const id = 'curr_' + curriculumCount;
+  const stepNum = document.querySelectorAll('#curriculumEntries .curriculum-step').length + 1;
+  const div = document.createElement('div');
+  div.className = 'curriculum-step';
+  div.id = id;
+  div.innerHTML = `
+    <div class="curriculum-step-num">${stepNum}</div>
+    <div class="curriculum-step-fields">
+      <input type="text" placeholder="단계 제목 (예: 초기 평가 및 목표 설정)" value="${esc(data.title || '')}">
+      <textarea placeholder="이 단계에서 어떤 활동을 하는지 설명해주세요 (예: 어르신의 현재 근력·균형 상태를 평가하고 3개월 목표를 함께 세워요)">${esc(data.desc || '')}</textarea>
+    </div>
+    <button class="curriculum-del-btn" onclick="removeCurriculumStep('${id}')">×</button>
+  `;
+  document.getElementById('curriculumEntries').appendChild(div);
+}
+
+function removeCurriculumStep(id) {
+  document.getElementById(id).remove();
+  // 번호 재정렬
+  document.querySelectorAll('#curriculumEntries .curriculum-step-num').forEach((el, i) => {
+    el.textContent = i + 1;
+  });
+}
+
+function collectCurriculum() {
+  return [...document.querySelectorAll('#curriculumEntries .curriculum-step')].map(el => ({
+    title: el.querySelector('input').value.trim(),
+    desc:  el.querySelector('textarea').value.trim(),
+  })).filter(c => c.title);
+}
+
 /* ── 프로필 로드 ── */
 function loadProfile(d) {
   selectAvatar(d.avatar || '#0D4A38');
@@ -712,6 +791,11 @@ function loadProfile(d) {
     d.careerList.forEach(c => addCareer(c));
   } else {
     addCareer(); // 빈 폼 1개
+  }
+
+  // 커리큘럼
+  if (d.curriculum && d.curriculum.length > 0) {
+    d.curriculum.forEach(c => addCurriculumStep(c));
   }
 
   // SNS 링크
@@ -806,6 +890,7 @@ async function saveProfile() {
       snsYoutube:   document.getElementById('inputYoutube').value.trim(),
       snsBlog:      document.getElementById('inputBlog').value.trim(),
       photos:       photoUrls.filter(Boolean),
+      curriculum:   collectCurriculum(),
       profileUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
     await db.collection('users').doc(currentUid).update(data);

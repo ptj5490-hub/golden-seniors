@@ -7,5 +7,10 @@
 </head>
 <body>
   <!-- 결제 및 정산 관리 페이지 -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
+  }
+</script>
 </body>
 </html>

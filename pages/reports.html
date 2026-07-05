@@ -7,5 +7,10 @@
 </head>
 <body>
   <!-- 통계 및 리포트 페이지 -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
+  }
+</script>
 </body>
 </html>

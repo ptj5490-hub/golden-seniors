@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>골든 시니어스 — 전문 방문 재활운동 서비스</title>
   <meta name="description" content="집에서 받는 1:1 맞춤 재활운동. 검증된 전문가가 직접 방문합니다.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0D4A38">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="골든시니어스">
+  <link rel="apple-touch-icon" href="/images/icons/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
@@ -1947,6 +1953,11 @@
     toast.textContent = '🎉 가입을 환영해요! 견적을 신청해보세요.';
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 4000);
+  }
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
   }
 </script>
 </body>

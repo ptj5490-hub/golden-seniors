@@ -1277,10 +1277,14 @@
                 <option>기타</option>
               </select>
             </div>
-            <div style="background:var(--teal-light);border-radius:var(--radius-sm);padding:14px 16px;font-size:13px;color:var(--teal-mid);line-height:1.7;margin-bottom:4px;display:flex;align-items:flex-start;gap:8px;">
+            <div style="background:var(--teal-light);border-radius:var(--radius-sm);padding:14px 16px;font-size:13px;color:var(--teal-mid);line-height:1.7;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               입력하신 정보는 전문가 매칭 목적으로만 사용되며 제3자에게 제공되지 않습니다.
             </div>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-600);margin-bottom:16px;cursor:pointer;">
+              <input type="checkbox" id="a-privacy-agree" style="width:17px;height:17px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;">
+              <span>[필수] <a href="pages/privacy.html" target="_blank" style="color:var(--teal);font-weight:700;text-decoration:underline;">개인정보 처리방침</a>에 동의합니다</span>
+            </label>
             <div class="a-btn-row">
               <button class="a-btn-prev" onclick="aNext(2)">← 이전</button>
               <button class="a-submit-btn a-submit" onclick="aSubmit()">견적 요청 등록하기 →</button>
@@ -1678,6 +1682,9 @@
     const phoneVal = document.getElementById('a-phone').value.trim();
     if (!nameVal)  { alert('이름을 입력해주세요.'); return; }
     if (!phoneVal) { alert('연락처를 입력해주세요.'); return; }
+    if (!document.getElementById('a-privacy-agree').checked) {
+      alert('개인정보 처리방침에 동의해주세요.'); return;
+    }
 
     const condition  = document.getElementById('a-condition').value || '';
     const region     = document.getElementById('a-region').value    || '';

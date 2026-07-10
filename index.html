@@ -200,24 +200,35 @@
        HERO
     ════════════════════════════════ */
     .hero {
-      background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 60%, var(--teal-mid) 100%);
+      background: url('/images/gallery/hero.jpg') center 25% / cover no-repeat;
       padding: 80px 0 72px;
       position: relative; overflow: hidden;
     }
     .hero::before {
       content: '';
-      position: absolute; top: -80px; right: -80px;
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(196,151,58,0.15) 0%, transparent 70%);
-      border-radius: 50%;
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(8,51,40,0.91) 0%, rgba(13,74,56,0.83) 55%, rgba(26,107,82,0.70) 100%);
+      z-index: 0;
     }
     .hero::after {
       content: '';
       position: absolute; bottom: -60px; left: -60px;
       width: 300px; height: 300px;
-      background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
-      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+      border-radius: 50%; z-index: 0;
     }
+
+    /* 히어로 입장 애니메이션 */
+    @keyframes heroFadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-badge   { animation: heroFadeUp 0.65s ease 0.15s both; }
+    .hero-title   { animation: heroFadeUp 0.70s ease 0.35s both; }
+    .hero-desc    { animation: heroFadeUp 0.70s ease 0.55s both; }
+    .hero-buttons { animation: heroFadeUp 0.70s ease 0.72s both; }
+    .hero-trust   { animation: heroFadeUp 0.70s ease 0.90s both; }
+    .hero-card    { animation: heroFadeUp 0.80s ease 0.50s both; }
     .hero-inner {
       position: relative; z-index: 1;
       display: grid; grid-template-columns: 1fr 420px; gap: 60px;
@@ -725,6 +736,62 @@
     .footer-info { line-height: 1.9; }
 
     /* ════════════════════════════════
+       GALLERY
+    ════════════════════════════════ */
+    .gallery-section {
+      background: var(--gray-900);
+      padding: 88px 0;
+    }
+    .gallery-section .section-tag {
+      background: rgba(196,151,58,0.18);
+      color: #F5D78E;
+    }
+    .gallery-section .section-title { color: var(--white); }
+    .gallery-section .section-sub   { color: rgba(255,255,255,0.6); }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: 320px 260px;
+      gap: 10px;
+      margin-top: 48px;
+    }
+    .gallery-item {
+      overflow: hidden;
+      border-radius: var(--radius-md);
+      position: relative;
+    }
+    .gallery-item:first-child { grid-column: span 2; }
+    .gallery-item img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center 30%;
+      display: block;
+      transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .gallery-item:hover img { transform: scale(1.06); }
+    .gallery-item::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.25) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .gallery-item:hover::after { opacity: 1; }
+
+    /* ════════════════════════════════
+       SCROLL ANIMATIONS
+    ════════════════════════════════ */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(38px);
+      transition: opacity 0.70s cubic-bezier(0.22,1,0.36,1),
+                  transform 0.70s cubic-bezier(0.22,1,0.36,1);
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ════════════════════════════════
        RESPONSIVE — 태블릿 (900px)
     ════════════════════════════════ */
     @media (max-width: 900px) {
@@ -792,6 +859,9 @@
       /* 후기 */
       .reviews-grid { grid-template-columns: 1fr; }
 
+      /* 갤러리 */
+      .gallery-grid { grid-template-rows: 260px 200px; gap: 8px; }
+
       /* 푸터 */
       .footer-inner  { grid-template-columns: 1fr 1fr; gap: 28px; }
       .footer-bottom { flex-direction: column; text-align: center; }
@@ -830,6 +900,14 @@
 
       /* 전문가 */
       .experts-grid { grid-template-columns: 1fr; }
+
+      /* 갤러리 */
+      .gallery-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+      }
+      .gallery-item:first-child { grid-column: span 1; }
+      .gallery-item { height: 240px; }
 
       /* 폼 카드 */
       .a-card      { padding: 20px 16px; }
@@ -1038,6 +1116,34 @@
         </div>
         <div class="why-title">매칭 후 채팅으로 소통</div>
         <div class="why-desc">결제 완료 후 전담 채팅방이 열립니다. 선생님과 직접 소통해 방문 일정, 특이사항을 편리하게 조율하세요.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ GALLERY ══ -->
+<section class="gallery-section">
+  <div class="container">
+    <div class="center">
+      <div class="section-tag">서비스 현장</div>
+      <h2 class="section-title">전문가가 직접 찾아갑니다</h2>
+      <p class="section-sub">어르신 자택에서 이루어지는 1:1 맞춤 재활운동 현장입니다.</p>
+    </div>
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="/images/gallery/gallery-3.jpg" alt="방문 재활운동 현장 — 자연광 스트레칭">
+      </div>
+      <div class="gallery-item">
+        <img src="/images/gallery/gallery-1.jpg" alt="방문 재활운동 현장 — 보행 재활">
+      </div>
+      <div class="gallery-item">
+        <img src="/images/gallery/gallery-2.jpg" alt="방문 재활운동 현장 — 밴드 운동">
+      </div>
+      <div class="gallery-item">
+        <img src="/images/gallery/gallery-4.jpg" alt="방문 재활운동 현장 — 바닥 운동">
+      </div>
+      <div class="gallery-item">
+        <img src="/images/gallery/gallery-5.jpg" alt="방문 재활운동 현장 — 맞춤 운동">
       </div>
     </div>
   </div>
@@ -1954,6 +2060,45 @@
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 4000);
   }
+</script>
+<script>
+  // 스크롤 애니메이션
+  (function () {
+    const targets = [
+      '.why-card', '.how-step', '.gallery-item',
+      '.expert-card', '.review-card', '.faq-item',
+      '.stat-item', '.why-grid', '.how-steps',
+      '.gallery-section .section-tag', '.gallery-section .section-title', '.gallery-section .section-sub',
+    ];
+
+    const allEls = [];
+    targets.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        el.classList.add('fade-up');
+        allEls.push(el);
+      });
+    });
+
+    // 같은 부모 내 형제들에게 stagger delay
+    const parents = new Set(allEls.map(el => el.parentElement));
+    parents.forEach(parent => {
+      const children = allEls.filter(el => el.parentElement === parent);
+      children.forEach((el, i) => {
+        el.style.transitionDelay = (i * 0.10) + 's';
+      });
+    });
+
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.10, rootMargin: '0px 0px -40px 0px' });
+
+    allEls.forEach(el => io.observe(el));
+  })();
 </script>
 <script>
   if ('serviceWorker' in navigator) {

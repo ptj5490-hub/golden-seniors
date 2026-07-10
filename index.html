@@ -207,7 +207,7 @@
     .hero::before {
       content: '';
       position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(8,51,40,0.91) 0%, rgba(13,74,56,0.83) 55%, rgba(26,107,82,0.70) 100%);
+      background: linear-gradient(135deg, rgba(8,51,40,0.84) 0%, rgba(13,74,56,0.75) 55%, rgba(26,107,82,0.60) 100%);
       z-index: 0;
     }
     .hero::after {
@@ -750,8 +750,8 @@
     .gallery-section .section-sub   { color: rgba(255,255,255,0.6); }
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: 320px 260px;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 370px 370px;
       gap: 10px;
       margin-top: 48px;
     }
@@ -760,18 +760,19 @@
       border-radius: var(--radius-md);
       position: relative;
     }
-    .gallery-item:first-child { grid-column: span 2; }
+    /* 첫 번째 사진: 왼쪽 전체 높이 (2행 차지) */
+    .gallery-item:first-child { grid-row: span 2; }
     .gallery-item img {
       width: 100%; height: 100%;
       object-fit: cover; object-position: center 30%;
       display: block;
       transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
     }
-    .gallery-item:hover img { transform: scale(1.06); }
+    .gallery-item:hover img { transform: scale(1.05); }
     .gallery-item::after {
       content: '';
       position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.25) 0%, transparent 60%);
+      background: linear-gradient(to top, rgba(0,0,0,0.20) 0%, transparent 55%);
       opacity: 0;
       transition: opacity 0.4s ease;
     }
@@ -860,7 +861,7 @@
       .reviews-grid { grid-template-columns: 1fr; }
 
       /* 갤러리 */
-      .gallery-grid { grid-template-rows: 260px 200px; gap: 8px; }
+      .gallery-grid { grid-template-rows: 300px 300px; gap: 8px; }
 
       /* 푸터 */
       .footer-inner  { grid-template-columns: 1fr 1fr; gap: 28px; }
@@ -903,11 +904,15 @@
 
       /* 갤러리 */
       .gallery-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: none;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 220px 220px 220px;
       }
-      .gallery-item:first-child { grid-column: span 1; }
-      .gallery-item { height: 240px; }
+      .gallery-item:first-child {
+        grid-row: span 1;
+        grid-column: span 2;
+        height: 260px;
+      }
+      .gallery-item { height: 220px; }
 
       /* 폼 카드 */
       .a-card      { padding: 20px 16px; }
@@ -1130,20 +1135,23 @@
       <p class="section-sub">어르신 자택에서 이루어지는 1:1 맞춤 재활운동 현장입니다.</p>
     </div>
     <div class="gallery-grid">
+      <!-- 첫 번째 (왼쪽 전체 높이): 채광 좋고 가장 임팩트 있는 사진 -->
       <div class="gallery-item">
-        <img src="/images/gallery/gallery-3.jpg" alt="방문 재활운동 현장 — 자연광 스트레칭">
+        <img src="/images/gallery/gallery-4.jpg" alt="방문 재활운동 현장" style="object-position: center 45%;">
+      </div>
+      <!-- 오른쪽 상단 2칸 -->
+      <div class="gallery-item">
+        <img src="/images/gallery/gallery-3.jpg" alt="방문 재활운동 현장" style="object-position: center 18%;">
       </div>
       <div class="gallery-item">
-        <img src="/images/gallery/gallery-1.jpg" alt="방문 재활운동 현장 — 보행 재활">
+        <img src="/images/gallery/gallery-5.jpg" alt="방문 재활운동 현장" style="object-position: center 28%;">
+      </div>
+      <!-- 오른쪽 하단 2칸 -->
+      <div class="gallery-item">
+        <img src="/images/gallery/gallery-2.jpg" alt="방문 재활운동 현장" style="object-position: center 22%;">
       </div>
       <div class="gallery-item">
-        <img src="/images/gallery/gallery-2.jpg" alt="방문 재활운동 현장 — 밴드 운동">
-      </div>
-      <div class="gallery-item">
-        <img src="/images/gallery/gallery-4.jpg" alt="방문 재활운동 현장 — 바닥 운동">
-      </div>
-      <div class="gallery-item">
-        <img src="/images/gallery/gallery-5.jpg" alt="방문 재활운동 현장 — 맞춤 운동">
+        <img src="/images/gallery/gallery-1.jpg" alt="방문 재활운동 현장" style="object-position: center 30%;">
       </div>
     </div>
   </div>

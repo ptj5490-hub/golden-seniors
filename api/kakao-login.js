@@ -54,19 +54,28 @@ module.exports = async function handler(req, res) {
   }
 
   const kakaoId    = String(kakaoUser.id);
-  const uid        = `kakao_${kakaoId}`;
+  let uid          = `kakao_${kakaoId}`;
   const kakaoName  = kakaoUser.kakao_account?.profile?.nickname
                    || kakaoUser.properties?.nickname
                    || '카카오회원';
   const syntheticEmail = `kakao_${kakaoId}@golden-seniors.internal`;
 
+  // 이메일 기준으로 먼저 조회한다 — 예전 방식(카카오ID로 비밀번호를 계산하던 방식)으로
+  // 이미 가입한 계정은 uid가 kakao_${kakaoId}가 아니라 Firebase가 임의로 부여한 값이라,
+  // uid로만 찾으면 "새 계정"으로 착각해 같은 이메일로 또 만들려다 충돌이 난다.
   let isNewUser = false;
   try {
-    await admin.auth().getUser(uid);
+    const existing = await admin.auth().getUserByEmail(syntheticEmail);
+    uid = existing.uid;
   } catch (e) {
     if (e.code === 'auth/user-not-found') {
-      await admin.auth().createUser({ uid, email: syntheticEmail, displayName: kakaoName });
-      isNewUser = true;
+      try {
+        await admin.auth().createUser({ uid, email: syntheticEmail, displayName: kakaoName });
+        isNewUser = true;
+      } catch (createErr) {
+        console.error('[kakao-login] 사용자 생성 오류:', createErr);
+        return res.status(500).json({ error: '로그인 처리 중 오류가 발생했어요.' });
+      }
     } else {
       console.error('[kakao-login] 사용자 조회 오류:', e);
       return res.status(500).json({ error: '로그인 처리 중 오류가 발생했어요.' });

@@ -439,6 +439,9 @@
     Kakao.Auth.authorize({
       redirectUri: KAKAO_REDIRECT,
       scope: 'profile_nickname',
+      // 모바일에서 카카오톡 앱으로 전환되는 "간편로그인"은 iOS 사파리에서 앱↔브라우저
+      // 전환 중 리다이렉트가 끊기는 경우가 있어 끔 — 항상 카카오계정 웹 로그인으로만 진행
+      throughTalk: false,
     });
   };
 </script>

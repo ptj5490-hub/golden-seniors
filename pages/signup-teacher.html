@@ -491,13 +491,13 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
-      // 4. 관리자 SMS 알림
+      // 4. 관리자 SMS 알림 (수신 번호는 서버 환경변수 ADMIN_PHONE으로 고정 — 클라이언트엔 노출 안 함)
+      const idToken = await cred.user.getIdToken();
       fetch('/api/notify', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
         body: JSON.stringify({
           type:   'teacher_signup_admin',
-          to:     '01082835490',
           params: { teacherName: name, phone, area: area || '미입력', license: license || '미입력' },
         }),
       }).then(r => r.json()).then(r => {

@@ -7,9 +7,14 @@ const SITE_URL   = 'https://golden-seniors.vercel.app';
 window.sendNotify = async function(type, phone, params) {
   if (!phone) return;
   try {
+    // /api/notify는 로그인(익명 로그인 포함)된 사용자만 호출할 수 있어서 토큰을 항상 확보해둔다
+    let user = firebase.auth().currentUser;
+    if (!user) user = (await firebase.auth().signInAnonymously()).user;
+    const idToken = await user.getIdToken();
+
     await fetch(NOTIFY_URL, {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
       body:    JSON.stringify({ type, to: phone, params }),
     });
   } catch(e) {

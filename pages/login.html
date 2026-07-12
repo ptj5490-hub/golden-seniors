@@ -396,32 +396,30 @@
       }
 
       const accessToken = tokenData.access_token;
-      Kakao.Auth.setAccessToken(accessToken);
 
-      // 2단계: 사용자 정보 가져오기 (SDK v2 - Promise 방식)
-      const user = await Kakao.API.request({ url: '/v2/user/me' });
-
-      const kakaoId   = String(user.id);
-      const kakaoName = user.kakao_account?.profile?.nickname
-                      || user.properties?.nickname
-                      || '카카오회원';
-      const syntheticEmail    = `kakao_${kakaoId}@golden-seniors.internal`;
-      const syntheticPassword = `kakao_${kakaoId}_gs_pw!`;
-
-      // 3단계: Firebase 로그인 시도 (기존 계정 있으면 로그인, 없으면 회원가입)
+      // 2단계: 우리 서버가 카카오 액세스 토큰을 직접 검증하고 Firebase 커스텀 토큰을 발급
+      // (카카오ID로 비밀번호를 계산하던 기존 방식은 카카오ID만 알면 로그인이 가능한 취약점이 있어 제거함)
       isLoggingIn = true;
-      try {
-        const cred = await auth.signInWithEmailAndPassword(syntheticEmail, syntheticPassword);
+      const authRes  = await fetch('/api/kakao-login', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ accessToken }),
+      });
+      const authData = await authRes.json();
+      if (!authRes.ok || !authData.ok) {
+        throw new Error(authData.error || '카카오 로그인 처리에 실패했어요.');
+      }
+
+      // 3단계: 발급받은 커스텀 토큰으로 Firebase 로그인
+      const cred = await auth.signInWithCustomToken(authData.customToken);
+
+      if (authData.isNewUser) {
+        // 신규 카카오 유저 → 회원가입 페이지로 (이미 인증된 상태라 비밀번호 등 민감정보를 URL에 담지 않음)
+        const params = new URLSearchParams({ kakao: '1', kakaoName: authData.kakaoName });
+        location.href = `signup.html?${params.toString()}`;
+      } else {
         const snap = await db.collection('users').doc(cred.user.uid).get();
         redirectByRole(snap.exists ? snap.data().role : 'customer');
-      } catch (loginErr) {
-        if (loginErr.code === 'auth/user-not-found' || loginErr.code === 'auth/invalid-credential') {
-          // 신규 카카오 유저 → 회원가입 페이지로
-          const params = new URLSearchParams({ kakaoId, kakaoName, syntheticEmail, syntheticPassword });
-          location.href = `signup.html?${params.toString()}`;
-        } else {
-          throw loginErr;
-        }
       }
     } catch(e) {
       isLoggingIn = false;

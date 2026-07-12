@@ -607,9 +607,10 @@ async function approveTeacher(uid) {
 
   // 선생님에게 승인 SMS 발송
   if (teacher?.phone) {
+    const idToken = await auth.currentUser.getIdToken();
     fetch('/api/notify', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
       body: JSON.stringify({
         type:   'teacher_approved',
         to:     teacher.phone,

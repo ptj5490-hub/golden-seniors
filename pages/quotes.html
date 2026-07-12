@@ -354,6 +354,12 @@
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
+  function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[c]));
+  }
+
   const params  = new URLSearchParams(location.search);
   const quoteId = params.get('quoteId') || '';
 
@@ -472,7 +478,7 @@
       q.budget ? q.budget + '원' : null,
       q.frequency
     ].filter(Boolean);
-    const html = tags.map(t => `<span class="request-tag">${t}</span>`).join('');
+    const html = tags.map(t => `<span class="request-tag">${escapeHtml(t)}</span>`).join('');
     document.getElementById('requestTags').innerHTML = html || '<span class="request-tag">조건 없음</span>';
   }
 
@@ -500,32 +506,33 @@
         <div class="q-avatar ${avatarCls}">${avatarEmoji}</div>
         <div class="q-info">
           <div class="q-name-row">
-            <span class="q-name">${name} 선생님</span>
-            ${license ? `<span class="q-license">${license}</span>` : ''}
+            <span class="q-name">${escapeHtml(name)} 선생님</span>
+            ${license ? `<span class="q-license">${escapeHtml(license)}</span>` : ''}
           </div>
-          ${spec ? `<div class="q-spec">${spec}</div>` : ''}
+          ${spec ? `<div class="q-spec">${escapeHtml(spec)}</div>` : ''}
           <div class="q-stats">
-            ${exp ? `<div class="q-stat">경력 <strong>${exp}</strong></div>` : ''}
-            ${teacher.visitCount ? `<div class="q-stat">방문 <strong>${teacher.visitCount}회</strong></div>` : ''}
-            ${teacher.rebookRate ? `<div class="q-stat">재예약 <strong>${teacher.rebookRate}%</strong></div>` : ''}
+            ${exp ? `<div class="q-stat">경력 <strong>${escapeHtml(exp)}</strong></div>` : ''}
+            ${teacher.visitCount ? `<div class="q-stat">방문 <strong>${escapeHtml(teacher.visitCount)}회</strong></div>` : ''}
+            ${teacher.rebookRate ? `<div class="q-stat">재예약 <strong>${escapeHtml(teacher.rebookRate)}%</strong></div>` : ''}
           </div>
         </div>
       </div>
       <div class="trust-badges">
-        ${license ? `<span class="trust-badge cert">📜 ${license}</span>` : ''}
+        ${license ? `<span class="trust-badge cert">📜 ${escapeHtml(license)}</span>` : ''}
         ${teacher.verified ? `<span class="trust-badge safe">✅ 신원인증</span>` : ''}
         ${teacher.hasInsurance ? `<span class="trust-badge ins">🛡️ 배상보험 가입</span>` : ''}
       </div>
       <div class="quote-price">
-        <span class="price-main">${priceStr}</span>
+        <span class="price-main">${escapeHtml(priceStr)}</span>
         <span class="price-unit">/ 1회 방문</span>
         ${isLowest ? `<span class="price-badge lowest">💚 최저가</span>` : ''}
         ${isBest ? `<span class="price-badge popular">🔥 추천</span>` : ''}
       </div>
-      ${msg ? `<div class="quote-msg">"${msg}"</div>` : ''}
+      ${msg ? `<div class="quote-msg">"${escapeHtml(msg)}"</div>` : ''}
       <div class="quote-actions">
         <button class="btn-select ${isBest ? 'gold-btn' : ''}"
-          onclick="openModal('${tq.teacherUid}','${name}','${priceStr}','${avatarEmoji}')">
+          data-teacher-uid="${escapeHtml(tq.teacherUid)}" data-name="${escapeHtml(name)}" data-price="${escapeHtml(priceStr)}" data-avatar="${escapeHtml(avatarEmoji)}"
+          onclick="openModal(this.dataset.teacherUid, this.dataset.name, this.dataset.price, this.dataset.avatar)">
           🔓 선택하면 프로필 공개
         </button>
       </div>

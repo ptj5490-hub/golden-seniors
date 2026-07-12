@@ -1,8 +1,11 @@
 // Vercel 서버리스 함수 — 카카오 알림톡 발송 (Solapi)
-// 환경변수 설정 필요: SOLAPI_API_KEY, SOLAPI_API_SECRET, SOLAPI_SENDER, KAKAO_CHANNEL_ID
+// 환경변수 설정 필요: SOLAPI_API_KEY, SOLAPI_API_SECRET, SOLAPI_SENDER, KAKAO_CHANNEL_ID, ADMIN_PHONE
+// 인증 없이 누구나 호출해 임의 번호로 문자를 보낼 수 있던 문제를 막기 위해 Firebase 로그인
+// 사용자만 호출할 수 있도록 하고(익명 로그인 포함), 사용자당 발송 빈도도 제한한다.
 
 const https = require('https');
 const crypto = require('crypto');
+const { admin, db } = require('./_firebaseAdmin');
 
 // ── Solapi 인증 헤더 생성 ──
 function makeAuthHeader(apiKey, apiSecret) {
@@ -152,6 +155,29 @@ const TEMPLATES = {
   },
 };
 
+// 관리자에게만 가는 알림 — 수신 번호를 클라이언트가 아닌 서버 환경변수로 고정한다
+// (대표님 개인 번호가 클라이언트 코드에 그대로 노출되는 걸 막기 위함)
+const ADMIN_ONLY_TYPES = new Set(['teacher_signup_admin']);
+
+// ── 사용자당 발송 빈도 제한 (1시간에 30건) ──
+async function isRateLimited(uid) {
+  const ref = db.collection('notify_rate_limits').doc(uid);
+  const windowSec = 3600;
+  const maxCount = 30;
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const now = Math.floor(Date.now() / 1000);
+    const data = snap.exists ? snap.data() : { windowStart: now, count: 0 };
+    if (now - data.windowStart > windowSec) {
+      tx.set(ref, { windowStart: now, count: 1 });
+      return false;
+    }
+    if (data.count >= maxCount) return true;
+    tx.set(ref, { windowStart: data.windowStart, count: data.count + 1 });
+    return false;
+  });
+}
+
 // ── 메인 핸들러 ──
 module.exports = async function handler(req, res) {
   // CORS
@@ -160,20 +186,43 @@ module.exports = async function handler(req, res) {
   if (allowed.includes(origin)) res.setHeader('Access-Control-Allow-Origin', origin);
   // legacy single-value header removed — replaced above
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { type, to, params } = req.body;
+  // ── 인증 확인: 로그인(익명 로그인 포함)된 사용자만 호출 가능 ──
+  const authHeader = req.headers.authorization || '';
+  const idToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (!idToken) return res.status(401).json({ error: '로그인이 필요해요.' });
 
-  if (!type || !to || !params) {
-    return res.status(400).json({ error: '필수 파라미터 누락' });
+  let uid;
+  try {
+    uid = (await admin.auth().verifyIdToken(idToken)).uid;
+  } catch (e) {
+    return res.status(401).json({ error: '인증 확인에 실패했어요.' });
   }
 
+  try {
+    if (await isRateLimited(uid)) {
+      return res.status(429).json({ error: '잠시 후 다시 시도해주세요.' });
+    }
+  } catch (e) {
+    console.error('[notify] 레이트리밋 확인 오류:', e);
+  }
+
+  const { type, params } = req.body;
   const template = TEMPLATES[type];
   if (!template) {
     return res.status(400).json({ error: `알 수 없는 알림 유형: ${type}` });
   }
+
+  // 관리자 전용 알림은 클라이언트가 보낸 수신번호를 무시하고 서버 설정값을 사용
+  const to = ADMIN_ONLY_TYPES.has(type) ? process.env.ADMIN_PHONE : req.body.to;
+
+  if (!to || !params) {
+    return res.status(400).json({ error: '필수 파라미터 누락' });
+  }
+
   if (!template.templateId) {
     // 템플릿 미설정 시 SMS 폴백으로 발송
     const phone = String(to).replace(/[^0-9]/g, '');

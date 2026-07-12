@@ -649,6 +649,12 @@
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
+  function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[c]));
+  }
+
   let currentUser = null;
   let teacherData = null;
   let selectedQuoteId = null;
@@ -826,7 +832,8 @@
           const date = q.createdAt ? new Date(q.createdAt.seconds * 1000).toLocaleDateString('ko-KR') : '';
           const won  = q.status === 'won';
           const chatBtn = won ? `
-            <button onclick="goToChat('${q.quoteId}','${(q.condition||'').replace(/'/g,'')}','${(q.region||'').replace(/'/g,'')}')"
+            <button data-quote-id="${escapeHtml(q.quoteId)}" data-condition="${escapeHtml(q.condition)}" data-region="${escapeHtml(q.region)}"
+              onclick="goToChat(this.dataset.quoteId, this.dataset.condition, this.dataset.region)"
               style="margin-top:10px;padding:8px 18px;background:var(--navy);color:white;border:none;
                      border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">
               💬 고객과 채팅하기
@@ -836,17 +843,17 @@
                onclick="toggleSentDetail(this)">
             <div class="request-top">
               <div>
-                <div class="request-title">${q.condition || '재활운동'} · ${q.region || ''}</div>
-                <div class="request-meta">${date} 제출 · 제안금액: ${q.price || '-'}</div>
+                <div class="request-title">${escapeHtml(q.condition) || '재활운동'} · ${escapeHtml(q.region) || ''}</div>
+                <div class="request-meta">${date} 제출 · 제안금액: ${escapeHtml(q.price) || '-'}</div>
               </div>
               <span class="badge ${won ? 'badge-sent' : 'badge-new'}">${won ? '매칭 성공!' : '검토 중'}</span>
             </div>
             <div class="sent-detail" style="display:none;margin-top:12px;border-top:1px solid var(--gray-200);padding-top:12px;">
               <div style="font-size:12px;font-weight:700;color:var(--gray-400);margin-bottom:6px;">📋 제출한 견적 내용</div>
-              <div style="font-size:13px;color:var(--gray-600);line-height:1.6;white-space:pre-line;">${q.message || '(내용 없음)'}</div>
-              ${q.schedule ? `<div style="font-size:12px;color:var(--gray-600);margin-top:6px;">📅 일정: ${q.schedule}</div>` : ''}
-              ${q.plan ? `<div style="font-size:12px;color:var(--gray-600);margin-top:4px;">📝 계획: ${q.plan}</div>` : ''}
-              <div style="font-size:13px;font-weight:800;color:var(--navy);margin-top:8px;">💰 제안 금액: ${q.price || '-'}</div>
+              <div style="font-size:13px;color:var(--gray-600);line-height:1.6;white-space:pre-line;">${escapeHtml(q.message) || '(내용 없음)'}</div>
+              ${q.schedule ? `<div style="font-size:12px;color:var(--gray-600);margin-top:6px;">📅 일정: ${escapeHtml(q.schedule)}</div>` : ''}
+              ${q.plan ? `<div style="font-size:12px;color:var(--gray-600);margin-top:4px;">📝 계획: ${escapeHtml(q.plan)}</div>` : ''}
+              <div style="font-size:13px;font-weight:800;color:var(--navy);margin-top:8px;">💰 제안 금액: ${escapeHtml(q.price) || '-'}</div>
             </div>
             ${won ? `<div style="font-size:12px;color:var(--green);font-weight:700;margin-top:8px;display:flex;align-items:center;gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>고객이 선생님을 선택했어요!</div>` : ''}
             ${chatBtn}
@@ -879,15 +886,15 @@
     <div class="request-card">
       <div class="request-top">
         <div>
-          <div class="request-title">${r.condition || '재활운동 신청'} · ${r.region || '지역 미입력'}</div>
-          <div class="request-meta">${date} · 예산: ${r.budget || '협의'}</div>
+          <div class="request-title">${escapeHtml(r.condition) || '재활운동 신청'} · ${escapeHtml(r.region) || '지역 미입력'}</div>
+          <div class="request-meta">${date} · 예산: ${escapeHtml(r.budget) || '협의'}</div>
         </div>
         <span class="badge ${isSent ? 'badge-sent' : 'badge-new'}">${isSent ? '제출 완료' : '새 요청'}</span>
       </div>
       <div class="request-tags">
-        ${tags.map(t => `<span class="tag">${t}</span>`).join('')}
-        ${r.budget ? `<span class="tag tag-budget">💰 ${r.budget}</span>` : ''}
-        ${r.freq   ? `<span class="tag">${r.freq}</span>` : ''}
+        ${tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}
+        ${r.budget ? `<span class="tag tag-budget">💰 ${escapeHtml(r.budget)}</span>` : ''}
+        ${r.freq   ? `<span class="tag">${escapeHtml(r.freq)}</span>` : ''}
       </div>
       <div class="request-footer">
         <span class="timer">
@@ -896,7 +903,8 @@
         </span>
         <button class="btn-quote ${isSent ? 'sent' : ''}"
           ${isSent || isPending ? 'disabled' : ''}
-          onclick="openModal('${r.id}', '${(r.condition || '').replace(/'/g,'')}', '${(r.region || '').replace(/'/g,'')}')">
+          data-quote-id="${escapeHtml(r.id)}" data-condition="${escapeHtml(r.condition)}" data-region="${escapeHtml(r.region)}"
+          onclick="openModal(this.dataset.quoteId, this.dataset.condition, this.dataset.region)">
           ${isSent ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 제출 완료` : isPending ? '심사 후 제출 가능' : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> 견적 작성`}
         </button>
       </div>

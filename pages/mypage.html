@@ -441,6 +441,12 @@
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
+  function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[c]));
+  }
+
   let currentUser = null;
 
   // ── 인증 확인 ──
@@ -542,15 +548,15 @@
     <div class="quote-card">
       <div class="quote-card-top">
         <div>
-          <div class="quote-title">${q.condition || '재활운동 신청'} · ${q.region || '지역 미입력'}</div>
+          <div class="quote-title">${escapeHtml(q.condition) || '재활운동 신청'} · ${escapeHtml(q.region) || '지역 미입력'}</div>
           <div class="quote-meta">${date} 신청</div>
         </div>
         <span class="badge ${st.cls}">${st.label}</span>
       </div>
       <div class="quote-tags">
-        ${tags.map(t => `<span class="tag">${t}</span>`).join('')}
-        ${q.ageGroup ? `<span class="tag">${q.ageGroup}</span>` : ''}
-        ${q.mobility ? `<span class="tag">${q.mobility}</span>` : ''}
+        ${tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}
+        ${q.ageGroup ? `<span class="tag">${escapeHtml(q.ageGroup)}</span>` : ''}
+        ${q.mobility ? `<span class="tag">${escapeHtml(q.mobility)}</span>` : ''}
       </div>
       <div class="quote-footer">
         <span class="quote-id">#${q.id.substring(0,8).toUpperCase()}</span>

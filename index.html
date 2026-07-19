@@ -1472,7 +1472,7 @@
       <!-- JS로 Firestore에서 동적 로드 -->
     </div>
     <div class="experts-more">
-      <a href="pages/teachers.html" class="btn-outline">전문가 전체 보기 →</a>
+      <a href="#calc" class="btn-outline">전문가 찾기 →</a>
     </div>
   </div>
 </section>
@@ -1990,9 +1990,10 @@
         const license = d.license || d.qualifications || '';
         const career = d.careerYears || 0;
 
-        const avatarBg = d.photoURL ? '' : `background:${color}`;
-        const avatarContent = d.photoURL
-          ? `<img src="${d.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="${d.name}">`
+        const photoUrl = (d.photos || []).find(Boolean) || '';
+        const avatarBg = photoUrl ? '' : `background:${color}`;
+        const avatarContent = photoUrl
+          ? `<img src="${photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="${d.name}">`
           : _PERSON_SVG('white');
 
         const html = `

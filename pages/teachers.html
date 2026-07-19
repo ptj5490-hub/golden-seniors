@@ -335,6 +335,7 @@
     const uid    = t.id;
     const d      = t;
     const color  = avatarColor(uid);
+    const photoUrl = (d.photos || []).find(Boolean) || '';
     const rating = d.rating > 0 ? d.rating.toFixed(2) : '신규';
     const visits = d.visitCount || 0;
     const reviews= d.reviewCount || 0;
@@ -364,8 +365,8 @@
         ${bestBadge}
         <div class="t-avatar-wrap">
           <div class="t-avatar" style="background:${color}">
-            ${d.photoURL
-              ? `<img src="${d.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:18px;" alt="${d.name}">`
+            ${photoUrl
+              ? `<img src="${photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:18px;" alt="${d.name}">`
               : PERSON_SVG(40)}
           </div>
         </div>

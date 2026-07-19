@@ -794,7 +794,10 @@
     ════════════════════════════════ */
     @media (max-width: 900px) {
       .header-nav  { display: none; }
-      .hamburger   { display: flex; }
+      /* 로그인/무료 견적 신청 버튼은 모바일 드롭다운 메뉴(.main-nav) 안으로 옮겨감 —
+         여기 남겨두면 좁은 화면에서 햄버거 버튼과 자리를 다투다 아이콘이 찌그러짐 */
+      .header-actions { display: none; }
+      .hamburger   { display: flex; flex-shrink: 0; }
 
       /* 모바일 드롭다운 메뉴 */
       .main-nav {
@@ -938,6 +941,7 @@
       <a href="#reviews" onclick="closeNav()">이용 후기</a>
       <a href="pages/signup-teacher.html" onclick="closeNav()">전문가 등록</a>
       <a href="pages/mypage.html" id="mobileMypage" onclick="closeNav()" style="display:none;">📋 마이페이지</a>
+      <a href="pages/login.html" id="mobileLogin" onclick="closeNav()">로그인</a>
       <a href="#calc" class="header-cta" onclick="closeNav()" style="margin-top:8px;">무료 견적 신청</a>
     </nav>
 
@@ -1874,6 +1878,8 @@
       userName.textContent = `👋 ${name}님`;
       const mobileMypageLink = document.getElementById('mobileMypage');
       if (mobileMypageLink) mobileMypageLink.style.display = 'block';
+      const mobileLoginLink = document.getElementById('mobileLogin');
+      if (mobileLoginLink) mobileLoginLink.style.display = 'none';
       try {
         const snap = await _db.collection('users').doc(user.uid).get();
         if (snap.exists) {

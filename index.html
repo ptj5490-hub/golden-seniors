@@ -1015,8 +1015,8 @@
         <div class="stat-label">고객 만족도</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">30<span style="font-size:22px">+</span></div>
-        <div class="stat-label">검증된 전문가</div>
+        <div class="stat-num">100<span style="font-size:22px">%</span></div>
+        <div class="stat-label">자격증 검증 전문가</div>
       </div>
       <div class="stat-item">
         <div class="stat-num">5년<span style="font-size:22px">+</span></div>
@@ -1635,7 +1635,7 @@
     </div>
     <div class="footer-bottom">
       <div class="footer-info" id="ftCopyright">
-        © 2025 골든 시니어스. All rights reserved.
+        © <span id="ftYear"></span> 골든 시니어스. All rights reserved.
       </div>
       <div style="display:flex;gap:16px;">
         <a href="pages/terms.html" style="color:rgba(255,255,255,0.4);font-size:13px;text-decoration:none;">이용약관</a>
@@ -1714,18 +1714,30 @@
     document.getElementById('a-dong').value = '';
   }
 
+  // 브라우저 기본 alert() 대신 화면 안에서 자연스럽게 뜨는 안내 메시지
+  function aShowError(msg) {
+    const existing = document.getElementById('aErrorToast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.id = 'aErrorToast';
+    toast.style.cssText = `position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:#C0392B;color:#fff;padding:14px 24px;border-radius:14px;font-size:14px;font-weight:700;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.25);max-width:90vw;text-align:center;line-height:1.5;`;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
   let currentStep = 1;
   function aNext(step) {
     if (step > currentStep) {
       if (currentStep === 1) {
         const cond = document.getElementById('a-condition').value;
-        if (!cond) { alert('질환/재활 목적을 선택해주세요.'); return; }
+        if (!cond) { aShowError('질환/재활 목적을 선택해주세요.'); return; }
         if (cond === '기타' && !document.getElementById('a-condition-etc').value.trim()) {
-          alert('질환/재활 목적을 직접 입력해주세요.'); return;
+          aShowError('질환/재활 목적을 직접 입력해주세요.'); return;
         }
-        if (!document.getElementById('a-region').value)   { alert('시/도를 선택해주세요.'); return; }
-        if (!document.getElementById('a-district').value) { alert('구/군/시를 선택해주세요.'); return; }
-        if (!document.getElementById('a-dong').value.trim()) { alert('동/읍/면을 입력해주세요.'); return; }
+        if (!document.getElementById('a-region').value)   { aShowError('시/도를 선택해주세요.'); return; }
+        if (!document.getElementById('a-district').value) { aShowError('구/군/시를 선택해주세요.'); return; }
+        if (!document.getElementById('a-dong').value.trim()) { aShowError('동/읍/면을 입력해주세요.'); return; }
       }
       if (currentStep === 2) {
         // 예산 선택 제거됨 — 선생님이 자유롭게 견적 제안
@@ -1753,10 +1765,10 @@
   async function aSubmit() {
     const nameVal  = document.getElementById('a-name').value.trim();
     const phoneVal = document.getElementById('a-phone').value.trim();
-    if (!nameVal)  { alert('이름을 입력해주세요.'); return; }
-    if (!phoneVal) { alert('연락처를 입력해주세요.'); return; }
+    if (!nameVal)  { aShowError('이름을 입력해주세요.'); return; }
+    if (!phoneVal) { aShowError('연락처를 입력해주세요.'); return; }
     if (!document.getElementById('a-privacy-agree').checked) {
-      alert('개인정보 처리방침에 동의해주세요.'); return;
+      aShowError('개인정보 처리방침에 동의해주세요.'); return;
     }
 
     const condition  = document.getElementById('a-condition').value || '';
@@ -1913,6 +1925,7 @@
   };
 
   // ── 푸터 동적 로드 ──
+  document.getElementById('ftYear').textContent = new Date().getFullYear();
   (async () => {
     try {
       const snap = await _db.collection('settings').doc('site').get();
@@ -1946,7 +1959,7 @@
     try {
       let snap = await _db.collection('users')
         .where('role', '==', 'teacher')
-        .where('status', '==', 'active')
+        .where('status', '==', 'approved')
         .orderBy('rating', 'desc')
         .limit(3)
         .get();

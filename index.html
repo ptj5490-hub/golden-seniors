@@ -1971,13 +1971,15 @@
       }
 
       // 평점이 동점(대부분 후기 없는 신규 상태)일 때를 대비해 경력 → 누적방문 순으로 보조 정렬
+      // (careerYears 필드는 실제로 안 쓰이고, 경력은 career에 "10+"/"3~5" 같은 문자열로 저장됨)
+      const getCareer = x => x.careerYears || (x.career ? parseInt(x.career) : 0) || 0;
       const topDocs = snap.docs
         .slice()
         .sort((a, b) => {
           const da = a.data(), db = b.data();
-          return (db.rating || 0)      - (da.rating || 0)
-              || (db.careerYears || 0) - (da.careerYears || 0)
-              || (db.visitCount || 0)  - (da.visitCount || 0);
+          return (db.rating || 0)  - (da.rating || 0)
+              || getCareer(db)      - getCareer(da)
+              || (db.visitCount || 0) - (da.visitCount || 0);
         })
         .slice(0, 3);
 

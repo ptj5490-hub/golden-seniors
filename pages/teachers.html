@@ -434,9 +434,11 @@
       </div>`;
     } else {
       // 가장 높은 평점 = best (동점일 땐 경력 → 누적방문 순으로 보조 정렬)
+      // careerYears 필드는 실제로 안 쓰이고, 경력은 career에 "10+"/"3~5" 같은 문자열로 저장됨
+      const getCareer = x => x.careerYears || (x.career ? parseInt(x.career) : 0) || 0;
       const topRated = [...filtered].sort((a,b) =>
         (b.rating||0) - (a.rating||0)
-        || (b.careerYears||0) - (a.careerYears||0)
+        || getCareer(b) - getCareer(a)
         || (b.visitCount||0) - (a.visitCount||0)
       );
       const bestId = topRated[0]?.id;

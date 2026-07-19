@@ -355,7 +355,7 @@
     const reviewData = reviews || 0;
 
     const bestBadge = isBest
-      ? `<div class="t-badge-bar">${TROPHY_SVG} 이달의 베스트 선생님</div>` : '';
+      ? `<div class="t-badge-bar">${TROPHY_SVG} 등록된 전문가</div>` : '';
 
     return `
       <a class="t-card${isBest?' best':''}" href="teacher.html?uid=${uid}"
@@ -433,8 +433,12 @@
         <p>필터를 조정하거나 초기화해보세요.</p>
       </div>`;
     } else {
-      // 가장 높은 평점 = best (첫 번째)
-      const topRated = [...filtered].sort((a,b) => (b.rating||0)-(a.rating||0));
+      // 가장 높은 평점 = best (동점일 땐 경력 → 누적방문 순으로 보조 정렬)
+      const topRated = [...filtered].sort((a,b) =>
+        (b.rating||0) - (a.rating||0)
+        || (b.careerYears||0) - (a.careerYears||0)
+        || (b.visitCount||0) - (a.visitCount||0)
+      );
       const bestId = topRated[0]?.id;
       filtered.forEach(t => {
         grid.insertAdjacentHTML('beforeend', renderCard(t, t.id === bestId));

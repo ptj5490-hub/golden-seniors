@@ -1464,7 +1464,7 @@
 <section class="section experts" id="experts">
   <div class="container">
     <div class="center">
-      <div class="section-tag">이달의 베스트</div>
+      <div class="section-tag">등록된 전문가</div>
       <h2 class="section-title">검증된 전문가를 만나보세요</h2>
       <p class="section-sub">모든 선생님은 자격증 확인과 심사를 거쳐 등록됩니다.</p>
     </div>
@@ -1970,9 +1970,15 @@
         return;
       }
 
+      // 평점이 동점(대부분 후기 없는 신규 상태)일 때를 대비해 경력 → 누적방문 순으로 보조 정렬
       const topDocs = snap.docs
         .slice()
-        .sort((a, b) => (b.data().rating || 0) - (a.data().rating || 0))
+        .sort((a, b) => {
+          const da = a.data(), db = b.data();
+          return (db.rating || 0)      - (da.rating || 0)
+              || (db.careerYears || 0) - (da.careerYears || 0)
+              || (db.visitCount || 0)  - (da.visitCount || 0);
+        })
         .slice(0, 3);
 
       grid.innerHTML = '';

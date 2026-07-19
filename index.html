@@ -1957,29 +1957,26 @@
     }
 
     try {
+      // role+status 조건만으로 조회 (orderBy를 같이 쓰면 복합 색인이 필요해서
+      // 정렬은 받아온 뒤 자바스크립트에서 처리 — 선생님 수가 적어 충분히 가벼움)
       let snap = await _db.collection('users')
         .where('role', '==', 'teacher')
         .where('status', '==', 'approved')
-        .orderBy('rating', 'desc')
-        .limit(3)
         .get();
 
-      // active 없으면 pending 포함
       if (snap.empty) {
-        snap = await _db.collection('users')
-          .where('role', '==', 'teacher')
-          .limit(3)
-          .get();
-      }
-
-      if (snap.empty) {
-        // 실제 선생님 없을 때 숨김
+        // 승인된 선생님 없으면 숨김
         document.getElementById('experts')?.style.setProperty('display','none');
         return;
       }
 
+      const topDocs = snap.docs
+        .slice()
+        .sort((a, b) => (b.data().rating || 0) - (a.data().rating || 0))
+        .slice(0, 3);
+
       grid.innerHTML = '';
-      snap.docs.forEach(doc => {
+      topDocs.forEach(doc => {
         const d   = doc.data();
         const uid = doc.id;
         const color = _avatarColor(uid);

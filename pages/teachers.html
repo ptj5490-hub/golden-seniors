@@ -339,7 +339,8 @@
     const visits = d.visitCount || 0;
     const reviews= d.reviewCount || 0;
     const career = d.careerYears || (d.career ? parseInt(d.career) : 0);
-    const price  = d.price ? parseInt(String(d.price).replace(/[^0-9]/g,'')) : 0;
+    // price는 "만원" 단위로 저장돼요 (예: 7 → 7만원 = 70,000원)
+    const price  = d.price ? parseInt(String(d.price).replace(/[^0-9]/g,'')) * 10000 : 0;
     const priceStr = price > 0 ? price.toLocaleString() + '원' : '문의';
     const area   = d.area || d.region || '';
     const specs  = (d.specialties || []).slice(0,3);
@@ -396,7 +397,7 @@
     let filtered = allTeachers.filter((t,i) => {
       const spec  = (t.specialties||[]).join(' ');
       const lic   = t.license || t.qualifications || '';
-      const price = t.price ? parseInt(String(t.price).replace(/[^0-9]/g,'')) : 0;
+      const price = t.price ? parseInt(String(t.price).replace(/[^0-9]/g,'')) * 10000 : 0;
       const area    = Array.isArray(t.area) ? t.area : (t.area || t.region || '').split(/[,，\s]+/).map(s=>s.trim()).filter(Boolean);
       const specOk  = activeFilters.spec  === 'all' || spec.includes(activeFilters.spec);
       const licOk   = activeFilters.lic   === 'all' || lic.includes(activeFilters.lic);

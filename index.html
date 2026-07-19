@@ -1980,7 +1980,8 @@
         const d   = doc.data();
         const uid = doc.id;
         const color = _avatarColor(uid);
-        const price = d.price ? parseInt(String(d.price).replace(/[^0-9]/g,'')) : 0;
+        // price는 "만원" 단위로 저장돼요 (예: 7 → 7만원 = 70,000원)
+        const price = d.price ? parseInt(String(d.price).replace(/[^0-9]/g,'')) * 10000 : 0;
         const priceStr = price > 0 ? price.toLocaleString() + '원~' : '문의';
         const visits = d.visitCount || 0;
         const rating = d.rating > 0 ? d.rating.toFixed(2) : null;

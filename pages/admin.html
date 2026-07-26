@@ -84,6 +84,46 @@
     .stat-num  { font-size: 26px; font-weight: 900; color: var(--navy); line-height: 1; }
     .stat-label { font-size: 12px; color: var(--gray-400); margin-top: 3px; }
 
+    /* ── 인사이트 ── */
+    .insight-section { margin-bottom: 28px; }
+    .insight-title {
+      font-size: 15px; font-weight: 800; color: var(--navy);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+    }
+    .insight-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 14px; }
+    .insight-card {
+      background: var(--white); border-radius: 16px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .insight-card-title { font-size: 13px; font-weight: 700; color: var(--gray-600); margin-bottom: 14px; }
+
+    /* 퍼널 */
+    .funnel-row { display: flex; align-items: center; gap: 6px; }
+    .funnel-step { flex: 1; text-align: center; }
+    .funnel-num { font-size: 22px; font-weight: 900; color: var(--navy); }
+    .funnel-label { font-size: 11.5px; color: var(--gray-400); margin-top: 2px; }
+    .funnel-rate { font-size: 11px; color: var(--gold-dark); font-weight: 700; margin-top: 2px; }
+    .funnel-arrow { color: var(--gray-200); font-size: 20px; flex-shrink: 0; }
+
+    /* 순위 리스트 */
+    .rank-list { display: flex; flex-direction: column; gap: 8px; }
+    .rank-item { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    .rank-num {
+      width: 20px; height: 20px; border-radius: 6px; background: var(--teal-light);
+      color: var(--navy); font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .rank-name { flex: 1; color: var(--gray-900); font-weight: 600; }
+    .rank-count { color: var(--gray-400); font-size: 12px; }
+
+    /* 구성비 바 */
+    .split-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 10px; }
+    .split-legend { display: flex; gap: 16px; font-size: 12px; color: var(--gray-600); flex-wrap: wrap; }
+    .split-legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .split-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+    .insight-empty { font-size: 13px; color: var(--gray-400); text-align: center; padding: 12px 0; }
+
     /* ── 탭 ── */
     .tabs {
       display: flex; gap: 4px; background: var(--gray-200);
@@ -342,6 +382,46 @@
     </div>
   </div>
 
+  <!-- 인사이트 -->
+  <div class="insight-section">
+    <div class="insight-title">📊 이번 달 운영 인사이트</div>
+
+    <div class="insight-row">
+      <div class="insight-card">
+        <div class="insight-card-title">견적 → 매칭 → 결제 퍼널 (전체 누적)</div>
+        <div class="funnel-row" id="funnelRow"><div class="insight-empty">데이터를 불러오는 중...</div></div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-card-title">이번 달 요약</div>
+        <div class="insight-row" style="grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:0;">
+          <div><div class="funnel-num" id="miNewMembers">-</div><div class="funnel-label">신규 가입</div></div>
+          <div><div class="funnel-num" id="miNewQuotes">-</div><div class="funnel-label">견적 신청</div></div>
+          <div><div class="funnel-num" id="miPaidCount">-</div><div class="funnel-label">결제 완료</div></div>
+          <div><div class="funnel-num" id="miRevenue">-</div><div class="funnel-label">예상 수수료(20%)</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-row">
+      <div class="insight-card">
+        <div class="insight-card-title">인기 지역 TOP 3</div>
+        <div class="rank-list" id="rankRegion"><div class="insight-empty">데이터 없음</div></div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-card-title">인기 재활 목적 TOP 3</div>
+        <div class="rank-list" id="rankCondition"><div class="insight-empty">데이터 없음</div></div>
+      </div>
+    </div>
+
+    <div class="insight-row" style="grid-template-columns:1fr;">
+      <div class="insight-card">
+        <div class="insight-card-title">회원 구성</div>
+        <div class="split-bar" id="memberSplitBar"></div>
+        <div class="split-legend" id="memberSplitLegend"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- 탭 -->
   <div class="tabs">
     <div class="tab active" onclick="switchTab('teachers')">
@@ -455,6 +535,7 @@ const db   = firebase.firestore();
 let allTeachers = [];
 let allMembers  = [];
 let allQuotes   = [];
+let allPayments = [];
 let teacherFilter = 'pending';
 let memberFilter  = 'all';
 let quoteFilter   = 'all';
@@ -479,8 +560,19 @@ function logout() {
 
 /* ── 전체 데이터 로드 ── */
 async function loadAll() {
-  await Promise.all([loadTeachers(), loadMembers(), loadQuotes()]);
+  await Promise.all([loadTeachers(), loadMembers(), loadQuotes(), loadPayments()]);
   updateStats();
+  renderInsights();
+}
+
+/* ── 결제 로드 ── */
+async function loadPayments() {
+  try {
+    const snap = await db.collection('payments').get();
+    allPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch(e) {
+    allPayments = [];
+  }
 }
 
 /* ── 전문가 로드 ── */
@@ -532,6 +624,87 @@ function updateStats() {
   document.getElementById('statApproved').textContent   = approved;
   const badge = document.getElementById('pendingBadge');
   if (pending > 0) { badge.textContent = pending; badge.style.display = 'inline-block'; }
+}
+
+/* ── 인사이트 렌더링 ── */
+function isThisMonth(ts) {
+  if (!ts || !ts.seconds) return false;
+  const d = new Date(ts.seconds * 1000);
+  const now = new Date();
+  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+}
+
+function renderInsights() {
+  // ── 퍼널 (전체 누적) ──
+  const totalQuotes = allQuotes.length;
+  const matchedCount = allQuotes.filter(q => q.status === 'matched' || q.status === 'closed').length;
+  const paidCount = allQuotes.filter(q => q.paymentStatus === 'paid').length;
+  const matchRate = totalQuotes ? Math.round(matchedCount / totalQuotes * 100) : 0;
+  const payRate = matchedCount ? Math.round(paidCount / matchedCount * 100) : 0;
+
+  document.getElementById('funnelRow').innerHTML = totalQuotes ? `
+    <div class="funnel-step">
+      <div class="funnel-num">${totalQuotes}</div>
+      <div class="funnel-label">견적 신청</div>
+    </div>
+    <div class="funnel-arrow">→</div>
+    <div class="funnel-step">
+      <div class="funnel-num">${matchedCount}</div>
+      <div class="funnel-label">매칭 완료</div>
+      <div class="funnel-rate">${matchRate}%</div>
+    </div>
+    <div class="funnel-arrow">→</div>
+    <div class="funnel-step">
+      <div class="funnel-num">${paidCount}</div>
+      <div class="funnel-label">결제 완료</div>
+      <div class="funnel-rate">${payRate}%</div>
+    </div>
+  ` : `<div class="insight-empty">아직 견적 데이터가 없어요</div>`;
+
+  // ── 이번 달 요약 ──
+  const newMembersThisMonth = allMembers.filter(m => isThisMonth(m.createdAt)).length;
+  const newQuotesThisMonth  = allQuotes.filter(q => isThisMonth(q.createdAt)).length;
+  const paidThisMonth = allPayments.filter(p => p.status === 'success' && isThisMonth(p.paidAt));
+  const revenueThisMonth = paidThisMonth.reduce((sum, p) => sum + (p.paidAmount || p.amount || 0), 0);
+  const feeThisMonth = Math.round(revenueThisMonth * 0.2);
+
+  document.getElementById('miNewMembers').textContent = newMembersThisMonth;
+  document.getElementById('miNewQuotes').textContent  = newQuotesThisMonth;
+  document.getElementById('miPaidCount').textContent  = paidThisMonth.length;
+  document.getElementById('miRevenue').textContent    = feeThisMonth.toLocaleString() + '원';
+
+  // ── 인기 지역 / 재활목적 TOP3 ──
+  renderRankList('rankRegion', allQuotes.map(q => (q.region || '').split(' ').slice(0,2).join(' ')).filter(Boolean));
+  renderRankList('rankCondition', allQuotes.map(q => q.condition).filter(Boolean));
+
+  // ── 회원 구성 ──
+  const customerCount = allMembers.filter(m => m.role === 'customer').length;
+  const teacherCount  = allMembers.filter(m => m.role === 'teacher').length;
+  const totalMembers  = customerCount + teacherCount || 1;
+  const custPct = Math.round(customerCount / totalMembers * 100);
+  document.getElementById('memberSplitBar').innerHTML = `
+    <div style="width:${custPct}%;background:var(--teal);"></div>
+    <div style="width:${100-custPct}%;background:var(--gold);"></div>
+  `;
+  document.getElementById('memberSplitLegend').innerHTML = `
+    <span><span class="split-dot" style="background:var(--teal);"></span>고객 ${customerCount}명 (${custPct}%)</span>
+    <span><span class="split-dot" style="background:var(--gold);"></span>전문가 ${teacherCount}명 (${100-custPct}%)</span>
+  `;
+}
+
+function renderRankList(elId, values) {
+  const counts = {};
+  values.forEach(v => { counts[v] = (counts[v] || 0) + 1; });
+  const top3 = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,3);
+  const el = document.getElementById(elId);
+  if (!top3.length) { el.innerHTML = '<div class="insight-empty">데이터 없음</div>'; return; }
+  el.innerHTML = top3.map(([name, count], i) => `
+    <div class="rank-item">
+      <span class="rank-num">${i+1}</span>
+      <span class="rank-name">${esc(name)}</span>
+      <span class="rank-count">${count}건</span>
+    </div>
+  `).join('');
 }
 
 /* ── 탭 전환 ── */

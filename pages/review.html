@@ -54,7 +54,9 @@
       background: linear-gradient(135deg, #FFE09A, var(--gold));
       display: flex; align-items: center; justify-content: center;
       font-size: 28px; border: 2px solid var(--gold);
+      overflow: hidden;
     }
+    .t-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
     .t-name { font-size: 17px; font-weight: 900; color: var(--navy); margin-bottom: 4px; }
     .t-spec { font-size: 13px; color: var(--gray-600); }
 
@@ -325,7 +327,23 @@
       const tSnap = await db.collection('users').doc(teacherUid).get();
       if (tSnap.exists) {
         const d = tSnap.data();
-        document.getElementById('tAvatar').textContent = d.avatar || '👨‍⚕️';
+
+        // 아바타: URL > photos[0] > 컬러이니셜 > 이모지 순으로 폴백 (teacher.html과 동일한 규칙)
+        const avatarEl  = document.getElementById('tAvatar');
+        const avatarVal = d.avatar || '';
+        const firstPhoto = (d.photos || []).find(Boolean) || '';
+        const avatarImg = avatarVal.startsWith('http') ? avatarVal : firstPhoto;
+        if (avatarImg) {
+          avatarEl.innerHTML = `<img src="${avatarImg}" alt="${d.name || ''} 선생님">`;
+        } else if (avatarVal.startsWith('#')) {
+          avatarEl.style.background = avatarVal;
+          avatarEl.textContent = (d.name || '선')[0];
+          avatarEl.style.color = 'white';
+          avatarEl.style.fontWeight = '900';
+        } else {
+          avatarEl.textContent = avatarVal || '👨‍⚕️';
+        }
+
         document.getElementById('tSpec').textContent   = (d.specialties || []).join(' · ') || '재활운동 전문';
       }
     }

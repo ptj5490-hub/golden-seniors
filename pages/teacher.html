@@ -223,6 +223,11 @@
     .review-stars { color: var(--gold); font-size: 14px; font-weight: 800; }
     .review-date  { font-size: 12px; color: var(--gray-400); }
     .review-text  { font-size: 14px; color: var(--gray-900); line-height: 1.7; }
+    .review-photos { display: flex; gap: 8px; margin-top: 10px; }
+    .review-photos img {
+      width: 72px; height: 72px; object-fit: cover; border-radius: 10px;
+      cursor: pointer;
+    }
     .review-author { font-size: 12px; color: var(--gray-400); margin-top: 8px; }
     .empty-review { text-align: center; padding: 30px; font-size: 14px; color: var(--gray-400); }
 
@@ -768,6 +773,10 @@ async function loadReviews(uid) {
               <div class="review-date">${fmtDate(r.createdAt)}</div>
             </div>
             <div class="review-text">${esc(r.content || '')}</div>
+            ${(r.photos || []).length ? `
+            <div class="review-photos">
+              ${r.photos.map(url => `<img src="${esc(url)}" alt="후기 사진" data-url="${esc(url)}" onclick="window.open(this.dataset.url,'_blank')">`).join('')}
+            </div>` : ''}
             <div class="review-author">${esc(r.authorName || '고객')}님 · ${esc(r.visitInfo || '')}</div>
           </div>
         `).join('')}

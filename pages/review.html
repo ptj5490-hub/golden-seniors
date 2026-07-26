@@ -98,6 +98,27 @@
       background: var(--gold-light); color: var(--navy); border-color: var(--gold);
     }
 
+    /* ── 후기 사진 ── */
+    .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 4px; }
+    .photo-slot {
+      position: relative; aspect-ratio: 1; border-radius: 14px; overflow: hidden;
+      background: var(--gray-100); border: 1.5px dashed var(--gray-200);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: border-color 0.2s;
+    }
+    .photo-slot:hover { border-color: var(--gold); }
+    .photo-slot.has-img { border-style: solid; border-color: var(--gray-200); }
+    .photo-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-add-icon { font-size: 24px; color: var(--gray-400); margin-bottom: 2px; }
+    .photo-add-text { font-size: 10px; color: var(--gray-400); font-weight: 600; }
+    .photo-remove {
+      position: absolute; top: 4px; right: 4px; width: 22px; height: 22px;
+      border-radius: 50%; background: rgba(0,0,0,0.55); color: white; border: none;
+      font-size: 14px; line-height: 1; cursor: pointer; display: none; align-items: center; justify-content: center;
+    }
+    .photo-slot.has-img .photo-remove { display: flex; }
+    .photo-slot.photo-uploading { opacity: 0.5; pointer-events: none; }
+
     /* ── 텍스트 후기 ── */
     .field { margin-bottom: 18px; }
     .field label {
@@ -207,6 +228,31 @@
         </div>
       </div>
 
+      <!-- 사진 -->
+      <div class="field">
+        <label>사진 첨부 <span class="opt">(선택 · 최대 3장)</span></label>
+        <div class="photo-grid">
+          <div class="photo-slot" id="slot0" onclick="triggerUpload(0)">
+            <input type="file" id="fileInput0" accept="image/*" style="display:none" onchange="uploadPhoto(0,this)">
+            <div class="photo-add-icon">📷</div>
+            <div class="photo-add-text">사진 추가</div>
+            <button class="photo-remove" onclick="removePhoto(event,0)">×</button>
+          </div>
+          <div class="photo-slot" id="slot1" onclick="triggerUpload(1)">
+            <input type="file" id="fileInput1" accept="image/*" style="display:none" onchange="uploadPhoto(1,this)">
+            <div class="photo-add-icon">📷</div>
+            <div class="photo-add-text">사진 추가</div>
+            <button class="photo-remove" onclick="removePhoto(event,1)">×</button>
+          </div>
+          <div class="photo-slot" id="slot2" onclick="triggerUpload(2)">
+            <input type="file" id="fileInput2" accept="image/*" style="display:none" onchange="uploadPhoto(2,this)">
+            <div class="photo-add-icon">📷</div>
+            <div class="photo-add-text">사진 추가</div>
+            <button class="photo-remove" onclick="removePhoto(event,2)">×</button>
+          </div>
+        </div>
+      </div>
+
       <!-- 텍스트 -->
       <div class="field">
         <label>후기 내용 <span class="opt">(선택 · 최소 10자)</span></label>
@@ -242,6 +288,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 <script>
   firebase.initializeApp({
     apiKey:            "AIzaSyBJtViY764nCepskf7Wf3Wl9JqPrC1bx2o",
@@ -251,8 +298,9 @@
     messagingSenderId: "244026917780",
     appId:             "1:244026917780:web:2dbb4b16db8365b0a10581"
   });
-  const auth = firebase.auth();
-  const db   = firebase.firestore();
+  const auth    = firebase.auth();
+  const db      = firebase.firestore();
+  const storage = firebase.storage();
 
   const params      = new URLSearchParams(window.location.search);
   const teacherUid  = params.get('teacherUid')  || '';
@@ -317,6 +365,58 @@
     }
   }
 
+  /* ── 사진 첨부 ── */
+  const photoUrls = [null, null, null];
+
+  function triggerUpload(idx) {
+    document.getElementById('fileInput' + idx).click();
+  }
+
+  async function uploadPhoto(idx, input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (!currentUser) { alert('잠시 후 다시 시도해주세요.'); input.value = ''; return; }
+    if (file.size > 10 * 1024 * 1024) {
+      alert('사진 용량이 너무 커요 (최대 10MB)');
+      input.value = '';
+      return;
+    }
+
+    const slot = document.getElementById('slot' + idx);
+    slot.classList.add('photo-uploading');
+
+    try {
+      const ext = file.name.split('.').pop().toLowerCase();
+      const ref = storage.ref(`review-photos/${currentUser.uid}/${Date.now()}_${idx}.${ext}`);
+      await ref.put(file);
+      const url = await ref.getDownloadURL();
+      photoUrls[idx] = url;
+      slot.classList.add('has-img');
+      slot.querySelector('.photo-add-icon').style.display = 'none';
+      slot.querySelector('.photo-add-text').style.display = 'none';
+      slot.style.backgroundImage = '';
+      const img = document.createElement('img');
+      img.src = url;
+      slot.insertBefore(img, slot.firstChild);
+    } catch(e) {
+      alert('사진 업로드 실패: ' + e.message);
+    } finally {
+      slot.classList.remove('photo-uploading');
+      input.value = '';
+    }
+  }
+
+  function removePhoto(e, idx) {
+    e.stopPropagation();
+    photoUrls[idx] = null;
+    const slot = document.getElementById('slot' + idx);
+    slot.classList.remove('has-img');
+    slot.querySelector('.photo-add-icon').style.display = '';
+    slot.querySelector('.photo-add-text').style.display = '';
+    const img = slot.querySelector('img');
+    if (img) img.remove();
+  }
+
   /* ── 글자수 ── */
   function updateCharCount() {
     const len = document.getElementById('reviewText').value.length;
@@ -354,6 +454,7 @@
         tags:       selectedTags,
         content:    document.getElementById('reviewText').value.trim(),
         visitInfo:  document.getElementById('visitInfo').value.trim(),
+        photos:     photoUrls.filter(Boolean),
         authorUid:  currentUser.uid,
         authorName: '보호자 ' + maskedName + '님',
         createdAt:  firebase.firestore.FieldValue.serverTimestamp(),

@@ -196,6 +196,21 @@
       display: none;
     }
 
+    /* 카카오 상담 플로팅 버튼 */
+    .kakao-float {
+      position: fixed; right: 20px; bottom: 24px; z-index: 500;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #FEE500; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      text-decoration: none; transition: transform 0.15s;
+    }
+    .kakao-float:hover { transform: scale(1.06); }
+    .kakao-float svg { width: 28px; height: 28px; }
+    @media (max-width: 480px) {
+      .kakao-float { right: 16px; bottom: 16px; width: 50px; height: 50px; }
+      .kakao-float svg { width: 24px; height: 24px; }
+    }
+
     /* ════════════════════════════════
        HERO
     ════════════════════════════════ */
@@ -972,6 +987,10 @@
     </button>
   </div>
 </header>
+
+<a href="http://pf.kakao.com/_Pwxoln" target="_blank" class="kakao-float" aria-label="카카오톡으로 상담하기">
+  <svg viewBox="0 0 24 24" fill="#3A1D00"><path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.7 1.7 5.08 4.3 6.5L5.2 21l5.1-2.7c.55.07 1.12.1 1.7.1 5.523 0 10-3.477 10-7.8C22 6.477 17.523 3 12 3z"/></svg>
+</a>
 
 <!-- ══ HERO ══ -->
 <section class="hero">

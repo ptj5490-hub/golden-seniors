@@ -899,7 +899,7 @@ async function saveProfile() {
       curriculum:   collectCurriculum(),
       profileUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
-    await db.collection('users').doc(currentUid).update(data);
+    await db.collection('users').doc(currentUid).set(data, { merge: true });
     const now = new Date();
     document.getElementById('saveStatus').textContent = '마지막 저장: ' + fmtDateTime(now);
     showToast('✅ 프로필이 저장되었습니다!');

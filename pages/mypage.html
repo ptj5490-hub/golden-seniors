@@ -323,6 +323,10 @@
 
   <!-- 내 정보 탭 -->
   <div class="tab-panel" id="panelInfo">
+    <div id="noProfileNotice" style="display:none;margin-bottom:16px;padding:16px 18px;background:#FFF8E8;border:1.5px solid #F0D28A;border-radius:14px;font-size:13px;line-height:1.6;color:#6B4E10;">
+      ⚠️ 이 계정에는 아직 저장된 프로필 정보가 없어요. 혹시 예전에 다른 방법(이메일 등)으로 가입한 계정이 있다면,
+      그 계정으로 로그인하면 기존 정보를 계속 이용할 수 있어요. 지금 이대로 저장하면 이 계정으로 새 프로필이 만들어져요.
+    </div>
     <div class="info-card">
       <div class="section-title" style="margin-bottom:20px;">내 정보 수정</div>
       <div class="info-row">
@@ -461,6 +465,9 @@
   async function loadProfile(user) {
     const snap = await db.collection('users').doc(user.uid).get();
     const data = snap.exists ? snap.data() : {};
+
+    const notice = document.getElementById('noProfileNotice');
+    if (notice) notice.style.display = snap.exists ? 'none' : 'block';
 
     const name  = data.name  || user.displayName || '이름 없음';
     const email = data.email || user.email;
@@ -625,7 +632,7 @@
     if (!career)         { alert('경력을 선택해주세요.'); return; }
     if (area.length === 0)  { alert('활동 지역을 입력해주세요.'); return; }
     try {
-      await db.collection('users').doc(currentUser.uid).update({ intro, license, career, area, specs });
+      await db.collection('users').doc(currentUser.uid).set({ intro, license, career, area, specs }, { merge: true });
       alert('✅ 프로필이 저장됐어요!');
     } catch(e) {
       alert('저장 중 오류가 발생했어요.');
@@ -639,10 +646,12 @@
     const phone = document.getElementById('editPhone').value.trim().replace(/-/g,'');
     if (!name) { alert('이름을 입력해주세요.'); return; }
     try {
-      await db.collection('users').doc(currentUser.uid).update({ name, phone });
+      await db.collection('users').doc(currentUser.uid).set({ name, phone }, { merge: true });
       await currentUser.updateProfile({ displayName: name });
       alert('✅ 정보가 저장됐어요!');
       document.getElementById('profileName').textContent = `${name}님`;
+      const notice = document.getElementById('noProfileNotice');
+      if (notice) notice.style.display = 'none';
     } catch(e) {
       alert('저장 중 오류가 발생했어요.');
     }

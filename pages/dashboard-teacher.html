@@ -1028,9 +1028,9 @@
       })).filter(c => c.org);
 
     try {
-      await db.collection('users').doc(currentUser.uid).update({
+      await db.collection('users').doc(currentUser.uid).set({
         name, phone, intro, area, specialties, certifications, education, careers,
-      });
+      }, { merge: true });
       await currentUser.updateProfile({ displayName: name });
       teacherData = { ...teacherData, name, phone, intro, area, specialties, certifications, education, careers };
       alert('✅ 프로필이 저장됐어요!');

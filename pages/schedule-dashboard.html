@@ -525,47 +525,17 @@ function getWeekRange(offset = 0) {
 }
 
 // ── Firebase 실시간 구독 ──
-let sampleLoaded = false;
 function subscribeSessions() {
   db.collection('sessions')
     .orderBy('dateTime', 'asc')
     .onSnapshot(snap => {
-      const firestoreData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      // Firebase에 실제 데이터가 있을 때만 교체 (빈 컬렉션으로 샘플 덮어쓰기 방지)
-      if (firestoreData.length > 0) {
-        allSessions = firestoreData;
-        sampleLoaded = false;
-      } else if (!sampleLoaded) {
-        loadSampleData();
-        return;
-      }
+      allSessions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       updateStats(); renderList(); renderWeek(); updateTeacherFilter();
     }, err => {
-      console.warn('Firebase 오류, 로컬 데이터 사용:', err);
-      if (!sampleLoaded) loadSampleData();
+      console.error('세션 로드 오류:', err);
+      allSessions = [];
+      updateStats(); renderList(); renderWeek(); updateTeacherFilter();
     });
-}
-
-function loadSampleData() {
-  sampleLoaded = true;
-  const today = new Date();
-  const fmt = (d) => d.toISOString();
-  const makeDate = (daysOffset, hour) => {
-    const d = new Date(today);
-    d.setDate(today.getDate() + daysOffset);
-    d.setHours(hour, 0, 0, 0);
-    return fmt(d);
-  };
-  allSessions = [
-    { id:'s1', teacherName:'김재활', customerName:'이순자', service:'뇌졸중 재활운동', dateTime: makeDate(0, 10), price:200000, status:'scheduled', memo:'' },
-    { id:'s2', teacherName:'김재활', customerName:'박영희', service:'낙상 예방 운동',  dateTime: makeDate(0, 14), price:200000, status:'completed', memo:'어르신 매우 만족' },
-    { id:'s3', teacherName:'박운동', customerName:'최철수', service:'무릎 수술 후 재활',dateTime: makeDate(1, 11), price:180000, status:'scheduled', memo:'' },
-    { id:'s4', teacherName:'이전문', customerName:'강말순', service:'근감소 예방 운동', dateTime: makeDate(2, 9),  price:150000, status:'scheduled', memo:'' },
-    { id:'s5', teacherName:'김재활', customerName:'윤복자', service:'어깨 재활운동',   dateTime: makeDate(3, 15), price:200000, status:'cancelled', memo:'고객 개인 사정' },
-    { id:'s6', teacherName:'박운동', customerName:'한철민', service:'뇌졸중 재활운동', dateTime: makeDate(4, 10), price:180000, status:'completed', memo:'' },
-    { id:'s7', teacherName:'이전문', customerName:'서말례', service:'수술 후 재활',    dateTime: makeDate(-1, 13),price:150000, status:'noshow', memo:'연락 두절' },
-  ];
-  updateStats(); renderList(); renderWeek(); updateTeacherFilter();
 }
 
 // ── 통계 ──

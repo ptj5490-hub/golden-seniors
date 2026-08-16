@@ -153,11 +153,18 @@ const TEMPLATES = {
     sms: ({ teacherName, phone, area, license }) =>
       `[골든시니어스] 선생님 신규 가입 신청\n이름: ${teacherName}\n연락처: ${phone}\n지역: ${area}\n자격: ${license}\n관리자 페이지에서 승인해주세요.`,
   },
+
+  // ⑨ 관리자용 — 새 견적 요청 접수 (SMS only)
+  quote_requested_admin: {
+    templateId: null,
+    sms: ({ region, condition, customerName, phone }) =>
+      `[골든시니어스] 새 견적 요청이 들어왔어요!\n고객: ${customerName || '-'} (${phone || '-'})\n지역: ${region}\n증상: ${condition}\n관리자 페이지에서 확인해주세요.`,
+  },
 };
 
 // 관리자에게만 가는 알림 — 수신 번호를 클라이언트가 아닌 서버 환경변수로 고정한다
 // (대표님 개인 번호가 클라이언트 코드에 그대로 노출되는 걸 막기 위함)
-const ADMIN_ONLY_TYPES = new Set(['teacher_signup_admin']);
+const ADMIN_ONLY_TYPES = new Set(['teacher_signup_admin', 'quote_requested_admin']);
 
 // ── 사용자당 발송 빈도 제한 (1시간에 30건) ──
 async function isRateLimited(uid) {

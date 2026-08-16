@@ -1833,6 +1833,8 @@
           });
         }).catch(() => {});
 
+      notifyQuoteRequestedAdmin(regionStr, condition, nameVal, phoneVal.replace(/-/g,'')).catch(() => {});
+
       const params = new URLSearchParams({ condition, region: regionStr, budget, freq, ageGroup, mobility, caregiver, quoteId: docRef.id });
       window.location.href = 'pages/complete.html?' + params.toString();
 

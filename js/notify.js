@@ -44,6 +44,11 @@ window.notifyQuoteRequested = function(teacherPhone, teacherName, region, condit
   });
 };
 
+// ②-B 관리자에게: 새 견적 요청 접수 (수신 번호는 서버에서 고정되므로 to는 비워둠)
+window.notifyQuoteRequestedAdmin = function(region, condition, customerName, phone) {
+  return sendNotify('quote_requested_admin', 'admin', { region, condition, customerName, phone });
+};
+
 // ③ 고객에게: 결제/매칭 완료
 window.notifyPaymentDoneCustomer = function(customerPhone, customerName, teacherName, quoteId) {
   return sendNotify('payment_done_customer', customerPhone, {

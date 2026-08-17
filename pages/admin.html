@@ -508,7 +508,7 @@
 <!-- 전문가 상세 모달 -->
 <div class="modal-overlay" id="teacherModal">
   <div class="modal">
-    <div class="modal-title">전문가 상세 정보</div>
+    <div class="modal-title" id="modalTitle">전문가 상세 정보</div>
     <div id="modalContent"></div>
     <div class="modal-actions" id="modalActions"></div>
     <button class="modal-close" onclick="closeModal()">닫기</button>
@@ -820,6 +820,7 @@ async function rejectTeacher(uid) {
 function openDetail(uid) {
   const t = allTeachers.find(x => x.id === uid);
   if (!t) return;
+  document.getElementById('modalTitle').textContent = '전문가 상세 정보';
   document.getElementById('modalContent').innerHTML = `
     <div class="modal-row"><span class="label">이름</span><span class="value">${esc(t.name || '-')}</span></div>
     <div class="modal-row"><span class="label">이메일</span><span class="value">${esc(t.email || '-')}</span></div>
@@ -928,16 +929,47 @@ function renderQuotes() {
     return;
   }
   el.innerHTML = list.map(q => `
-    <div class="quote-card">
+    <div class="quote-card" onclick="openQuoteDetail('${q.id}')" style="cursor:pointer;">
       <div class="quote-dot ${q.status || 'open'}"></div>
       <div class="quote-info">
         <div class="quote-title">${esc(q.condition || '질환 미입력')} · ${esc(q.region || '-')}</div>
         <div class="quote-meta">예산 ${esc(q.budget || '-')} · ${esc(q.freq || '-')} · 작성일 ${fmtDate(q.createdAt)}</div>
       </div>
       <span class="quote-status ${q.status || 'open'}">${quoteStatusLabel(q.status)}</span>
-      <button class="quote-delete" onclick="deleteQuote('${q.id}')">삭제</button>
+      <button class="quote-delete" onclick="event.stopPropagation();deleteQuote('${q.id}')">삭제</button>
     </div>
   `).join('');
+}
+
+/* ── 견적 상세 모달 ── */
+function openQuoteDetail(id) {
+  const q = allQuotes.find(x => x.id === id);
+  if (!q) return;
+  document.getElementById('modalTitle').textContent = '견적 상세 정보';
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-row"><span class="label">신청자</span><span class="value">${esc(q.name || '-')}</span></div>
+    <div class="modal-row"><span class="label">연락처</span><span class="value">${esc(q.phone || '-')}</span></div>
+    <div class="modal-row"><span class="label">상태</span><span class="value"><span class="quote-status ${q.status || 'open'}">${quoteStatusLabel(q.status)}</span></span></div>
+    <hr class="modal-divider">
+    <div class="modal-row"><span class="label">질환/목적</span><span class="value">${esc(q.condition || '-')}</span></div>
+    <div class="modal-row"><span class="label">지역</span><span class="value">${esc(q.region || '-')}</span></div>
+    <div class="modal-row"><span class="label">예산</span><span class="value">${esc(q.budget || '협의')}</span></div>
+    <div class="modal-row"><span class="label">방문 빈도</span><span class="value">${esc(q.freq || '-')}</span></div>
+    <div class="modal-row"><span class="label">희망 시작일</span><span class="value">${esc(q.startdate || '-')}</span></div>
+    <div class="modal-row"><span class="label">나이대</span><span class="value">${esc(q.ageGroup || '-')}</span></div>
+    <div class="modal-row"><span class="label">거동 여부</span><span class="value">${esc(q.mobility || '-')}</span></div>
+    <div class="modal-row"><span class="label">보호자 동반</span><span class="value">${esc(q.caregiver || '-')}</span></div>
+    <div class="modal-row"><span class="label">희망 시간대</span><span class="value">${(q.timeSlots || []).join(', ') || '-'}</span></div>
+    <div class="modal-row"><span class="label">특이사항</span><span class="value" style="white-space:pre-wrap;line-height:1.6">${esc(q.note || '-')}</span></div>
+    <hr class="modal-divider">
+    ${q.matchedTeacherName ? `<div class="modal-row"><span class="label">매칭된 선생님</span><span class="value">${esc(q.matchedTeacherName)}</span></div>` : ''}
+    <div class="modal-row"><span class="label">결제 여부</span><span class="value">${q.paymentStatus === 'paid' ? '✅ 결제완료' : '미결제'}</span></div>
+    <div class="modal-row"><span class="label">신청일</span><span class="value">${fmtDate(q.createdAt)}</span></div>
+  `;
+  document.getElementById('modalActions').innerHTML = `
+    <button class="quote-delete" style="flex:1;padding:13px;font-size:14px;border-radius:12px" onclick="deleteQuote('${id}');closeModal()">이 견적 삭제</button>
+  `;
+  document.getElementById('teacherModal').classList.add('show');
 }
 
 async function deleteQuote(id) {

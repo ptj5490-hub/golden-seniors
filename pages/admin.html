@@ -298,6 +298,11 @@
     .quote-status.open    { background: var(--green-light); color: var(--green); }
     .quote-status.matched { background: var(--gold-light); color: var(--gold); }
     .quote-status.closed  { background: var(--gray-200); color: var(--gray-400); }
+    .quote-delete {
+      flex-shrink: 0; background: none; border: 1.5px solid var(--red); color: var(--red);
+      font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 8px; cursor: pointer;
+    }
+    .quote-delete:hover { background: var(--red-light); }
 
     /* ── 토스트 ── */
     .toast {
@@ -930,8 +935,17 @@ function renderQuotes() {
         <div class="quote-meta">예산 ${esc(q.budget || '-')} · ${esc(q.freq || '-')} · 작성일 ${fmtDate(q.createdAt)}</div>
       </div>
       <span class="quote-status ${q.status || 'open'}">${quoteStatusLabel(q.status)}</span>
+      <button class="quote-delete" onclick="deleteQuote('${q.id}')">삭제</button>
     </div>
   `).join('');
+}
+
+async function deleteQuote(id) {
+  if (!confirm('이 견적을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) return;
+  await db.collection('quotes').doc(id).delete();
+  showToast('견적이 삭제되었습니다.');
+  await loadQuotes();
+  updateStats();
 }
 
 function quoteStatusLabel(s) {

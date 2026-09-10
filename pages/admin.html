@@ -375,7 +375,7 @@
       <div class="stat-emoji">📋</div>
       <div>
         <div class="stat-num" id="statQuotes">-</div>
-        <div class="stat-label">전체 견적 요청</div>
+        <div class="stat-label">전체 프로그램 신청</div>
       </div>
     </div>
     <div class="stat-card">
@@ -393,14 +393,14 @@
 
     <div class="insight-row">
       <div class="insight-card">
-        <div class="insight-card-title">견적 → 매칭 → 결제 퍼널 (전체 누적)</div>
+        <div class="insight-card-title">신청 → 배정 → 결제 퍼널 (전체 누적)</div>
         <div class="funnel-row" id="funnelRow"><div class="insight-empty">데이터를 불러오는 중...</div></div>
       </div>
       <div class="insight-card">
         <div class="insight-card-title">이번 달 요약</div>
         <div class="insight-row" style="grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:0;">
           <div><div class="funnel-num" id="miNewMembers">-</div><div class="funnel-label">신규 가입</div></div>
-          <div><div class="funnel-num" id="miNewQuotes">-</div><div class="funnel-label">견적 신청</div></div>
+          <div><div class="funnel-num" id="miNewQuotes">-</div><div class="funnel-label">프로그램 신청</div></div>
           <div><div class="funnel-num" id="miPaidCount">-</div><div class="funnel-label">결제 완료</div></div>
           <div><div class="funnel-num" id="miRevenue">-</div><div class="funnel-label">예상 수수료(20%)</div></div>
         </div>
@@ -434,7 +434,7 @@
       <span class="tab-badge" id="pendingBadge" style="display:none">0</span>
     </div>
     <div class="tab" onclick="switchTab('members')">전체 회원</div>
-    <div class="tab" onclick="switchTab('quotes')">견적 현황</div>
+    <div class="tab" onclick="switchTab('quotes')">신청 현황</div>
   </div>
 
   <!-- ── 탭: 전문가 심사 ── -->
@@ -486,16 +486,16 @@
     </div>
   </div>
 
-  <!-- ── 탭: 견적 현황 ── -->
+  <!-- ── 탭: 신청 현황 ── -->
   <div class="tab-panel" id="panel-quotes">
     <div class="panel-header">
-      <div class="panel-title">견적 요청 현황</div>
+      <div class="panel-title">프로그램 신청 현황</div>
       <div class="panel-count" id="quoteCount"></div>
     </div>
     <div class="search-bar">
       <button class="filter-btn on" id="qFilterAll"     onclick="setQuoteFilter('all')">전체</button>
-      <button class="filter-btn" id="qFilterOpen"    onclick="setQuoteFilter('open')">진행중</button>
-      <button class="filter-btn" id="qFilterMatched" onclick="setQuoteFilter('matched')">매칭됨</button>
+      <button class="filter-btn" id="qFilterOpen"    onclick="setQuoteFilter('open')">배정 대기</button>
+      <button class="filter-btn" id="qFilterMatched" onclick="setQuoteFilter('matched')">배정됨</button>
       <button class="filter-btn" id="qFilterClosed"  onclick="setQuoteFilter('closed')">종료</button>
     </div>
     <div id="quoteList">
@@ -650,21 +650,21 @@ function renderInsights() {
   document.getElementById('funnelRow').innerHTML = totalQuotes ? `
     <div class="funnel-step">
       <div class="funnel-num">${totalQuotes}</div>
-      <div class="funnel-label">견적 신청</div>
+      <div class="funnel-label">프로그램 신청</div>
     </div>
     <div class="funnel-arrow">→</div>
     <div class="funnel-step">
       <div class="funnel-num">${matchedCount}</div>
-      <div class="funnel-label">매칭 완료</div>
+      <div class="funnel-label">전문가 배정</div>
       <div class="funnel-rate">${matchRate}%</div>
     </div>
     <div class="funnel-arrow">→</div>
     <div class="funnel-step">
       <div class="funnel-num">${paidCount}</div>
-      <div class="funnel-label">결제 완료</div>
+      <div class="funnel-label">결제 완료(잔금)</div>
       <div class="funnel-rate">${payRate}%</div>
     </div>
-  ` : `<div class="insight-empty">아직 견적 데이터가 없어요</div>`;
+  ` : `<div class="insight-empty">아직 신청 데이터가 없어요</div>`;
 
   // ── 이번 달 요약 ──
   const newMembersThisMonth = allMembers.filter(m => isThisMonth(m.createdAt)).length;
@@ -910,7 +910,7 @@ async function banMember(uid, name) {
 }
 
 /* ═══════════════════════════════
-   견적 현황
+   프로그램 신청 현황
 ═══════════════════════════════ */
 function setQuoteFilter(f) {
   quoteFilter = f;
@@ -925,7 +925,7 @@ function renderQuotes() {
   document.getElementById('quoteCount').textContent = list.length + '건';
   const el = document.getElementById('quoteList');
   if (!list.length) {
-    el.innerHTML = `<div class="empty-msg"><span class="empty-icon">📋</span>해당하는 견적이 없습니다.</div>`;
+    el.innerHTML = `<div class="empty-msg"><span class="empty-icon">📋</span>해당하는 신청이 없습니다.</div>`;
     return;
   }
   el.innerHTML = list.map(q => `
@@ -933,7 +933,7 @@ function renderQuotes() {
       <div class="quote-dot ${q.status || 'open'}"></div>
       <div class="quote-info">
         <div class="quote-title">${esc(q.condition || '질환 미입력')} · ${esc(q.region || '-')}</div>
-        <div class="quote-meta">예산 ${esc(q.budget || '-')} · ${esc(q.freq || '-')} · 작성일 ${fmtDate(q.createdAt)}</div>
+        <div class="quote-meta">${esc(q.freq || '방문일정 미정')} · 신청일 ${fmtDate(q.createdAt)}</div>
       </div>
       <span class="quote-status ${q.status || 'open'}">${quoteStatusLabel(q.status)}</span>
       <button class="quote-delete" onclick="event.stopPropagation();deleteQuote('${q.id}')">삭제</button>
@@ -941,11 +941,11 @@ function renderQuotes() {
   `).join('');
 }
 
-/* ── 견적 상세 모달 ── */
+/* ── 신청 상세 모달 ── */
 function openQuoteDetail(id) {
   const q = allQuotes.find(x => x.id === id);
   if (!q) return;
-  document.getElementById('modalTitle').textContent = '견적 상세 정보';
+  document.getElementById('modalTitle').textContent = '프로그램 신청 상세';
   document.getElementById('modalContent').innerHTML = `
     <div class="modal-row"><span class="label">신청자</span><span class="value">${esc(q.name || '-')}</span></div>
     <div class="modal-row"><span class="label">연락처</span><span class="value">${esc(q.phone || '-')}</span></div>
@@ -953,7 +953,6 @@ function openQuoteDetail(id) {
     <hr class="modal-divider">
     <div class="modal-row"><span class="label">질환/목적</span><span class="value">${esc(q.condition || '-')}</span></div>
     <div class="modal-row"><span class="label">지역</span><span class="value">${esc(q.region || '-')}</span></div>
-    <div class="modal-row"><span class="label">예산</span><span class="value">${esc(q.budget || '협의')}</span></div>
     <div class="modal-row"><span class="label">방문 빈도</span><span class="value">${esc(q.freq || '-')}</span></div>
     <div class="modal-row"><span class="label">희망 시작일</span><span class="value">${esc(q.startdate || '-')}</span></div>
     <div class="modal-row"><span class="label">나이대</span><span class="value">${esc(q.ageGroup || '-')}</span></div>
@@ -962,26 +961,26 @@ function openQuoteDetail(id) {
     <div class="modal-row"><span class="label">희망 시간대</span><span class="value">${(q.timeSlots || []).join(', ') || '-'}</span></div>
     <div class="modal-row"><span class="label">특이사항</span><span class="value" style="white-space:pre-wrap;line-height:1.6">${esc(q.note || '-')}</span></div>
     <hr class="modal-divider">
-    ${q.matchedTeacherName ? `<div class="modal-row"><span class="label">매칭된 선생님</span><span class="value">${esc(q.matchedTeacherName)}</span></div>` : ''}
-    <div class="modal-row"><span class="label">결제 여부</span><span class="value">${q.paymentStatus === 'paid' ? '✅ 결제완료' : '미결제'}</span></div>
+    ${q.matchedTeacherName ? `<div class="modal-row"><span class="label">배정된 선생님</span><span class="value">${esc(q.matchedTeacherName)}</span></div>` : ''}
+    <div class="modal-row"><span class="label">결제 상태</span><span class="value">${q.paymentStatus === 'paid' ? '✅ 결제완료(잔금까지)' : q.paymentStatus === 'deposit' ? '🟡 계약금 결제' : '미결제'}</span></div>
     <div class="modal-row"><span class="label">신청일</span><span class="value">${fmtDate(q.createdAt)}</span></div>
   `;
   document.getElementById('modalActions').innerHTML = `
-    <button class="quote-delete" style="flex:1;padding:13px;font-size:14px;border-radius:12px" onclick="deleteQuote('${id}');closeModal()">이 견적 삭제</button>
+    <button class="quote-delete" style="flex:1;padding:13px;font-size:14px;border-radius:12px" onclick="deleteQuote('${id}');closeModal()">이 신청 삭제</button>
   `;
   document.getElementById('teacherModal').classList.add('show');
 }
 
 async function deleteQuote(id) {
-  if (!confirm('이 견적을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) return;
+  if (!confirm('이 신청을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) return;
   await db.collection('quotes').doc(id).delete();
-  showToast('견적이 삭제되었습니다.');
+  showToast('신청이 삭제되었습니다.');
   await loadQuotes();
   updateStats();
 }
 
 function quoteStatusLabel(s) {
-  return { open: '진행중', matched: '매칭됨', closed: '종료', expired: '만료' }[s] || '진행중';
+  return { open: '배정 대기', matched: '배정됨', closed: '종료', expired: '만료' }[s] || '배정 대기';
 }
 
 /* ── 유틸 ── */

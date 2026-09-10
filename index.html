@@ -961,7 +961,7 @@
     </nav>
 
     <nav class="header-nav">
-      <a href="#calc">견적 신청</a>
+      <a href="#calc">프로그램 신청</a>
       <a href="#how">이용 방법</a>
       <a href="#calc">전문가 보기</a>
       <a href="#reviews">이용 후기</a>
@@ -1066,7 +1066,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7" stroke-width="2.8"/></svg>
         </div>
         <div class="why-title">누구나 같은 정찰제 요금</div>
-        <div class="why-desc">12주 재활 프로그램을 누구에게나 동일한 고정 금액으로 제공합니다. 흥정이나 견적 비교 없이, 처음부터 투명하게 공개된 요금 그대로입니다.</div>
+        <div class="why-desc">12주 재활 프로그램을 누구에게나 동일한 고정 금액으로 제공합니다. 가격 흥정 없이, 처음부터 투명하게 공개된 요금 그대로입니다.</div>
       </div>
       <div class="why-card">
         <div class="why-icon">
@@ -1167,7 +1167,7 @@
   <div class="container" style="max-width:720px;text-align:center;">
     <div class="section-tag">서비스 요금</div>
     <h2 class="section-title">누구나 같은 정찰제 요금</h2>
-    <p class="section-sub" style="text-align:center;margin:0 auto;">흥정도, 견적 비교도 없습니다.<br>12주 재활 프로그램을 아래 고정 금액으로 제공합니다.</p>
+    <p class="section-sub" style="text-align:center;margin:0 auto;">가격 흥정이 없습니다.<br>12주 재활 프로그램을 아래 고정 금액으로 제공합니다.</p>
     <div style="display:inline-block;margin-top:32px;background:var(--white);border:2px solid var(--teal);border-radius:20px;padding:36px 48px;box-shadow:0 4px 20px rgba(0,0,0,0.07);">
       <div style="font-size:14px;font-weight:700;color:var(--teal);letter-spacing:1px;margin-bottom:8px;">12주 방문 재활 프로그램</div>
       <div style="font-size:42px;font-weight:800;color:var(--gray-900);letter-spacing:-1px;">1,680,000<span style="font-size:20px;font-weight:600;">원</span></div>
@@ -1199,16 +1199,6 @@
     <div class="section-tag">프로그램 신청</div>
     <h2 class="section-title">조건을 등록하면<br>회사가 전문가를 배정해 드립니다</h2>
     <p class="section-sub" style="margin-bottom:0">12주 재활 프로그램 1,680,000원 · 흥정 없는 정찰제 요금입니다.</p>
-
-    <!-- 특정 선생님에게 요청 시 표시되는 배너 -->
-    <div id="preferredTeacherBanner" style="display:none;margin-top:20px;padding:14px 18px;background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:12px;align-items:center;gap:12px;">
-      <span style="font-size:20px;flex-shrink:0;">👨‍⚕️</span>
-      <div style="font-size:14px;color:#065F46;line-height:1.5;">
-        <strong id="preferredTeacherBannerName"></strong>에게 우선 견적 요청됩니다.<br>
-        <span style="font-size:12px;color:#059669;">다른 선생님의 견적도 함께 받아보실 수 있어요.</span>
-      </div>
-      <button onclick="clearPreferredTeacher()" style="margin-left:auto;background:none;border:none;font-size:18px;cursor:pointer;color:#6B7280;flex-shrink:0;" title="취소">×</button>
-    </div>
 
     <div class="form-wrap">
       <!-- 좌측: 3단계 폼 -->
@@ -1531,7 +1521,7 @@
           요금은 어떻게 되나요?
           <div class="faq-q-icon">+</div>
         </button>
-        <div class="faq-a">12주 방문 재활 프로그램은 누구에게나 동일한 1,680,000원(정찰제)입니다. 흥정이나 견적 비교 없이, 전문가 배정 후 계약금 168,000원 결제로 프로그램이 확정되고 잔금 1,512,000원은 첫 방문 전까지 결제합니다. 프로그램 신청 자체는 무료입니다.</div>
+        <div class="faq-a">12주 방문 재활 프로그램은 누구에게나 동일한 1,680,000원(정찰제)입니다. 가격 흥정 없이, 전문가 배정 후 계약금 168,000원 결제로 프로그램이 확정되고 잔금 1,512,000원은 첫 방문 전까지 결제합니다. 프로그램 신청 자체는 무료입니다.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
@@ -1633,24 +1623,6 @@
 
 <!-- ══ JS: 폼 로직 ══ -->
 <script>
-  // ── 특정 선생님 우선 견적 요청 처리 ──
-  let _preferredTeacherUid = '';
-  (function initPreferredTeacher() {
-    const p = new URLSearchParams(window.location.search);
-    const uid  = p.get('preferredTeacher');
-    const name = p.get('preferredTeacherName');
-    if (!uid) return;
-    _preferredTeacherUid = uid;
-    const banner = document.getElementById('preferredTeacherBanner');
-    document.getElementById('preferredTeacherBannerName').textContent = decodeURIComponent(name || '선생님');
-    banner.style.display = 'flex';
-  })();
-
-  function clearPreferredTeacher() {
-    _preferredTeacherUid = '';
-    document.getElementById('preferredTeacherBanner').style.display = 'none';
-  }
-
   function selectChipGroup(el, group) {
     el.closest('.chips').querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
     el.classList.add('selected');
@@ -1726,7 +1698,7 @@
         if (!document.getElementById('a-dong').value.trim()) { aShowError('동/읍/면을 입력해주세요.'); return; }
       }
       if (currentStep === 2) {
-        // 예산 선택 제거됨 — 선생님이 자유롭게 견적 제안
+        // 2단계(방문 일정)는 선택 입력이라 별도 검증 없음 — 금액은 정찰제 고정
       }
     }
     document.getElementById('aPanel' + currentStep).classList.remove('active');

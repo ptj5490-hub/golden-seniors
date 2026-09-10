@@ -720,7 +720,7 @@ async function renderProfile(d, matchedQuoteId, isPaid) {
   } else if (matchedQuoteId) {
     // 배정됐지만 아직 결제 전 → 계약금 결제 버튼
     document.getElementById('selectedBanner').classList.add('show');
-    const depositHref = `payment.html?quoteId=${matchedQuoteId}&stage=deposit`;
+    const depositHref = `payment.html?quoteId=${matchedQuoteId}&stage=deposit&teacherUid=${teacherUid}&teacherName=${teacherNameEnc}`;
     ctaBtn.textContent = '💳 계약금 결제하기';
     ctaBtn.href = depositHref;
     mobileCta.textContent = '💳 계약금 결제';

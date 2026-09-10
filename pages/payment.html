@@ -158,14 +158,14 @@
 
   <div id="payContent" style="display:none;">
     <div style="text-align:center;margin-bottom:20px;">
-      <h1 style="font-size:22px;font-weight:900;color:var(--teal);">결제하기</h1>
+      <h1 style="font-size:22px;font-weight:900;color:var(--teal);" id="payHeading">결제하기</h1>
     </div>
 
     <div class="test-mode-banner">
       <span>🚧</span>
       <span>
         <b>카드 실결제 심사 준비 중이에요</b>
-        지금은 실제 카드 결제가 완료되지 않을 수 있어요. 결제 대신 채팅으로 선생님과 계좌이체 등
+        지금은 실제 카드 결제가 완료되지 않을 수 있어요. 결제 대신 채팅으로 담당자에게 계좌이체 등
         다른 방법을 안내받으시거나, 도움이 필요하면 카카오채널로 문의해주세요.
       </span>
     </div>
@@ -174,27 +174,28 @@
     <div class="section-card">
       <div class="section-title">결제 정보</div>
       <div class="info-row">
-        <span class="label">서비스</span>
-        <span class="value" id="displayService">방문 재활운동</span>
+        <span class="label">프로그램</span>
+        <span class="value">골든시니어스 12주 방문 재활 프로그램</span>
       </div>
       <div class="info-row">
-        <span class="label">선생님</span>
+        <span class="label">배정 선생님</span>
         <span class="value" id="displayTeacher">-</span>
       </div>
       <div class="info-row">
-        <span class="label">견적 번호</span>
+        <span class="label">신청 번호</span>
         <span class="value" id="displayQuoteId" style="font-family:monospace;font-size:12px;">-</span>
+      </div>
+      <div class="info-row">
+        <span class="label">총 프로그램 금액</span>
+        <span class="value">1,680,000원 (정찰제)</span>
       </div>
     </div>
 
-    <!-- 금액 입력 -->
+    <!-- 결제 금액 (고정 · 수정 불가) -->
     <div class="section-card amount-input-wrap">
-      <label>결제 금액 (채팅에서 협의한 금액을 입력해주세요)</label>
-      <div class="amount-input-row">
-        <input type="text" inputmode="numeric" class="amount-input" id="amountInput" placeholder="0">
-        <span class="amount-unit">원</span>
-      </div>
-      <div class="amount-hint">※ 1회 방문 기준 금액이에요</div>
+      <label id="stageLabel">이번 결제 금액</label>
+      <div style="font-size:32px;font-weight:900;color:var(--teal);margin-top:4px;" id="fixedAmountDisplay">-</div>
+      <div class="amount-hint" id="stageHint">— </div>
     </div>
 
     <!-- 결제 수단 선택 -->
@@ -250,15 +251,26 @@
     selectedMethod = el.dataset.method;
   };
 
+  // ── 12주 프로그램 정찰제 — 금액은 서버가 아니라 여기 고정 상수로만 결정된다 ──
+  // 토스 심사 요구사항: "정해진 금액만을 결제할 수 있도록" — 사용자가 금액을 바꿀 수 없어야 함.
+  const PROGRAM_TOTAL = 1680000;
+  const STAGES = {
+    deposit: { amount: 168000,  orderName: '골든시니어스 12주 프로그램 계약금',
+               label: '계약금 (총액의 10%)',
+               hint: '계약금 168,000원 결제 시 프로그램이 확정됩니다. 잔금 1,512,000원은 첫 방문 전까지 결제해요.' },
+    balance: { amount: 1512000, orderName: '골든시니어스 12주 프로그램 잔금',
+               label: '잔금',
+               hint: '계약금 168,000원을 제외한 잔금입니다. 결제 후 12주 방문 재활 프로그램이 시작돼요.' },
+  };
+
   const params      = new URLSearchParams(location.search);
   const quoteId     = params.get('quoteId') || '';
   const teacherUid  = params.get('teacherUid') || '';
-  const teacherName = params.get('teacherName') || '선생님';
-  const preAmount   = parseInt(params.get('amount') || '0', 10);
-  const serviceName = params.get('serviceName') || '방문 재활운동 서비스';
+  const teacherName = params.get('teacherName') || '배정 예정';
+  const stageKey    = (params.get('stage') === 'balance') ? 'balance' : 'deposit';
+  const stage       = STAGES[stageKey];
 
-  let currentUser   = null;
-  let currentAmount = preAmount || 0;
+  let currentUser = null;
 
   if (quoteId) sessionStorage.setItem('lastQuoteId', quoteId);
 
@@ -266,37 +278,14 @@
     if (!user) { location.href = 'login.html'; return; }
     currentUser = user;
 
-    let amount = preAmount;
-    if (!amount && quoteId) {
-      try {
-        const tqSnap = await db.collection('teacher_quotes')
-          .where('quoteId', '==', quoteId).get();
-        const wonDoc = tqSnap.docs.find(d => d.data().status === 'won') || tqSnap.docs[0];
-        if (wonDoc) {
-          amount = parseInt((wonDoc.data().price || '').replace(/[^0-9]/g, ''), 10) || 0;
-        }
-      } catch(e) { console.warn('가격 조회 실패:', e); }
-    }
-    currentAmount = amount;
-
-    document.getElementById('displayService').textContent = serviceName;
+    document.getElementById('payHeading').textContent =
+      stageKey === 'deposit' ? '계약금 결제' : '잔금 결제';
     document.getElementById('displayTeacher').textContent = teacherName;
     document.getElementById('displayQuoteId').textContent = quoteId ? '#' + quoteId.substring(0,8).toUpperCase() : '-';
-
-    if (amount > 0) {
-      document.getElementById('amountInput').value = amount.toLocaleString();
-      document.getElementById('amountInput').closest('.amount-input-wrap').querySelector('label').textContent = '결제 금액';
-      document.getElementById('payBtnText').textContent = `${amount.toLocaleString()}원 결제하기`;
-    }
-
-    document.getElementById('amountInput').addEventListener('input', (e) => {
-      const raw = e.target.value.replace(/[^0-9]/g, '');
-      const val = parseInt(raw, 10) || 0;
-      e.target.value = val > 0 ? val.toLocaleString() : '';
-      currentAmount = val;
-      document.getElementById('payBtnText').textContent =
-        val >= 1000 ? `${val.toLocaleString()}원 결제하기` : '결제하기';
-    });
+    document.getElementById('stageLabel').textContent = stage.label;
+    document.getElementById('fixedAmountDisplay').textContent = stage.amount.toLocaleString() + '원';
+    document.getElementById('stageHint').textContent = stage.hint;
+    document.getElementById('payBtnText').textContent = `${stage.amount.toLocaleString()}원 결제하기`;
 
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('payContent').style.display   = 'block';
@@ -304,24 +293,23 @@
   });
 
   window.requestPayment = async function() {
-    const amount = parseInt(document.getElementById('amountInput').value.replace(/[^0-9]/g,''), 10);
-    if (!amount || amount < 1000) {
-      alert('결제 금액을 1,000원 이상 입력해주세요.');
-      document.getElementById('amountInput').focus();
-      return;
-    }
+    // 금액은 URL 파라미터(stage)로만 결정된 고정 상수. 사용자 입력값 없음.
+    const amount    = stage.amount;
+    const orderName = stage.orderName;
 
     const btn = document.getElementById('payBtn');
     btn.disabled = true;
     btn.querySelector('#payBtnText').textContent = '결제창 여는 중...';
 
     try {
-      const orderId = `order-${(quoteId.slice(0,8) || 'gs').replace(/[^a-zA-Z0-9]/g,'')}-${Date.now()}`;
+      const orderId = `order-${stageKey}-${(quoteId.slice(0,8) || 'gs').replace(/[^a-zA-Z0-9]/g,'')}-${Date.now()}`;
 
       await db.collection('payments').doc(orderId).set({
         orderId, quoteId,
         customerUid:  currentUser.uid,
-        teacherUid, teacherName, serviceName,
+        teacherUid, teacherName,
+        serviceName:  orderName,
+        stage:        stageKey,
         amount,
         status:    'pending',
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -331,7 +319,7 @@
       await tossPayments.requestPayment(selectedMethod, {
         amount,
         orderId,
-        orderName:     serviceName,
+        orderName,
         customerName:  currentUser.displayName || '고객',
         customerEmail: currentUser.email || '',
         successUrl: `${location.origin}/pages/payment-success.html`,
@@ -344,8 +332,7 @@
         alert('결제 중 오류가 발생했어요: ' + (e.message || '다시 시도해주세요.'));
       }
       btn.disabled = false;
-      btn.querySelector('#payBtnText').textContent =
-        currentAmount >= 1000 ? `${currentAmount.toLocaleString()}원 결제하기` : '결제하기';
+      btn.querySelector('#payBtnText').textContent = `${stage.amount.toLocaleString()}원 결제하기`;
     }
   };
 </script>

@@ -115,8 +115,8 @@
   <div id="successContent" style="display:none;">
     <div class="success-card">
       <div class="success-icon">✅</div>
-      <div class="success-title">결제가 완료됐어요!</div>
-      <div class="success-sub">
+      <div class="success-title" id="successTitle">결제가 완료됐어요!</div>
+      <div class="success-sub" id="successSub">
         선생님과의 방문 일정을 확인하고<br>채팅으로 소통해보세요.
       </div>
 
@@ -126,7 +126,7 @@
           <span class="value" id="displayOrderId" style="font-family:monospace;font-size:12px;">-</span>
         </div>
         <div class="detail-row">
-          <span class="label">서비스</span>
+          <span class="label">결제 항목</span>
           <span class="value" id="displayOrderName">-</span>
         </div>
         <div class="detail-row">
@@ -187,11 +187,25 @@
         paymentDoc = snap.exists ? snap.data() : null;
       }
 
+      // 결제 단계 구분 — payment.html이 payments 문서에 기록한 stage 값 사용
+      // 'deposit' = 계약금(168,000원), 'balance' = 잔금(1,512,000원), 그 외/없음 = 레거시 단건 결제
+      const stage = paymentDoc?.stage || '';
+
       // ── 2. UI 업데이트 ──
       document.getElementById('displayOrderId').textContent = orderId ? orderId.toUpperCase() : '-';
-      document.getElementById('displayOrderName').textContent = paymentDoc?.orderName || paymentDoc?.serviceName || '방문 재활운동 서비스';
+      document.getElementById('displayOrderName').textContent = paymentDoc?.orderName || paymentDoc?.serviceName || '골든시니어스 12주 프로그램';
       document.getElementById('displayMethod').textContent = '카드 / 간편결제';
       document.getElementById('displayAmount').textContent = amount ? `${amount.toLocaleString()}원` : '-';
+
+      if (stage === 'deposit') {
+        document.getElementById('successTitle').textContent = '계약금 결제가 완료됐어요!';
+        document.getElementById('successSub').innerHTML =
+          '12주 방문 재활 프로그램이 확정됐어요.<br>배정된 선생님과 채팅으로 첫 방문 일정을 잡아보세요.<br>잔금 1,512,000원은 첫 방문 전까지 결제해주세요.';
+      } else if (stage === 'balance') {
+        document.getElementById('successTitle').textContent = '잔금 결제가 완료됐어요!';
+        document.getElementById('successSub').innerHTML =
+          '12주 방문 재활 프로그램 결제가 모두 끝났어요.<br>선생님과 일정을 조율해 재활을 시작하세요.';
+      }
 
       // 채팅 링크 설정
       if (paymentDoc?.quoteId && paymentDoc?.teacherUid) {
@@ -199,12 +213,16 @@
         document.getElementById('btnChat').href = chatHref;
       }
 
-      // ── 3. quote 상태 업데이트 (paid + matched) ──
+      // ── 3. quote 상태 업데이트 ──
+      // 계약금(deposit) 결제 → paymentStatus:'deposit' (프로그램 확정, 잔금 대기)
+      // 잔금(balance) 또는 레거시 단건 결제 → paymentStatus:'paid' (결제 완료)
       if (paymentDoc?.quoteId) {
         const quoteUpdate = {
-          paymentStatus: 'paid',
+          paymentStatus: stage === 'deposit' ? 'deposit' : 'paid',
           paidAt: firebase.firestore.FieldValue.serverTimestamp(),
         };
+        if (stage === 'deposit') quoteUpdate.depositPaidAt = firebase.firestore.FieldValue.serverTimestamp();
+        if (stage === 'balance') quoteUpdate.balancePaidAt = firebase.firestore.FieldValue.serverTimestamp();
         if (paymentDoc.teacherUid) {
           quoteUpdate.status            = 'matched';
           quoteUpdate.matchedTeacherUid  = paymentDoc.teacherUid;

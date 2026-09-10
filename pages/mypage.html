@@ -589,10 +589,14 @@
     if (stage === 'paid') {
       return `<span style="padding:8px 12px;background:#EAFAF1;color:#2ECC71;border-radius:10px;font-size:13px;font-weight:700;">✅ 결제완료</span>`;
     }
+    // 배정된 선생님 정보를 결제 페이지로 넘겨야 결제 완료 후 채팅/선생님 알림이 연결됨
+    const tParams = q.matchedTeacherUid
+      ? `&teacherUid=${q.matchedTeacherUid}&teacherName=${encodeURIComponent(q.matchedTeacherName || '선생님')}`
+      : '';
     if (stage === 'deposit') {
-      return `<a class="btn-pay" href="payment.html?quoteId=${q.id}&stage=balance">💳 잔금 결제하기</a>`;
+      return `<a class="btn-pay" href="payment.html?quoteId=${q.id}&stage=balance${tParams}">💳 잔금 결제하기</a>`;
     }
-    return `<a class="btn-pay" href="payment.html?quoteId=${q.id}&stage=deposit">💳 계약금 결제하기</a>`;
+    return `<a class="btn-pay" href="payment.html?quoteId=${q.id}&stage=deposit${tParams}">💳 계약금 결제하기</a>`;
   }
 
   function renderEmpty() {

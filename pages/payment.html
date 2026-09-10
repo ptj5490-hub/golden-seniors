@@ -241,8 +241,15 @@
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
-  // 심사 완료 후 라이브 키(live_ck_...)로 교체
+  // 라이브 전환 시 두 곳을 함께 교체해야 한다:
+  //   1) 여기 TOSS_CLIENT_KEY  : test_ck_... → live_ck_...
+  //   2) Vercel 환경변수 TOSS_SECRET_KEY : test_sk_... → live_sk_... (api/confirm-payment.js가 사용)
   const TOSS_CLIENT_KEY = 'test_ck_6BYq7GWPVv5wYJObxXZl3NE5vbo1';
+
+  // 토스 v1 SDK가 인정하는 결제수단 값으로만 매핑한다.
+  // '카카오페이'/'토스페이'는 SDK의 method 값이 아니라 토스 '카드' 결제창 안에서
+  // 간편결제로 선택하는 방식이라, 칩을 눌러도 항상 유효한 값만 SDK에 넘긴다.
+  const TOSS_METHOD_MAP = { '카드': '카드', '카카오페이': '카드', '토스페이': '카드', '계좌이체': '계좌이체' };
 
   let selectedMethod = '카드';
   window.selectMethod = function(el) {
@@ -254,14 +261,16 @@
   // ── 12주 프로그램 정찰제 — 금액은 서버가 아니라 여기 고정 상수로만 결정된다 ──
   // 토스 심사 요구사항: "정해진 금액만을 결제할 수 있도록" — 사용자가 금액을 바꿀 수 없어야 함.
   // 총액 1,680,000원 = 계약금 168,000원 + 잔금 1,512,000원
-  const STAGES = {
-    deposit: { amount: 168000,  orderName: '골든시니어스 12주 프로그램 계약금',
+  // Object.freeze로 값 변경을 막는다(콘솔에서 금액 조작 방지). 실제 위변조 방어는
+  // 서버(api/confirm-payment.js)에서 금액을 대조하는 단계에서 이뤄진다.
+  const STAGES = Object.freeze({
+    deposit: Object.freeze({ amount: 168000,  orderName: '골든시니어스 12주 프로그램 계약금',
                label: '계약금 (총액의 10%)',
-               hint: '계약금 168,000원 결제 시 프로그램이 확정됩니다. 잔금 1,512,000원은 첫 방문 전까지 결제해요.' },
-    balance: { amount: 1512000, orderName: '골든시니어스 12주 프로그램 잔금',
+               hint: '계약금 168,000원 결제 시 프로그램이 확정됩니다. 잔금 1,512,000원은 첫 방문 전까지 결제해요.' }),
+    balance: Object.freeze({ amount: 1512000, orderName: '골든시니어스 12주 프로그램 잔금',
                label: '잔금',
-               hint: '계약금 168,000원을 제외한 잔금입니다. 결제 후 12주 방문 재활 프로그램이 시작돼요.' },
-  };
+               hint: '계약금 168,000원을 제외한 잔금입니다. 결제 후 12주 방문 재활 프로그램이 시작돼요.' }),
+  });
 
   const params      = new URLSearchParams(location.search);
   const quoteId     = params.get('quoteId') || '';
@@ -296,6 +305,7 @@
     // 금액은 URL 파라미터(stage)로만 결정된 고정 상수. 사용자 입력값 없음.
     const amount    = stage.amount;
     const orderName = stage.orderName;
+    const method    = TOSS_METHOD_MAP[selectedMethod] || '카드';
 
     const btn = document.getElementById('payBtn');
     btn.disabled = true;
@@ -316,7 +326,7 @@
       });
 
       const tossPayments = TossPayments(TOSS_CLIENT_KEY);
-      await tossPayments.requestPayment(selectedMethod, {
+      await tossPayments.requestPayment(method, {
         amount,
         orderId,
         orderName,

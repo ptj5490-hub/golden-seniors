@@ -173,17 +173,26 @@
     if (!user) { location.href = 'login.html'; return; }
 
     try {
-      // ── 1. Firestore payment 문서 업데이트 (success) ──
+      // ── 1. 서버에 결제 승인 요청 (필수) ──
+      // 토스는 결제창 인증만으로 결제가 확정되지 않는다. 서버(api/confirm-payment.js)가
+      // 시크릿 키로 승인 API를 호출하고, 그 과정에서 금액이 우리가 정한 값과 맞는지 대조한다.
+      // 승인이 실패하면 아래 단계(견적 확정·채팅·알림)를 진행하지 않는다.
       let paymentDoc = null;
+      let alreadyConfirmed = false;   // 새로고침 등으로 이미 승인된 건이면 알림 중복 발송을 막는다
       if (orderId) {
-        const docRef = db.collection('payments').doc(orderId);
-        await docRef.update({
-          status:     'success',
-          paymentKey,
-          paidAmount: amount,
-          paidAt:     firebase.firestore.FieldValue.serverTimestamp(),
+        const idToken = await user.getIdToken();
+        const confirmRes = await fetch('/api/confirm-payment', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+          body:    JSON.stringify({ paymentKey, orderId, amount }),
         });
-        const snap = await docRef.get();
+        const confirmBody = await confirmRes.json().catch(() => ({}));
+        if (!confirmRes.ok) {
+          throw new Error(confirmBody.error || '결제 승인에 실패했어요.');
+        }
+        alreadyConfirmed = !!confirmBody.alreadyConfirmed;
+        // 승인 완료된 payment 문서 읽기 (상태는 서버가 이미 success로 기록함)
+        const snap = await db.collection('payments').doc(orderId).get();
         paymentDoc = snap.exists ? snap.data() : null;
       }
 
@@ -273,31 +282,35 @@
           }).catch(() => {});
       }
 
-      // ── 6. 카카오 알림톡 발송 ──
-      try {
-        const customerName = user.displayName || paymentDoc?.customerName || '고객';
-        const teacherName  = paymentDoc?.teacherName || '선생님';
-        const price        = paymentDoc?.amount || 0;
-        const quoteId      = paymentDoc?.quoteId || '';
+      // ── 6. 카카오 알림톡 발송 (이미 승인된 건이면 중복 발송하지 않음) ──
+      if (!alreadyConfirmed) {
+        try {
+          const customerName = user.displayName || paymentDoc?.customerName || '고객';
+          const teacherName  = paymentDoc?.teacherName || '선생님';
+          const price        = paymentDoc?.amount || 0;
+          const quoteId      = paymentDoc?.quoteId || '';
 
-        // 고객에게: 결제/매칭 완료 알림
-        notifyPaymentDoneCustomer(user.phoneNumber || '', customerName, teacherName, quoteId);
+          // 고객에게: 결제/매칭 완료 알림
+          notifyPaymentDoneCustomer(user.phoneNumber || '', customerName, teacherName, quoteId);
 
-        // 선생님에게: 결제 완료 알림
-        if (paymentDoc?.teacherUid) {
-          db.collection('users').doc(paymentDoc.teacherUid).get().then(snap => {
-            if (snap.exists) {
-              const teacher = snap.data();
-              notifyPaymentDoneTeacher(teacher.phone || '', teacherName, customerName, price, quoteId);
-            }
-          }).catch(() => {});
-        }
-      } catch(e) { console.warn('알림 발송 실패:', e); }
+          // 선생님에게: 결제 완료 알림
+          if (paymentDoc?.teacherUid) {
+            db.collection('users').doc(paymentDoc.teacherUid).get().then(snap => {
+              if (snap.exists) {
+                const teacher = snap.data();
+                notifyPaymentDoneTeacher(teacher.phone || '', teacherName, customerName, price, quoteId);
+              }
+            }).catch(() => {});
+          }
+        } catch(e) { console.warn('알림 발송 실패:', e); }
+      }
 
     } catch(e) {
       console.error('결제 완료 처리 오류:', e);
+      const msg = (e && e.message) ? e.message : '결제 정보 처리 중 오류가 발생했어요.';
       document.getElementById('loadingState').innerHTML =
-        '<p style="color:#E74C3C;font-weight:700;">결제 정보 처리 중 오류가 발생했어요.<br>고객센터에 문의해주세요.</p>';
+        `<p style="color:#E74C3C;font-weight:700;">${msg}<br>` +
+        `결제가 완료되지 않았다면 다시 시도하시거나 카카오채널로 문의해주세요.</p>`;
       return;
     }
 

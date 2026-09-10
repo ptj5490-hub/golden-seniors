@@ -24,17 +24,17 @@ window.sendNotify = async function(type, phone, params) {
 
 // ── 알림 유형별 편의 함수 ──
 
-// ① 고객에게: 선생님 견적 도착
+// [레거시] 견적 도착/견적 요청 알림 — 정찰제(회사 배정) 모델로 전환하며 더 이상 사용하지 않음.
+// 혹시 남은 호출부가 있어도 오류 없이 동작하도록 링크만 마이페이지로 유지.
 window.notifyQuoteArrived = function(customerPhone, customerName, teacherName, price, quoteId) {
   return sendNotify('quote_arrived', customerPhone, {
     customerName,
     teacherName,
     price: Number(price).toLocaleString(),
-    link:  `${SITE_URL}/pages/quotes.html?quoteId=${quoteId}`,
+    link:  `${SITE_URL}/pages/mypage.html`,
   });
 };
 
-// ② 선생님에게: 새 견적 요청
 window.notifyQuoteRequested = function(teacherPhone, teacherName, region, condition, quoteId) {
   return sendNotify('quote_requested', teacherPhone, {
     teacherName,
@@ -44,7 +44,7 @@ window.notifyQuoteRequested = function(teacherPhone, teacherName, region, condit
   });
 };
 
-// ②-B 관리자에게: 새 견적 요청 접수 (수신 번호는 서버에서 고정되므로 to는 비워둠)
+// 관리자에게: 새 프로그램 신청 접수 (수신 번호는 서버에서 고정되므로 to는 비워둠)
 window.notifyQuoteRequestedAdmin = function(region, condition, customerName, phone) {
   return sendNotify('quote_requested_admin', 'admin', { region, condition, customerName, phone });
 };

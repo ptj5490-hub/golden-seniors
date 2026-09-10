@@ -91,7 +91,7 @@ const TEMPLATES = {
       '#{링크}':     link,
     }),
     sms: ({ customerName, teacherName, link }) =>
-      `[골든 시니어스] ${customerName}님, 결제 완료! ${teacherName} 선생님과 매칭됐어요.\n채팅: ${link}`,
+      `[골든 시니어스] ${customerName}님, 결제 완료! ${teacherName} 선생님이 배정됐어요.\n채팅: ${link}`,
   },
 
   // ④ 선생님용 - 매칭 확정
@@ -154,11 +154,11 @@ const TEMPLATES = {
       `[골든시니어스] 선생님 신규 가입 신청\n이름: ${teacherName}\n연락처: ${phone}\n지역: ${area}\n자격: ${license}\n관리자 페이지에서 승인해주세요.`,
   },
 
-  // ⑨ 관리자용 — 새 견적 요청 접수 (SMS only)
+  // ⑨ 관리자용 — 새 프로그램 신청 접수 (SMS only)
   quote_requested_admin: {
     templateId: null,
     sms: ({ region, condition, customerName, phone }) =>
-      `[골든시니어스] 새 견적 요청이 들어왔어요!\n고객: ${customerName || '-'} (${phone || '-'})\n지역: ${region}\n증상: ${condition}\n관리자 페이지에서 확인해주세요.`,
+      `[골든시니어스] 새 프로그램 신청이 들어왔어요!\n고객: ${customerName || '-'} (${phone || '-'})\n지역: ${region}\n증상: ${condition}\n관리자 페이지에서 확인하고 전문가를 배정해주세요.`,
   },
 };
 

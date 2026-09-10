@@ -187,11 +187,11 @@
 
     <div class="complete-card">
       <div class="check-wrap">✓</div>
-      <h1 class="complete-title">견적 신청이 완료됐습니다!</h1>
+      <h1 class="complete-title">프로그램 신청이 접수됐습니다!</h1>
       <p class="complete-sub">
-        조건에 맞는 재활운동사 선생님들이<br>
-        직접 견적을 제안해 드릴 예정입니다.<br>
-        평균 <strong style="color:var(--gold-dark)">3~5개</strong> 견적이 도착합니다.
+        회사가 어르신의 조건을 검토해<br>
+        가장 잘 맞는 검증된 전문가를 배정해 드립니다.<br>
+        <strong style="color:var(--gold-dark)">1~2 영업일 이내</strong>에 배정 결과를 연락드립니다.
       </p>
 
       <!-- 진행 타임라인 -->
@@ -199,7 +199,7 @@
         <div class="tl-item">
           <div class="tl-icon done">✅</div>
           <div class="tl-text">
-            <strong>견적 신청 완료</strong>
+            <strong>프로그램 신청 접수</strong>
             <span>방금 전</span>
           </div>
           <span class="tl-badge done">완료</span>
@@ -207,16 +207,16 @@
         <div class="tl-item">
           <div class="tl-icon going">⏳</div>
           <div class="tl-text">
-            <strong>전문가 견적 검토 중</strong>
-            <span>주변 재활운동사들이 조건을 확인하고 있어요</span>
+            <strong>전문가 배정 검토 중</strong>
+            <span>지역·질환·일정에 맞는 전문가를 회사가 배정하고 있어요</span>
           </div>
           <span class="tl-badge going">진행 중</span>
         </div>
         <div class="tl-item">
           <div class="tl-icon wait">💬</div>
           <div class="tl-text">
-            <strong>견적 도착 예정</strong>
-            <span>평균 2~4시간 이내</span>
+            <strong>배정 결과 안내</strong>
+            <span>1~2 영업일 이내 카카오톡·문자로 연락</span>
           </div>
           <span class="tl-badge wait">대기 중</span>
         </div>
@@ -225,8 +225,8 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M13 4a1 1 0 1 0 2 0 1 1 0 0 0-2 0M6.5 10l3-3.5 2 2.5 2-1.5 2 3H6.5zM5 20l4-4h6l4 4" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
           <div class="tl-text">
-            <strong>선생님 선택 &amp; 첫 방문</strong>
-            <span>마음에 드는 분 선택 후 일정 조율</span>
+            <strong>계약금 결제 &amp; 첫 방문</strong>
+            <span>계약금 168,000원 결제로 프로그램 확정 후 방문 시작</span>
           </div>
           <span class="tl-badge wait">대기 중</span>
         </div>
@@ -244,17 +244,13 @@
           <span id="summaryRegion">—</span>
         </div>
         <div class="summary-row">
-          <span>희망 예산</span>
-          <span id="summaryBudget">—</span>
-        </div>
-        <div class="summary-row">
           <span>방문 횟수</span>
           <span id="summaryFreq">—</span>
         </div>
       </div>
 
       <!-- 버튼 -->
-      <a href="quotes.html" class="btn-primary">📨 받은 견적 확인하기</a>
+      <a href="mypage.html" class="btn-primary">📋 마이페이지에서 진행 상황 보기</a>
       <a href="http://pf.kakao.com/_Pwxoln" target="_blank" class="btn-kakao">
         💬 카카오톡으로 알림 받기
       </a>
@@ -263,8 +259,8 @@
 
     <!-- 하단 안내 -->
     <div class="notice">
-      <p>📱 <strong>견적 알림</strong>은 카카오톡 채널을 통해 받을 수 있습니다. 위 버튼을 눌러 채널을 추가해 주세요.</p>
-      <p>⏰ 견적은 신청 후 <strong>24시간 이내</strong> 도착합니다. 영업일 기준이며, 주말·공휴일은 다음 평일에 처리됩니다.</p>
+      <p>📱 <strong>배정 결과</strong>는 카카오톡 채널·문자로 안내드립니다. 위 버튼을 눌러 채널을 추가해 주세요.</p>
+      <p>⏰ 배정 결과는 신청 후 <strong>1~2 영업일 이내</strong> 연락드립니다. 영업일 기준이며, 주말·공휴일은 다음 평일에 처리됩니다.</p>
       <p>❓ 문의사항은 카카오톡 채널 <strong>'골든 시니어스'</strong>로 연락해 주세요.</p>
     </div>
 
@@ -276,7 +272,6 @@
   const params = new URLSearchParams(window.location.search);
   document.getElementById('summaryCondition').textContent = params.get('condition') || '뇌졸중 재활';
   document.getElementById('summaryRegion').textContent    = params.get('region')    || '서울 강남구 역삼동';
-  document.getElementById('summaryBudget').textContent    = params.get('budget')    || '5~7만원';
   document.getElementById('summaryFreq').textContent      = params.get('freq')      || '주 2회';
 </script>
 

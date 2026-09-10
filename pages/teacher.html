@@ -320,7 +320,7 @@
 </header>
 
 <div class="selected-banner" id="selectedBanner">
-  ✅ 이 선생님을 선택하셨어요! 아래에서 일정을 조율해보세요.
+  ✅ 이 선생님이 배정되셨어요! 아래에서 일정을 조율해보세요.
 </div>
 
 <!-- 로딩 -->
@@ -334,7 +334,7 @@
   <div class="err-icon">😥</div>
   <p>선생님 프로필을 찾을 수 없습니다.</p>
   <p style="font-size:13px;color:#9CA3AF;margin-top:8px;">선생님이 아직 프로필을 완성하지 않았거나<br>잠시 후 다시 이용 가능할 수 있어요.</p>
-  <a href="javascript:history.back()" style="display:inline-block;margin-top:16px;color:var(--navy);font-weight:700">← 견적 목록으로</a>
+  <a href="javascript:history.back()" style="display:inline-block;margin-top:16px;color:var(--navy);font-weight:700">← 이전으로</a>
 </div>
 
 <!-- 메인 -->
@@ -434,7 +434,7 @@
           <div class="dot"></div>
           현재 신규 고객 수락 가능
         </div>
-        <a id="ctaBtn" href="#" class="btn-request">📋 이 선생님께 견적 요청</a>
+        <a id="ctaBtn" href="#" class="btn-request">📋 프로그램 신청하기</a>
         <a href="http://pf.kakao.com/_Pwxoln" target="_blank" class="btn-chat">
           💬 카카오로 문의하기
         </a>
@@ -458,7 +458,7 @@
 
 <!-- 모바일 하단 버튼 -->
 <div class="mobile-cta">
-  <a id="mobileCta" href="#" class="btn-request" style="flex:1">📋 견적 요청</a>
+  <a id="mobileCta" href="#" class="btn-request" style="flex:1">📋 프로그램 신청</a>
   <button onclick="shareProfile()" style="width:52px;height:52px;border-radius:14px;background:var(--gray-100);border:none;font-size:20px;cursor:pointer;flex-shrink:0;">🔗</button>
 </div>
 
@@ -718,17 +718,18 @@ async function renderProfile(d, matchedQuoteId, isPaid) {
     mobileCta.textContent = '💬 채팅하기';
     mobileCta.href = chatHref;
   } else if (matchedQuoteId) {
-    // 매칭됐지만 아직 결제 전 → 결제 버튼
+    // 배정됐지만 아직 결제 전 → 계약금 결제 버튼
     document.getElementById('selectedBanner').classList.add('show');
-    ctaBtn.textContent = '💳 결제하기';
-    ctaBtn.href = payHref;
-    mobileCta.textContent = '💳 결제하기';
-    mobileCta.href = payHref;
+    const depositHref = `payment.html?quoteId=${matchedQuoteId}&stage=deposit`;
+    ctaBtn.textContent = '💳 계약금 결제하기';
+    ctaBtn.href = depositHref;
+    mobileCta.textContent = '💳 계약금 결제';
+    mobileCta.href = depositHref;
   } else {
-    // 일반 방문 → 견적 요청 (선생님 정보 파라미터로 전달)
-    const quoteHref = `../index.html?preferredTeacher=${encodeURIComponent(teacherUid)}&preferredTeacherName=${teacherNameEnc}#calc`;
-    ctaBtn.href    = quoteHref;
-    mobileCta.href = quoteHref;
+    // 일반 방문 → 프로그램 신청 (특정 선생님 지정 없이 회사가 배정)
+    const applyHref = `../index.html#calc`;
+    ctaBtn.href    = applyHref;
+    mobileCta.href = applyHref;
   }
 
   // 화면 전환

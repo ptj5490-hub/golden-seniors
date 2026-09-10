@@ -352,34 +352,13 @@
 <!-- 심사 대기 배너 -->
 <div class="pending-banner" id="pendingBanner">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-  현재 자격 심사 중이에요. 승인 완료 후 견적 제출이 가능합니다. (평균 1~2 영업일 소요)
+  현재 자격 심사 중이에요. 승인 완료 후 고객 배정 대상에 포함됩니다. (평균 1~2 영업일 소요)
 </div>
 
 <div class="container">
 
   <!-- 통계 카드 -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon-wrap teal">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
-      </div>
-      <div class="stat-num" id="statNew">0</div>
-      <div class="stat-label">새 요청</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon-wrap teal">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      </div>
-      <div class="stat-num" id="statSent">0</div>
-      <div class="stat-label">견적 제출</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon-wrap green">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      </div>
-      <div class="stat-num" id="statWon">0</div>
-      <div class="stat-label">매칭 성공</div>
-    </div>
+  <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);">
     <div class="stat-card">
       <div class="stat-icon-wrap gold">
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -387,17 +366,20 @@
       <div class="stat-num" id="statRating">-</div>
       <div class="stat-label">평균 평점</div>
     </div>
+    <div class="stat-card">
+      <div class="stat-icon-wrap teal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="stat-num" id="statReviews">0</div>
+      <div class="stat-label">누적 후기</div>
+    </div>
   </div>
 
   <!-- 탭 -->
   <div class="tabs">
     <button class="tab active" onclick="switchTab('requests', this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
-      견적 요청
-    </button>
-    <button class="tab" onclick="switchTab('sent', this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      제출한 견적
+      배정 안내
     </button>
     <button class="tab" onclick="switchTab('profile', this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -405,17 +387,20 @@
     </button>
   </div>
 
-  <!-- 견적 요청 탭 -->
+  <!-- 배정 안내 탭 -->
   <div class="tab-panel active" id="panelRequests">
-    <div id="requestsList">
-      <div class="loading"><div class="loading-spinner"></div>요청 목록 불러오는 중...</div>
-    </div>
-  </div>
-
-  <!-- 제출한 견적 탭 -->
-  <div class="tab-panel" id="panelSent">
-    <div id="sentList">
-      <div class="loading"><div class="loading-spinner"></div>불러오는 중...</div>
+    <div id="requestsList" style="background:var(--white);border-radius:16px;padding:32px 24px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="font-size:40px;margin-bottom:12px;">🗂️</div>
+      <div style="font-size:16px;font-weight:800;color:var(--navy);margin-bottom:8px;">고객 배정은 운영팀이 직접 진행합니다</div>
+      <div style="font-size:14px;color:var(--gray-600);line-height:1.7;">
+        골든시니어스는 정찰제 12주 프로그램으로 운영됩니다.<br>
+        고객 신청이 들어오면 운영팀이 지역·전문 분야·일정을 검토해<br>
+        선생님을 직접 배정하고 담당자가 연락드립니다.<br>
+        결제가 완료되면 전담 채팅방이 열려 고객과 소통하실 수 있어요.
+      </div>
+      <div style="font-size:13px;color:var(--gray-400);margin-top:16px;">
+        프로필 정보(전문 분야·활동 지역·경력)를 꼼꼼히 채워두시면<br>배정 우선순위에 반영됩니다. → '내 프로필' 탭
+      </div>
     </div>
   </div>
 
@@ -516,7 +501,7 @@
           회원 탈퇴
         </div>
         <div style="font-size:13px;color:var(--gray-600);line-height:1.6;margin-bottom:14px;">
-          탈퇴 시 프로필·제출 견적·모든 정보가 삭제되며 복구할 수 없어요.
+          탈퇴 시 프로필·활동 내역·모든 정보가 삭제되며 복구할 수 없어요.
         </div>
         <button onclick="openDeleteModal()"
           style="width:100%;padding:13px;background:transparent;border:1.5px solid #E74C3C;
@@ -599,39 +584,6 @@
   </div>
 </div>
 
-<!-- 견적 작성 모달 -->
-<div class="modal-overlay" id="quoteModal">
-  <div class="modal">
-    <h2 class="modal-title">견적 작성하기</h2>
-    <p class="modal-sub" id="modalSubtitle">고객에게 나만의 견적을 제안해보세요</p>
-
-    <div class="modal-field">
-      <label>제안 금액 (1회 방문) *</label>
-      <input type="text" id="modalPrice" placeholder="예: 55,000원">
-    </div>
-    <div class="modal-field">
-      <label>방문 가능 일정</label>
-      <input type="text" id="modalSchedule" placeholder="예: 평일 오전 9시~12시 가능">
-    </div>
-    <div class="modal-field">
-      <label>첫 인사 메시지 *</label>
-      <textarea id="modalMessage" placeholder="안녕하세요! 저는 OOO 선생님입니다. 어르신의 재활을 도와드리겠습니다..."></textarea>
-    </div>
-    <div class="modal-field">
-      <label>예상 효과 / 프로그램 소개</label>
-      <textarea id="modalPlan" placeholder="관절 가동범위 개선, 낙상 예방 운동 위주로..."></textarea>
-    </div>
-
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal()">취소</button>
-      <button class="btn-submit-modal" onclick="submitQuote()" style="display:flex;align-items:center;justify-content:center;gap:8px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        견적 제출
-      </button>
-    </div>
-  </div>
-</div>
-
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -665,8 +617,6 @@
     if (!user) { window.location.href = 'login.html'; return; }
     currentUser = user;
     await loadTeacherData(user);
-    await loadRequests();
-    loadSentQuotes();
     loadFooterSettings(user.uid);
   });
 
@@ -682,6 +632,7 @@
     const name = teacherData.name || user.displayName || '선생님';
     document.getElementById('teacherName').textContent = `👋 ${name} 선생님`;
     document.getElementById('statRating').textContent  = teacherData.rating > 0 ? teacherData.rating.toFixed(1) : '-';
+    document.getElementById('statReviews').textContent = teacherData.reviewCount || 0;
 
     // 심사 대기 배너
     if (teacherData.status === 'pending') {
@@ -911,84 +862,7 @@
     </div>`;
   }
 
-  // ── 모달 ──
-  window.openModal = function(quoteId, condition, region) {
-    selectedQuoteId = quoteId;
-    document.getElementById('modalSubtitle').textContent = `${condition} · ${region}`;
-    document.getElementById('modalPrice').value    = '';
-    document.getElementById('modalSchedule').value = '';
-    document.getElementById('modalMessage').value  = '';
-    document.getElementById('modalPlan').value     = '';
-    const savedScrollY = window.scrollY;
-    document.getElementById('quoteModal').classList.add('open');
-    // 모달 open 후 스크롤 위치 복원 (일부 브라우저에서 위로 튀는 버그 방지)
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: savedScrollY, behavior: 'instant' });
-      document.getElementById('modalPrice').focus();
-    });
-  };
-  window.closeModal = function() {
-    document.getElementById('quoteModal').classList.remove('open');
-    selectedQuoteId = null;
-  };
-  document.getElementById('quoteModal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
-
-  window.submitQuote = async function() {
-    if (!selectedQuoteId || !currentUser) return;
-    const price    = document.getElementById('modalPrice').value.trim();
-    const message  = document.getElementById('modalMessage').value.trim();
-    if (!price)   { alert('제안 금액을 입력해주세요.'); return; }
-    if (!message) { alert('첫 인사 메시지를 입력해주세요.'); return; }
-
-    const btn = document.querySelector('.btn-submit-modal');
-    btn.disabled = true; btn.textContent = '제출 중...';
-
-    try {
-      // 1. teacher_quotes 컬렉션에 저장
-      const quoteSnap = await db.collection('quotes').doc(selectedQuoteId).get();
-      const quoteData = quoteSnap.exists ? quoteSnap.data() : {};
-
-      await db.collection('teacher_quotes').add({
-        quoteId:     selectedQuoteId,
-        teacherUid:  currentUser.uid,
-        teacherId:   currentUser.uid,   // 하위호환
-        teacherName: teacherData?.name || currentUser.displayName || '',
-        price, message,
-        schedule:  document.getElementById('modalSchedule').value.trim(),
-        plan:      document.getElementById('modalPlan').value.trim(),
-        condition: quoteData.condition || '',
-        region:    quoteData.region    || '',
-        status:    'pending',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      });
-
-      sentQuoteIds.add(selectedQuoteId);
-      closeModal();
-      alert('✅ 견적이 제출됐어요! 고객이 확인하면 연락이 갈 거예요.');
-
-      // 고객에게 카카오 알림톡 발송 (견적 데이터에 저장된 phone 사용)
-      if (quoteData.phone) {
-        try {
-          notifyQuoteArrived(
-            quoteData.phone,
-            quoteData.name || '고객',
-            teacherData?.name || '선생님',
-            price,
-            selectedQuoteId
-          );
-        } catch(e) { console.warn('알림 발송 실패:', e); }
-      }
-
-      await loadRequests();
-      loadSentQuotes();
-    } catch(err) {
-      alert('제출 중 오류가 발생했어요: ' + err.message);
-    } finally {
-      btn.disabled = false; btn.textContent = '견적 제출';
-    }
-  };
+  // 견적 작성/제출 기능은 정찰제(회사 배정) 모델 전환으로 제거됨
 
   // ── 프로필 저장 ──
   window.saveProfile = async function() {

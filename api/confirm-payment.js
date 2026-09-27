@@ -74,13 +74,14 @@ module.exports = async function handler(req, res) {
     return res.status(401).json({ error: '인증 확인에 실패했어요.' });
   }
 
-  const { paymentKey, orderId, amount } = req.body || {};
-  const amountNum = parseInt(amount, 10);
-  if (!paymentKey || !orderId || !Number.isInteger(amountNum) || amountNum <= 0) {
+  const { paymentKey, orderId } = req.body || {};
+  if (!paymentKey || !orderId) {
     return res.status(400).json({ error: '필수 결제 정보가 누락됐어요.' });
   }
 
-  // ── 서버측 금액 대조 (위변조 방어의 핵심) ──
+  // ── 결제 문서 조회 ──
+  // amount 확인보다 먼저 조회한다: 이미 승인 끝난 건(새로고침 등 재호출)은
+  // 클라이언트가 보낸 amount가 URL에서 유실됐어도 그냥 성공으로 처리해야 하기 때문.
   const payRef = db.collection('payments').doc(String(orderId));
   let snap;
   try {
@@ -99,8 +100,18 @@ module.exports = async function handler(req, res) {
     // 이미 승인 완료된 건 — 새로고침 등으로 중복 호출된 경우 조용히 성공 처리
     return res.status(200).json({ ok: true, alreadyConfirmed: true });
   }
-  if (Number(pay.amount) !== amountNum) {
-    console.error('[confirm-payment] 금액 불일치:', { orderId, docAmount: pay.amount, reqAmount: amountNum });
+
+  // ── 서버측 금액 대조 (위변조 방어의 핵심) ──
+  // 클라이언트가 보낸 amount는 URL 파라미터 유실 등으로 없을 수 있어 참고용으로만 쓰고,
+  // 실제 승인 금액은 결제 생성 시 우리가 저장해둔 payments 문서의 amount를 신뢰한다.
+  const clientAmount = parseInt(req.body?.amount, 10);
+  const amountNum = Number(pay.amount);
+  if (!Number.isInteger(amountNum) || amountNum <= 0) {
+    console.error('[confirm-payment] 결제 문서에 유효한 amount가 없음:', { orderId, docAmount: pay.amount });
+    return res.status(400).json({ error: '결제 금액 정보를 확인할 수 없어요.' });
+  }
+  if (Number.isInteger(clientAmount) && clientAmount > 0 && clientAmount !== amountNum) {
+    console.error('[confirm-payment] 금액 불일치:', { orderId, docAmount: amountNum, reqAmount: clientAmount });
     return res.status(400).json({ error: '결제 금액이 일치하지 않아요.' });
   }
   // 정찰제 단계 결제(stage 있음)면 허용 금액만 통과

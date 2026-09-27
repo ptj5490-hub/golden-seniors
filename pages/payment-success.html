@@ -245,8 +245,17 @@
       // ── 4. chats 문서 생성 (채팅 목록 활성화) ──
       if (paymentDoc?.quoteId && paymentDoc?.teacherUid) {
         const chatRef = db.collection('chats').doc(paymentDoc.quoteId);
-        const chatSnap = await chatRef.get();
-        if (!chatSnap.exists) {
+        // 아직 생성되지 않은 채팅방은 보안 규칙상 조회(get) 자체가 거부될 수 있음
+        // (문서가 없으면 resource.data를 확인할 수 없어서 규칙이 permission-denied를 반환함).
+        // 이 경우는 "존재하지 않는다"는 뜻으로 간주하고 생성 시도로 넘어간다.
+        let chatExists = false;
+        try {
+          const chatSnap = await chatRef.get();
+          chatExists = chatSnap.exists;
+        } catch (e) {
+          chatExists = false;
+        }
+        if (!chatExists) {
           const customerName = user.displayName || '고객';
           const teacherName  = paymentDoc.teacherName || '선생님';
           await chatRef.set({

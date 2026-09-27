@@ -330,8 +330,17 @@
   // ── 채팅방 생성/확인 ──
   async function ensureChat(chatId, partnerUid, partnerName, title) {
     const ref  = db.collection('chats').doc(chatId);
-    const snap = await ref.get();
-    if (!snap.exists) {
+    // 아직 생성되지 않은 채팅방은 보안 규칙상 조회(get) 자체가 거부될 수 있음
+    // (문서가 없으면 resource.data를 확인할 수 없어서 규칙이 permission-denied를 반환함).
+    // 이 경우는 "존재하지 않는다"는 뜻으로 간주하고 생성 시도로 넘어간다.
+    let exists = false;
+    try {
+      const snap = await ref.get();
+      exists = snap.exists;
+    } catch (e) {
+      exists = false;
+    }
+    if (!exists) {
       // Firestore 보안 규칙(chats 컬렉션)이 customerId/teacherId 필드로 접근 권한을 판단하므로
       // participants 배열과 별도로 두 필드를 반드시 같이 저장해야 함 (없으면 permission denied)
       const customerId = me.role === 'teacher' ? partnerUid : me.uid;

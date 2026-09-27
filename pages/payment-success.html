@@ -204,7 +204,9 @@
       document.getElementById('displayOrderId').textContent = orderId ? orderId.toUpperCase() : '-';
       document.getElementById('displayOrderName').textContent = paymentDoc?.orderName || paymentDoc?.serviceName || '골든시니어스 12주 프로그램';
       document.getElementById('displayMethod').textContent = '카드 / 간편결제';
-      document.getElementById('displayAmount').textContent = amount ? `${amount.toLocaleString()}원` : '-';
+      // URL의 amount 파라미터가 없으면(새로고침 등) payments 문서에 저장된 실제 승인 금액으로 표시
+      const displayAmt = amount || Number(paymentDoc?.paidAmount) || Number(paymentDoc?.amount) || 0;
+      document.getElementById('displayAmount').textContent = displayAmt ? `${displayAmt.toLocaleString()}원` : '-';
 
       if (stage === 'deposit') {
         document.getElementById('successTitle').textContent = '계약금 결제가 완료됐어요!';

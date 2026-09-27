@@ -255,6 +255,9 @@
               [user.uid]:            customerName,
               [paymentDoc.teacherUid]: teacherName,
             },
+            // Firestore 보안 규칙(chats 컬렉션)이 이 두 필드로 접근 권한을 판단하므로 필수
+            customerId: user.uid,
+            teacherId:  paymentDoc.teacherUid,
             quoteTitle:    paymentDoc.serviceName || '방문 재활운동 서비스',
             lastMessage:   '결제가 완료됐어요! 선생님과 일정을 조율해보세요 😊',
             lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),

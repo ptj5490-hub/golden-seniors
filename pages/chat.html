@@ -332,12 +332,17 @@
     const ref  = db.collection('chats').doc(chatId);
     const snap = await ref.get();
     if (!snap.exists) {
+      // Firestore 보안 규칙(chats 컬렉션)이 customerId/teacherId 필드로 접근 권한을 판단하므로
+      // participants 배열과 별도로 두 필드를 반드시 같이 저장해야 함 (없으면 permission denied)
+      const customerId = me.role === 'teacher' ? partnerUid : me.uid;
+      const teacherId  = me.role === 'teacher' ? me.uid : partnerUid;
       await ref.set({
         participants: [me.uid, partnerUid],
         participantNames: {
           [me.uid]: me.name,
           [partnerUid]: partnerName || '상대방',
         },
+        customerId, teacherId,
         quoteTitle:     title,
         lastMessage:    '',
         lastMessageAt:  firebase.firestore.FieldValue.serverTimestamp(),
